@@ -1,0 +1,1928 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>실과 프로그래밍 웹 교재</title>
+<meta name="description" content="5학년 실과 7단원 2절 '컴퓨터 프로그래밍'(교과서 110~117쪽)을 1인 1태블릿 학급에 맞게 4차시로 재구성한 인터랙티브 웹 교재.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>/* 교재 테마: 깊은 남색 바탕 + 금색 한 색 강조. 왼쪽 목차(차시 칩) · 위쪽 경로와 진행선 · 본문은 위에서 아래로.
+   어두운 단일 테마로 설계했다(밝은 바탕을 따로 두지 않음). */
+:root{
+  --bg:#0B1220; --bg-2:#0E1626; --panel:#111A2B; --panel-2:#16213A; --panel-3:#1B2846;
+  --line:#1E2A40; --line-2:#2D3C5B; --ink:#E8ECF3; --ink-2:#BAC3D3; --muted:#8C97AD;
+  --gold:#D9A441; --gold-2:#F0C46B; --gold-soft:#D9A4411F; --on-gold:#1A1405;
+  --ok:#5CC48C; --ok-soft:#5CC48C1F; --bad:#F07C70; --bad-soft:#F07C701F; --teal:#4FB3BF;
+  --b-start:#2E9E4A; --b-flow:#1F86BD; --b-move:#8A4FD0; --b-look:#CC3D6D; --b-data:#D0567F; --b-judge:#3EA37A;
+  --f-body:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-it:"Gowun Batang","Noto Serif KR","Nanum Myeongjo",serif;
+  --f-mono:"IBM Plex Mono","D2Coding",ui-monospace,Menlo,Consolas,monospace;
+  --touch:48px; --r:14px; --r-s:8px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.8 var(--f-body);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--gold-2);outline-offset:2px}
+a{color:var(--gold-2)}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit}
+em.it{font-family:var(--f-it);font-style:italic;font-weight:700;color:var(--gold-2)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- 배치 ---------- */
+.app{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:100vh}
+.content{min-width:0;outline:none}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column}
+.side a{color:inherit;text-decoration:none}
+.side__brand{padding:26px 26px 22px;border-bottom:1px solid var(--line)}
+.side__brand a{display:block;font:700 18px/1.4 var(--f-body);color:var(--ink)}
+.side__brand em{display:block;font:700 italic 21px/1.35 var(--f-it);color:var(--gold-2)}
+.side__nav{display:flex;gap:6px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.side__nav a{flex:1;display:grid;place-items:center;min-height:40px;border-radius:var(--r-s);font:500 14px/1 var(--f-body);color:var(--muted);border:1px solid transparent}
+.side__nav a:hover{color:var(--ink)}
+.side__nav a[aria-current="page"]{color:var(--gold-2);border-color:var(--gold);background:var(--gold-soft)}
+.side__toc{padding:18px 18px 12px;flex:1}
+.side__h{display:flex;justify-content:space-between;align-items:baseline;padding:0 8px 10px;font:700 14px/1 var(--f-body);color:var(--ink-2)}
+.side__h span{font:400 13px/1 var(--f-body);color:var(--muted)}
+.toc{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.toc__row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;min-height:var(--touch);padding:6px 8px;border-radius:var(--r-s);color:var(--ink-2);font:500 15px/1.4 var(--f-body)}
+.toc__row:hover{background:var(--panel)}
+.toc__chip{font:700 12.5px/1 var(--f-body);color:var(--gold-2);border:1px solid var(--gold);border-radius:5px;padding:4px 6px;white-space:nowrap}
+.toc__n{font:400 13px/1 var(--f-body);color:var(--muted);font-variant-numeric:tabular-nums}
+.toc__item.is-cur>.toc__row{background:var(--panel);color:var(--ink)}
+.toc__item.is-lock>.toc__row{color:var(--muted)}
+.toc__item.is-lock .toc__chip{color:var(--muted);border-color:var(--line-2)}
+.steps{list-style:none;margin:2px 0 8px;padding:0 0 0 18px;display:grid;gap:1px;border-left:1px solid var(--line-2);margin-left:22px}
+.steps a{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:42px;padding:4px 8px;border-radius:var(--r-s);color:var(--ink-2);font:400 14.5px/1.4 var(--f-body)}
+.steps a:hover{background:var(--panel)}
+.steps .n{font:500 12.5px/1 var(--f-mono);color:var(--muted)}
+.steps .s{font:500 12px/1 var(--f-body);color:var(--muted)}
+.steps li.is-done .s{color:var(--ok)}
+.steps li.is-cur a{background:var(--gold-soft);color:var(--gold-2);font-weight:700}
+.steps li.is-cur .n{color:var(--gold-2)}
+.steps li.is-lock a{color:var(--muted);cursor:default}
+.steps li.is-lock a:hover{background:transparent}
+.side__foot{padding:16px 26px 20px;border-top:1px solid var(--line);display:grid;gap:10px;font-size:14px}
+.side__row{display:flex;justify-content:space-between;align-items:center;color:var(--ink-2)}
+.side__row b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+.bar{height:4px;border-radius:4px;background:var(--line-2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--gold)}
+.side__links{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.side__btn{background:none;border:0;padding:8px 0;min-height:40px;color:var(--muted);font:400 13.5px/1.2 var(--f-body);cursor:pointer;text-align:left}
+.side__btn:hover{color:var(--ink)}
+
+.topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:minmax(0,1fr) minmax(80px,240px) auto;gap:24px;align-items:center;padding:14px 40px;background:var(--bg);border-bottom:1px solid var(--line)}
+.crumb{font:400 14px/1.4 var(--f-body);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--gold-2);font-weight:700}
+.crumb i{font-style:normal;margin:0 6px;color:var(--line-2)}
+.topbar .bar{height:3px}
+.topbar__n{font:400 14px/1 var(--f-body);color:var(--ink-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.page{max-width:900px;margin:0 auto;padding:40px 40px 110px}
+
+@media (max-width:1100px){.app{grid-template-columns:260px minmax(0,1fr)}.page{padding:28px 28px 100px}.topbar{padding:12px 28px}}
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .side__brand{padding:16px 16px 12px}.side__toc{padding:10px 10px 4px}.side__foot{padding:10px 16px 14px}
+  .steps{display:flex;overflow-x:auto;border-left:0;margin-left:0;padding-left:0;scrollbar-width:none}
+  .steps a{white-space:nowrap}
+  .page{padding:20px 16px 90px}.topbar{padding:10px 16px;grid-template-columns:minmax(0,1fr) auto}.topbar .bar{display:none}
+}
+
+/* ---------- 머리 ---------- */
+.kicker{font:700 14px/1.5 var(--f-body);color:var(--gold)}
+.hero{display:grid;gap:18px;padding-bottom:28px}
+.hero h1{font:700 clamp(36px,5vw,56px)/1.16 var(--f-body);letter-spacing:-.025em;text-wrap:balance}
+.hero h1 em{display:block;font:700 italic clamp(38px,5.2vw,58px)/1.2 var(--f-it);color:var(--gold-2);letter-spacing:-.01em}
+.hero p.lead{color:var(--ink-2);max-width:62ch}
+.lesson-head{display:grid;gap:14px;padding-bottom:12px}
+.lesson-head h1{font:700 clamp(32px,4.4vw,44px)/1.2 var(--f-body);letter-spacing:-.02em}
+.lesson-head h1 em{font:700 italic 1.04em/1 var(--f-it);color:var(--gold-2)}
+.goal{color:var(--ink-2);font-size:16px;line-height:1.75;max-width:66ch}
+.goal b{color:var(--gold-2);margin-right:10px;font-weight:700}
+
+/* ---------- 단계 ---------- */
+.step{display:grid;gap:18px;padding-top:56px;scroll-margin-top:72px}
+.step__h{display:grid;gap:6px}
+.step__h h2{display:flex;gap:14px;align-items:baseline;font:700 26px/1.4 var(--f-body);letter-spacing:-.01em;text-wrap:balance}
+.step__h h2 .no{font:500 15px/1 var(--f-mono);color:var(--gold)}
+.step__h p{color:var(--muted);font-size:16px;line-height:1.7}
+.step.is-done .step__h h2 .no::after{content:" ✓";color:var(--ok)}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;display:grid;gap:14px;min-width:0}
+.card h3{font:700 19px/1.45 var(--f-body)}
+.card p,.card li{color:var(--ink-2)}
+.card b,.card strong{color:var(--ink)}
+.oneline{position:relative;border:1px solid var(--gold);background:var(--gold-soft);border-radius:var(--r);padding:26px 24px 20px;margin-top:10px}
+.oneline__l{position:absolute;top:-10px;left:18px;padding:0 8px;background:var(--bg);font:500 12.5px/20px var(--f-mono);letter-spacing:.08em;color:var(--gold-2)}
+.oneline p{color:var(--ink);font-size:17px}
+.aside-t{font-size:15px;line-height:1.7;color:var(--muted)}
+.q{display:grid;gap:10px}
+.q+.q{padding-top:18px;border-top:1px solid var(--line)}
+.q__t{font-weight:700;color:var(--ink);font-size:17px;line-height:1.6}
+.rules,.howto{margin:0;padding-left:24px;display:grid;gap:6px;color:var(--ink-2)}
+.rules li::marker,.howto li::marker{font-family:var(--f-mono);color:var(--gold)}
+.howto--plain{list-style:disc}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+@media (max-width:1180px){.two{grid-template-columns:minmax(0,1fr)}}
+.chk{color:var(--bad);font-weight:700}
+
+/* 선택지 */
+.mn-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.mn-choice{display:grid;grid-template-columns:24px minmax(0,1fr);gap:4px 8px;align-items:start;min-height:var(--touch);padding:10px 14px;text-align:left;background:var(--panel-2);border:1px solid var(--line-2);border-radius:10px;color:var(--ink-2);font:400 15.5px/1.55 var(--f-body);cursor:pointer}
+.mn-choice__no{color:var(--muted);font-size:16px}
+.mn-choice__mark{grid-column:2;font:700 13.5px/1.4 var(--f-body)}
+.mn-choice__mark:empty{display:none}
+.mn-choice[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);color:var(--ink)}
+.mn-choice[aria-pressed="true"] .mn-choice__no{color:var(--gold-2)}
+.mn-choice.is-right{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok);background:var(--ok-soft)}
+.mn-choice.is-right .mn-choice__mark{color:var(--ok)}
+.mn-choice.is-wrong{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad);background:var(--bad-soft)}
+.mn-choice.is-wrong .mn-choice__mark{color:var(--bad)}
+.mn-choice:disabled{cursor:default}
+
+/* 버튼 */
+.mn-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--touch);padding:0 20px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);font:700 15px/1 var(--f-body);text-decoration:none;cursor:pointer}
+.mn-btn:hover{border-color:var(--muted)}
+.mn-btn--primary,.mn-btn--run{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
+.mn-btn--primary:hover,.mn-btn--run:hover{background:var(--gold-2);border-color:var(--gold-2)}
+.mn-btn--quiet{background:none;border-color:transparent;color:var(--muted);padding:0 8px}
+.mn-btn--s{min-height:44px;padding:0 12px;font-size:14px}
+.mn-btn:disabled{opacity:.4;cursor:default}
+.mn-btn[aria-pressed="true"]{border-color:var(--gold);color:var(--gold-2)}
+.mn-msg{padding:10px 14px;border-radius:10px;font-size:15px;line-height:1.6;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink)}
+.mn-msg--ok{border-color:var(--ok);background:var(--ok-soft)}
+.mn-msg--no{border-color:var(--bad);background:var(--bad-soft)}
+.mn-input{min-height:44px;padding:8px 12px;border:1px solid var(--line-2);border-radius:var(--r-s);background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--f-body);width:100%}
+.mn-input--num{width:84px;text-align:center;font-variant-numeric:tabular-nums}
+.mn-input--txt{width:min(240px,100%)}
+textarea.mn-input{min-height:88px;resize:vertical}
+.mn-stepper{display:inline-flex;gap:4px;align-items:center}
+.mn-seg{display:inline-flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+.mn-seg button{min-height:44px;padding:0 14px;border:0;background:var(--panel-2);color:var(--ink-2);font:500 14.5px/1 var(--f-body);cursor:pointer}
+.mn-seg button+button{border-left:1px solid var(--line-2)}
+.mn-seg button[aria-pressed="true"]{background:var(--gold-soft);color:var(--gold-2);box-shadow:inset 0 0 0 1px var(--gold)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}
+
+/* 관문 */
+.gate{display:grid;justify-items:center;gap:10px;margin-top:40px;padding:28px 16px;border:1px dashed var(--line-2);border-radius:var(--r);color:var(--muted);text-align:center;font-size:15px}
+.gate__no{font:500 14px/1 var(--f-mono);color:var(--muted);border:1px solid var(--line-2);border-radius:6px;padding:6px 8px}
+
+/* 표 */
+.tbl{overflow-x:auto}
+.mn-table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.6}
+.mn-table th,.mn-table td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;color:var(--ink-2)}
+.mn-table thead th{background:var(--panel-2);color:var(--ink);font-weight:700;white-space:nowrap}
+.mn-table tbody th{color:var(--ink);font-weight:700}
+.mn-table tr:last-child>*{border-bottom:0}
+.mn-table .is-ok{color:var(--ok);font-weight:700;white-space:nowrap}
+.mn-table .is-no{color:var(--bad);font-weight:700;white-space:nowrap}
+.mn-table .nw{white-space:nowrap}
+.mn-table--kv tbody th{width:120px;white-space:nowrap;color:var(--muted);font-weight:500}
+
+/* 체크 목록, 평가 */
+.ticks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tick{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;align-items:center;width:100%;min-height:var(--touch);padding:8px 14px;text-align:left;background:var(--panel-2);border:1px solid var(--line-2);border-radius:10px;color:var(--ink-2);font:400 15.5px/1.5 var(--f-body);cursor:pointer}
+.tick__box{width:22px;height:22px;display:grid;place-items:center;border:1px solid var(--muted);border-radius:5px;font-weight:700;font-size:13px}
+.tick[aria-pressed="true"]{border-color:var(--ok);background:var(--ok-soft);color:var(--ink)}
+.tick[aria-pressed="true"] .tick__box{background:var(--ok);border-color:var(--ok);color:var(--bg)}
+.evals{display:grid}
+.eval{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);font-size:15.5px;color:var(--ink-2)}
+.eval:first-child{border-top:0}
+@media (max-width:620px){.eval{grid-template-columns:minmax(0,1fr)}}
+.debug{list-style:none;margin:0;padding:0;display:grid;gap:6px;counter-reset:dbg}
+.debug li{counter-increment:dbg;display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;color:var(--muted);font-size:15.5px}
+.debug li::before{content:counter(dbg);width:26px;height:26px;display:grid;place-items:center;border:1px solid var(--line-2);border-radius:6px;font:500 13px/1 var(--f-mono)}
+.debug li.is-done{color:var(--ink-2)}
+.debug li.is-done::before{content:"✓";background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.debug li.is-now{color:var(--gold-2);font-weight:700}
+.debug li.is-now::before{border-color:var(--gold);color:var(--gold-2)}
+
+/* ---------- 작업대 ---------- */
+.bench{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-areas:"head head" "prog stage";gap:16px 18px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:0 18px 18px;align-items:start;overflow:hidden}
+.bench__head{grid-area:head;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline;margin:0 -18px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.bench__title{display:flex;gap:10px;align-items:center;font:700 16px/1.4 var(--f-body);color:var(--ink)}
+.dia{color:var(--gold);font-size:13px}
+.bench__hint{font-size:14px;line-height:1.5;color:var(--muted)}
+.bench .stage{grid-area:stage;display:grid;gap:10px;min-width:0}
+.bench .bench__prog{grid-area:prog;display:grid;gap:8px;min-width:0}
+@media (max-width:1180px){.bench{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "stage" "prog"}}
+.stage__frame{border:1px solid var(--line-2);border-radius:10px;overflow:hidden;background:var(--panel-2)}
+.stage__frame svg{display:block;width:100%;height:auto}
+.stage__bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mn-checks{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.mn-checks li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding:6px 10px;border-radius:8px;background:var(--panel-2);font-size:14.5px;line-height:1.5;color:var(--ink-2)}
+.mn-checks li::before{content:"○";color:var(--muted);text-align:center;font-weight:700}
+.mn-checks li.is-ok::before{content:"✓";color:var(--ok)}
+.mn-checks li.is-no::before{content:"✗";color:var(--bad)}
+.mn-checks li.is-ok{color:var(--ink)}
+.mn-tools{display:grid;gap:8px;padding:10px;background:var(--bg);border:1px solid var(--line-2);border-radius:10px}
+.mn-tools__row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mn-tools__hint{font-size:14px;line-height:1.6;color:var(--muted)}
+.mn-tools__lbl{font:500 13.5px/1 var(--f-body);color:var(--muted)}
+.obj-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.mn-program{display:grid;gap:3px;justify-items:start;padding:14px;background:var(--bg);border:1px solid var(--line-2);border-radius:10px;min-width:0;overflow-x:auto}
+.mn-program.is-flow{display:block;padding:8px}
+.empty-inner{font-size:13.5px;color:var(--muted);padding:6px 4px}
+.ask{display:grid;gap:8px;padding:12px;margin-top:8px;border:1px solid var(--gold);border-radius:10px;background:var(--gold-soft)}
+.ask__q{font-weight:700;color:var(--ink)}
+.ask__row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ask__in{width:140px}
+
+/* 블록 */
+.mn-block{position:relative;display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px;min-height:42px;max-width:100%;padding:6px 12px;border:0;border-radius:9px;color:#FFFFFF;font:700 14.5px/1.3 var(--f-body);text-align:left}
+button.mn-block{cursor:pointer}
+.mn-block--start{background:var(--b-start);border-radius:20px 20px 9px 9px}
+.mn-block--flow{background:var(--b-flow)} .mn-block--move{background:var(--b-move)} .mn-block--look{background:var(--b-look)} .mn-block--data{background:var(--b-data)}
+.mn-block--else{min-height:34px;padding:4px 12px;border-radius:0 9px 9px 0}
+.mn-block__v{display:inline-grid;place-items:center;min-width:32px;height:28px;padding:0 9px;border-radius:999px;background:#FFFFFF;color:#16233F}
+.mn-block__v--text{border-radius:6px}
+.mn-block__v--data{background:var(--b-data);color:#FFFFFF;box-shadow:inset 0 0 0 1.5px #FFFFFF99}
+.mn-cond{display:inline-flex;gap:6px;align-items:center;padding:2px 8px;border-radius:999px;background:var(--b-judge)}
+.mn-block__count{position:absolute;right:-8px;top:-9px;min-width:26px;padding:0 7px;border-radius:999px;background:var(--gold);color:var(--on-gold);font:700 12.5px/20px var(--f-body);text-align:center}
+.mn-block.is-running{outline:3px solid var(--gold-2);outline-offset:2px}
+.mn-block.is-picked{outline:3px solid #FFFFFF;outline-offset:2px}
+.mn-block.is-right{outline:3px solid var(--ok);outline-offset:2px}
+.mn-block.is-wrong{outline:3px solid var(--bad);outline-offset:2px}
+.mn-cblock{display:grid;justify-items:start}
+.mn-cblock__inner{display:grid;gap:3px;justify-items:start;margin-left:14px;padding:3px 0 3px 18px;box-shadow:inset 14px 0 0 var(--b-flow)}
+.mn-cblock__end{width:96px;height:14px;background:var(--b-flow);border-radius:0 0 6px 6px;margin-left:14px;margin-top:-3px}
+.mn-cblock>.mn-block--else{margin-left:14px}
+
+/* 실행 화면 그림 */
+.sky{fill:#14213A} .gnd{fill:#1C3A2D} .gnd-l{stroke:#2F5C46;stroke-width:1.5}
+.rtick{stroke:#5D7A68;stroke-width:1.5} .tick-t{fill:var(--muted);font:500 11px var(--f-body)}
+.wall{fill:var(--bad)}
+.bot{transition:transform var(--mv,70ms) linear}
+.bot-b{fill:var(--gold)} .bot-d{fill:#A97E2E} .bot-p{fill:#0B1220} .bot-a{stroke:var(--gold);stroke-width:3}
+.eye{fill:#FFFFFF} .pupil{fill:#0B1220}
+.fr-b{fill:var(--teal)}
+.lbl{fill:var(--ink-2);font:700 12px var(--f-body)}
+.bub{fill:#F4F1EA;stroke:#0B1220;stroke-width:1} .bub-t{fill:#16233F;font:700 15px var(--f-body)}
+.hud{fill:var(--ink-2);font:500 13px var(--f-body);font-variant-numeric:tabular-nums}
+.rope{fill:none;stroke:var(--teal);stroke-width:3}
+.clock{fill:var(--panel-3);stroke:var(--line-2)} .clock-t{fill:var(--gold-2);font:500 46px var(--f-mono);font-variant-numeric:tabular-nums} .clock-l{fill:var(--muted);font:500 12px var(--f-body)}
+.frame{fill:#7A5A2E} .frame-in{fill:#1A2740} .frame-t{fill:var(--ink);font:700 24px var(--f-body)}
+.obj{cursor:pointer} .obj-hit{fill:transparent} .obj:hover .obj-hit,.obj:focus .obj-hit{fill:#FFFFFF14} .obj:focus{outline:none}
+.obj-t{fill:var(--ink-2);font:500 12px var(--f-body)}
+.ic-a{fill:var(--teal)} .ic-d{fill:#2B7E89} .ic-s{fill:#0B1220} .ic-line{fill:none;stroke:#E8ECF3;stroke-width:2.5} .ic-line2{stroke:#0B1220;stroke-width:2}
+.obj[data-obj="phone"] .ic-d{fill:#C7CFDD} .obj[data-obj="umbrella"] .ic-a{fill:#E57399} .obj[data-obj="pencil"] .ic-a{fill:var(--gold)} .obj[data-obj="cap"] .ic-a{fill:#6FA8E8} .obj[data-obj="cap"] .ic-d{fill:#3E79BD} .obj[data-obj="shoe"] .ic-a{fill:#9C7BD6}
+.ic-x{fill:#3B4F78;stroke:#E8ECF3;stroke-width:1.5} .ic-xl{stroke:#FFFFFF;stroke-width:3.5;stroke-linecap:round}
+
+/* 순서도 */
+.flow{display:block;width:100%;height:auto}
+.fl-term{fill:#E5739926;stroke:#E57399;stroke-width:1.5} .fl-proc{fill:#5CC48C22;stroke:var(--ok);stroke-width:1.5} .fl-io{fill:#E3A35A22;stroke:#E3A35A;stroke-width:1.5} .fl-dec{fill:#6FA8E822;stroke:#6FA8E8;stroke-width:1.5}
+.fl-slot{fill:transparent;stroke:var(--gold);stroke-dasharray:6 4;stroke-width:2}
+.fl-t{fill:var(--ink);font:500 13px var(--f-body)} .fl-t--ph{fill:var(--gold-2)}
+.fl-e{fill:none;stroke:var(--muted);stroke-width:1.5} .fl-ah{fill:var(--muted)} .fl-l{fill:var(--ink-2);font:700 12px var(--f-body)}
+.fl-tap{cursor:pointer}
+.fl-node.is-running>path,.fl-node.is-running>rect{stroke:var(--gold-2);stroke-width:3.5}
+.fl-node.is-path>path,.fl-node.is-path>rect{stroke:var(--gold-2);stroke-width:3;fill:var(--gold-soft)}
+.fl-node.is-wrong>path,.fl-node.is-wrong>rect{stroke:var(--bad);stroke-width:3}
+.fl-node.is-picked>path,.fl-node.is-picked>rect{stroke:#FFFFFF;stroke-width:3}
+.flow-card{background:var(--bg);border:1px solid var(--line-2);border-radius:10px;padding:10px}
+.cards{display:flex;flex-wrap:wrap;gap:8px}
+.cards .mn-btn{font-weight:500}
+
+/* 처음 화면 */
+.arc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:820px){.arc{grid-template-columns:minmax(0,1fr)}}
+.arc .card{align-content:start}
+.arc .card .kick{font:500 13px/1 var(--f-mono);color:var(--gold)}
+.arc .go{display:flex;gap:8px;flex-wrap:wrap}
+.panel{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.panel__h{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line);font-weight:700}
+.panel__h span:last-child{font-weight:400;font-size:14px;color:var(--muted)}
+.panel__b{padding:18px}
+.page-foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display:grid;gap:4px;font-size:14px;line-height:1.7;color:var(--muted)}
+
+/* 교사용 */
+.doc{display:grid;gap:18px}
+.doc .card{scroll-margin-top:72px;font-size:15.5px}
+.doc h2{font:700 21px/1.4 var(--f-body);display:flex;gap:12px;align-items:baseline}
+.doc h2 .no{font:500 14px/1 var(--f-mono);color:var(--gold)}
+.notes{margin:0;padding-left:20px;display:grid;gap:8px;color:var(--ink-2)}
+.obs{display:grid;gap:12px}
+.obs label{display:grid;gap:6px;font:700 14.5px/1.4 var(--f-body);color:var(--ink)}
+.obs-act{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+@media (prefers-reduced-motion:reduce){.bot{transition:none}.bar i{transition:none}}
+.field{display:grid;gap:6px;font:700 14.5px/1.4 var(--f-body);color:var(--ink)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;min-height:48px}
+.pool .mn-block{margin-right:0}
+
+/* ---------- 보강 1: 센서 실행 화면 ---------- */
+.mn-live{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:#0000003d;font:500 12.5px/1.6 var(--f-body)}
+.mn-input--sel{min-height:44px;padding:0 10px;border-radius:8px}
+.dr-f{fill:#2B3A5C} .dr-in{fill:#0B1220} .dr-p{fill:#2E6F8E;stroke:#7FC4D8;stroke-width:1.5} .dr-h{stroke:#E8ECF3;stroke-width:3;stroke-linecap:round} .dr-s{fill:var(--gold)}
+[data-r="dl"],[data-r="dr"]{transition:transform .5s ease}
+.lp-pole{stroke:#8C97AD;stroke-width:6;stroke-linecap:round} .lp-arm{fill:none;stroke:#8C97AD;stroke-width:6;stroke-linecap:round}
+.lp-bulb{fill:#3A4661;stroke:#8C97AD;stroke-width:2;transition:fill .3s} .lp-bulb.is-on{fill:#F0C46B;stroke:#FFF1C9} .lp-glow{fill:#F0C46B;transition:opacity .3s}
+.sens{display:grid;gap:8px;padding:12px 14px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel-2)}
+.sens__row{display:grid;grid-template-columns:86px minmax(0,1fr) 52px;grid-template-areas:"n r v" "lo lo hi";align-items:center;gap:2px 10px}
+.sens__n{grid-area:n;font:700 14px/1.3 var(--f-body);color:var(--ink)}
+.sens__row input[type="range"]{grid-area:r;width:100%;accent-color:var(--gold);min-height:36px}
+.sens__v{grid-area:v;font:500 16px/1 var(--f-mono);color:var(--gold-2);text-align:right}
+.sens__lo,.sens__hi{font:400 12px/1.4 var(--f-body);color:var(--muted)} .sens__lo{grid-area:lo;padding-left:96px} .sens__hi{grid-area:hi;text-align:right}
+.bins{display:grid;gap:10px}
+.bin{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel-2)}
+.bin.is-ok{border-color:var(--ok)} .bin.is-no{border-color:var(--bad)}
+.bin__t{font:500 15px/1.5 var(--f-body);color:var(--ink)}
+.ipo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:8px 0}
+.ipo div{padding:10px;border-radius:10px;background:var(--panel-3);text-align:center;font:700 15px/1.4 var(--f-body)}
+.ipo div span{display:block;font:400 13px/1.4 var(--f-body);color:var(--muted)}
+@media (max-width:620px){.ipo{grid-template-columns:minmax(0,1fr)}.sens__row{grid-template-columns:70px minmax(0,1fr) 44px}.sens__lo{padding-left:80px}}
+.rec{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* ---------- 보강 2: 데이터 표와 그래프 ---------- */
+.dl-table td.dl-cell{padding:0}
+.dl-cell button{width:100%;min-height:44px;padding:8px 12px;border:0;background:transparent;text-align:right;font:500 15px/1.4 var(--f-mono);color:var(--ink-2);cursor:pointer;border-radius:6px}
+.dl-cell button:hover{background:var(--panel-3)}
+.dl-cell.is-flag button{background:var(--bad-soft);color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.dl-cell.is-fixed button{background:var(--ok-soft);color:var(--ok)}
+.dl-table tr.is-hi th,.dl-table tr.is-hi td{background:var(--gold-soft);color:var(--gold-2)}
+.dl-table .num{text-align:right;font-family:var(--f-mono)}
+.dl-src{font:400 12.5px/1.6 var(--f-body);color:var(--muted);margin-top:6px}
+.chart{border:1px solid var(--line-2);border-radius:10px;background:var(--panel-2);padding:8px}
+.chart svg{display:block;width:100%;height:auto}
+.ch-ax{stroke:#3B4A6B;stroke-width:1} .ch-grid{stroke:#1E2A40;stroke-width:1} .ch-t{fill:#BAC3D3;font:400 12px var(--f-body)} .ch-tt{fill:#E8ECF3;font:700 13px var(--f-body)}
+.ch-bar{fill:#D9A441;opacity:.85} .ch-bar.is-hi{fill:#F0C46B;opacity:1;stroke:#FFF1C9;stroke-width:1.5} .ch-bar.is-dim{opacity:.35}
+.ch-line{fill:none;stroke:#F0C46B;stroke-width:3;stroke-linejoin:round} .ch-dot{fill:#0B1220;stroke:#F0C46B;stroke-width:2.5} .ch-dot.is-hi{fill:#F0C46B;r:7}
+.ch-v{fill:#E8ECF3;font:500 11.5px var(--f-mono)}
+.fix-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.cls-grid{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:8px 12px;align-items:center}
+.cls-grid input{width:100%}
+.side__h--gap{margin-top:16px}
+.mn-cond--s{flex-wrap:nowrap;white-space:nowrap}
+.mn-cond__t{color:#fff;font-weight:700}
+.sc-t{fill:#E8ECF3;font:700 15px var(--f-body)}
+.ch-div{stroke:var(--gold,#c9a227);stroke-width:1.5;stroke-dasharray:5 4}
+.ch-dt{font-size:11px;fill:var(--gold,#c9a227)}
+
+[hidden]{display:none!important}
+</style></head><body class="mn-paper">
+
+<div class="app">
+  <aside class="side" id="side" aria-label="교재 차례"></aside>
+  <main class="content" id="view" tabindex="-1"></main>
+</div>
+<script>(()=>{
+/* engine.js — 블록 정의, 블록 실행기, 실행 화면 3종(걷기·줄넘기 타이머·분실물 보관함), 순서도 그리기, 작업대 */
+'use strict';
+const KEY = 's72v1-';
+const store = {
+  get(k, d) { try { const s = localStorage.getItem(KEY + k); return s == null ? d : JSON.parse(s); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) {} },
+  clear(prefix) { try { Object.keys(localStorage).filter(k => k.startsWith(KEY + prefix)).forEach(k => localStorage.removeItem(k)); } catch (e) {} }
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let UID = 0; const uid = () => 'b' + (++UID);
+const fresh = items => items.map(it => ({ u: it.u && /^n/.test(it.u) ? it.u : uid(), t: it.t, d: it.d || 0, v: Object.assign({}, it.v || {}) }));
+const plain = items => items.map(({ t, d, v }) => ({ t, d, v: Object.assign({}, v) }));
+const P = (t, d, v, u) => ({ t, d: d || 0, v: v || {}, u });
+
+/* ---------- 블록 ---------- */
+const fv = (k, val, isText) => `<span class="mn-block__v${isText ? ' mn-block__v--text' : ''}" data-k="${k}">${esc(val)}</span>`;
+const BT = {
+  start:  { c: 'start', hat: 1, f: [], r: () => '▶ 시작하기 버튼을 클릭했을 때' },
+  click:  { c: 'start', hat: 1, f: [], r: () => '오브젝트를 클릭했을 때' },
+  live:   { c: 'start', hat: 1, f: [], r: () => '▶ 시작하기 버튼을 클릭했을 때 <span class="mn-live">센서를 계속 읽으며 반복</span>' },
+  repeat: { c: 'flow', box: 1, f: [{ k: 'n', min: 0, max: 30, step: 1 }], r: v => `${fv('n', v.n)} 번 반복하기` },
+  if:     { c: 'flow', box: 1, f: [{ k: 't', text: true, max: 6 }], r: v => `만일 <span class="mn-cond"><span class="mn-block__v mn-block__v--data">대답</span> = ${fv('t', v.t, true)}</span> (이)라면` },
+  else:   { c: 'flow', box: 1, f: [], r: () => '아니면' },
+  move:   { c: 'move', f: [{ k: 'n', min: -30, max: 30, step: 1 }], r: v => `이동 방향으로 ${fv('n', v.n)} 만큼 움직이기` },
+  next:   { c: 'look', f: [], r: () => '다음 모양으로 바꾸기' },
+  wait:   { c: 'flow', f: [{ k: 'n', min: 0, max: 200, step: 1 }], r: v => `${fv('n', v.n)} 초 기다리기` },
+  say:    { c: 'look', f: [{ k: 't', text: true, max: 24 }, { k: 'n', min: 1, max: 5, step: 1 }], r: v => `${fv('t', v.t, true)} 을(를) ${fv('n', v.n)} 초 동안 말하기` },
+  ask:    { c: 'data', f: [{ k: 't', text: true, max: 24 }], r: v => `${fv('t', v.t, true)} 을(를) 묻고 대답 기다리기` },
+  hide:   { c: 'look', f: [], r: () => '모양 숨기기' },
+  stop:   { c: 'flow', f: [], r: () => '모든 코드 멈추기' },
+  /* 보강 1(컴퓨팅 시스템)용 블록 */
+  forever:{ c: 'flow', box: 1, f: [], r: () => '계속 반복하기' },
+  ifs:    { c: 'flow', box: 1, f: [{ k: 's', sel: ['거리', '밝기', '소리'] }, { k: 'o', sel: ['<', '>'] }, { k: 'n', min: 0, max: 200, step: 5 }], r: v => `만일 <span class="mn-cond mn-cond--s">${fv('s', v.s, true)}<span class="mn-cond__t">센서 값</span>${fv('o', v.o, true)}${fv('n', v.n)}</span> (이)라면` },
+  dopen:  { c: 'look', f: [], r: () => '문 열기' },
+  dclose: { c: 'look', f: [], r: () => '문 닫기' },
+  lon:    { c: 'look', f: [], r: () => '불 켜기' },
+  loff:   { c: 'look', f: [], r: () => '불 끄기' }
+};
+const isBox = t => t === 'repeat' || t === 'if' || t === 'else' || t === 'forever' || t === 'ifs';
+const isIf = t => t === 'if' || t === 'ifs';
+const isHat = t => t === 'start' || t === 'click' || t === 'live';
+
+function normalize(items) {
+  let inBox = false;
+  for (const it of items) {
+    if (isBox(it.t)) { it.d = 0; inBox = true; }
+    else if (isHat(it.t)) { it.d = 0; inBox = false; }
+    else if (it.d === 1) { if (!inBox) it.d = 0; }
+    else inBox = false;
+  }
+  return items;
+}
+function toTree(items) {
+  const out = []; let cur = null, lastIf = null;
+  for (const it of items) {
+    if (it.t === 'repeat' || it.t === 'forever') { cur = Object.assign({}, it, { body: [] }); out.push(cur); lastIf = null; }
+    else if (isIf(it.t)) { cur = Object.assign({}, it, { body: [], els: null }); out.push(cur); lastIf = cur; }
+    else if (it.t === 'else') { if (lastIf && !lastIf.els) { lastIf.els = []; lastIf.elseU = it.u; cur = { body: lastIf.els }; } else cur = { body: [] }; lastIf = null; }
+    else if (it.d === 1 && cur) cur.body.push(it);
+    else { cur = null; lastIf = null; out.push(it); }
+  }
+  return out;
+}
+function blockHTML(it, o) {
+  const d = BT[it.t];
+  const tag = o.tap ? 'button' : 'div', ty = o.tap ? ' type="button"' : '';
+  const cls = `mn-block mn-block--${d.c}${it.t === 'else' ? ' mn-block--else' : ''}${o.sel === it.u ? ' is-picked' : ''}${o.mark && o.mark[it.u] ? ' ' + o.mark[it.u] : ''}`;
+  return `<${tag}${ty} class="${cls}" data-u="${it.u}">${d.r(it.v)}${o.counts ? `<span class="mn-block__count" data-cnt="${it.u}" hidden>0</span>` : ''}</${tag}>`;
+}
+function progHTML(items, o = {}) {
+  let h = '', i = 0;
+  const inner = j => { let s = ''; while (j < items.length && items[j].d === 1) { s += blockHTML(items[j], o); j++; } return [s, j]; };
+  while (i < items.length) {
+    const it = items[i];
+    if (it.t === 'repeat' || it.t === 'forever' || isIf(it.t)) {
+      let [a, j] = inner(i + 1);
+      h += `<div class="mn-cblock">${blockHTML(it, o)}<div class="mn-cblock__inner">${a || '<p class="empty-inner">안이 비어 있어요</p>'}</div>`;
+      if (isIf(it.t) && items[j] && items[j].t === 'else') { const [b, k] = inner(j + 1); h += `${blockHTML(items[j], o)}<div class="mn-cblock__inner">${b || '<p class="empty-inner">안이 비어 있어요</p>'}</div>`; j = k; }
+      h += `<div class="mn-cblock__end" aria-hidden="true"></div></div>`;
+      i = j;
+    } else { h += blockHTML(it, o); i++; }
+  }
+  return h || '<p class="empty-inner">블록이 없어요.</p>';
+}
+
+/* 편집: 묶음(반복, 만일~아니면)은 안에 든 블록과 함께 움직인다 */
+function headerOf(items, i) { let j = i; while (j > 0 && !isBox(items[j].t)) j--; return j; }
+function ifOf(items, j) { while (j > 0 && !isIf(items[j].t)) j--; return j; }
+function runEnd(items, i) { let j = i; while (j + 1 < items.length && items[j + 1].d === 1) j++; return j; }
+function unitEnd(items, i) {
+  const t = items[i].t; if (!isBox(t)) return i;
+  let e = runEnd(items, i);
+  if (isIf(t) && items[e + 1] && items[e + 1].t === 'else') e = runEnd(items, e + 1);
+  return e;
+}
+function topStart(items, j) { if (items[j].d === 1) j = headerOf(items, j); if (items[j].t === 'else') j = ifOf(items, j); return j; }
+function canDo(items, i, op) {
+  const it = items[i]; if (!it || isHat(it.t) || it.t === 'else') return false;
+  const prev = items[i - 1], end = unitEnd(items, i), next = items[end + 1];
+  if (op === 'up') { if (it.d === 1) return !!prev && prev.d === 1; return !!prev && !isHat(prev.t); }
+  if (op === 'down') { if (it.d === 1) return !!next && next.d === 1; return !!next && next.t !== 'else'; }
+  if (op === 'in') return it.d === 0 && !isBox(it.t) && !!prev && (isBox(prev.t) || prev.d === 1);
+  if (op === 'out') return it.d === 1;
+  return false;
+}
+function doOp(items, i, op) {
+  if (!canDo(items, i, op)) return items;
+  const it = items[i];
+  if (it.d === 1 && (op === 'up' || op === 'down')) { const j = op === 'up' ? i - 1 : i + 1; [items[i], items[j]] = [items[j], items[i]]; return normalize(items); }
+  if (op === 'in') { it.d = 1; return normalize(items); }
+  if (op === 'out') { const top = topStart(items, i), e = unitEnd(items, top); items.splice(i, 1); it.d = 0; items.splice(e, 0, it); return normalize(items); }
+  const end = unitEnd(items, i), unit = items.slice(i, end + 1);
+  if (op === 'up') { const to = topStart(items, i - 1); items.splice(i, unit.length); items.splice(to, 0, ...unit); }
+  else { const nx = end + 1, span = unitEnd(items, nx) - nx + 1; items.splice(i, unit.length); items.splice(i + span, 0, ...unit); }
+  return normalize(items);
+}
+
+/* ---------- 실행기 ---------- */
+async function runProgram(items, st, o) {
+  const tr = { log: [], moves: 0, nexts: 0, waits: [], says: [], asks: 0, answers: [], hides: 0, branch: { yes: 0, no: 0 }, wall: false, error: null, stopped: false, u: 0, counts: {} };
+  if (!items.length || !isHat(items[0].t)) { tr.error = 'nostart'; return tr; }
+  if (!o.keep) st.reset();
+  const ctx = { answer: null }, counts = tr.counts, tick = () => sleep(16 / o.speed);
+  const hit = u => { if (!u) return; o.onBlock && o.onBlock(u); counts[u] = (counts[u] || 0) + 1; o.onCount && o.onCount(u, counts[u]); };
+  async function ex(list) {
+    for (const b of list) {
+      if (o.token.stop) throw new Error('stop');
+      hit(b.u); const v = b.v || {};
+      if (b.t === 'repeat') {
+        const n = Math.max(0, Math.floor(+v.n || 0));
+        for (let i = 0; i < n; i++) { st.hud && st.hud(`반복 ${i + 1} / ${n}`); await ex(b.body); await tick(); }
+        st.hud && st.hud('');
+      } else if (b.t === 'forever') {
+        const max = o.maxLoops || 100000; tr.loops = 0;
+        for (let i = 0; i < max; i++) { if (o.token.stop) throw new Error('stop'); tr.loops++; st.hud && st.hud(`계속 반복 ${i + 1}`); await ex(b.body); o.onLoop && o.onLoop(i, st); await sleep(Math.max(30, 120 / o.speed)); }
+        st.hud && st.hud('');
+      } else if (b.t === 'if') {
+        const yes = String(ctx.answer == null ? '' : ctx.answer).trim() === String(v.t || '').trim();
+        tr.branch[yes ? 'yes' : 'no']++;
+        if (yes) await ex(b.body); else if (b.els) { hit(b.elseU); await ex(b.els); }
+      } else if (b.t === 'ifs') {
+        const val = st.sensor ? st.sensor(v.s) : 0, n = +v.n || 0;
+        const yes = v.o === '>' ? val > n : val < n;
+        tr.branch[yes ? 'yes' : 'no']++; tr.lastSensor = { s: v.s, val, yes };
+        if (yes) await ex(b.body); else if (b.els) { hit(b.elseU); await ex(b.els); }
+      } else if (b.t === 'dopen' || b.t === 'dclose') { tr.door = b.t === 'dopen'; st.door && st.door(tr.door); }
+      else if (b.t === 'lon' || b.t === 'loff') { tr.led = b.t === 'lon'; st.led && st.led(tr.led); } else if (b.t === 'move') { if (st.move && st.move(+v.n || 0)) tr.wall = true; tr.moves++; }
+      else if (b.t === 'next') { st.next && st.next(); tr.nexts++; }
+      else if (b.t === 'wait') { const s = Math.max(0, +v.n || 0); tr.waits.push({ s, mb: tr.moves }); tr.log.push('w' + s); if (st.wait) await st.wait(s, o); else await sleep(s * 1000 / o.speed); }
+      else if (b.t === 'say') { const s = Math.max(0, +v.n || 0); tr.says.push({ t: String(v.t || ''), mb: tr.moves }); tr.log.push('s:' + String(v.t || '')); st.say(String(v.t || '')); await sleep(s * 1000 / Math.min(o.speed, 3)); st.clearSay(); }
+      else if (b.t === 'ask') { tr.asks++; const a = await st.ask(String(v.t || ''), o.token); if (a == null) throw new Error('stop'); ctx.answer = a; tr.answers.push(a); tr.log.push('a:' + a); }
+      else if (b.t === 'hide') { tr.hides++; tr.log.push('h'); st.hide && st.hide(); }
+      else if (b.t === 'stop') { tr.stopAll = true; throw new Error('stopall'); }
+      await tick();
+    }
+  }
+  try { await ex(toTree(items)); } catch (e) { if (e.message === 'stop') tr.stopped = true; }
+  o.onBlock && o.onBlock(null); tr.u = st.u ? st.u() : 0; return tr;
+}
+
+/* ---------- 실행 화면 공통: 질문 칸 ---------- */
+function askPanel(host) {
+  const box = document.createElement('div'); box.className = 'ask'; box.hidden = true;
+  box.innerHTML = `<p class="ask__q"></p><div class="ask__row"><button type="button" class="mn-btn mn-btn--s" data-a="예">예</button><button type="button" class="mn-btn mn-btn--s" data-a="아니요">아니요</button><input class="mn-input ask__in" type="text" maxlength="10" aria-label="직접 입력" placeholder="직접 입력"><button type="button" class="mn-btn mn-btn--s" data-a="__in">입력</button></div>`;
+  host.appendChild(box);
+  return (q, token) => new Promise(res => {
+    box.hidden = false; box.querySelector('.ask__q').textContent = q; const inp = box.querySelector('.ask__in'); inp.value = '';
+    const done = a => { box.hidden = true; box.removeEventListener('click', on); clearInterval(iv); res(a); };
+    const on = e => { const b = e.target.closest('[data-a]'); if (!b) return; done(b.dataset.a === '__in' ? inp.value.trim() : b.dataset.a); };
+    box.addEventListener('click', on);
+    const iv = setInterval(() => { if (token.stop) done(null); }, 100);
+  });
+}
+
+/* ---------- 실행 화면 1: 걷기 (1차시) ---------- */
+const GY = 168, X = u => 60 + u * 4.2, UMIN = -12, UMAX = 130;
+const ROBOT = (legs) => `${legs}<rect class="bot-b" x="-20" y="-60" width="40" height="36" rx="8"/><rect class="bot-p" x="-9" y="-50" width="18" height="10" rx="3"/><line class="bot-a" x1="0" y1="-88" x2="0" y2="-97"/><circle class="bot-p" cx="0" cy="-99" r="4"/><rect class="bot-b" x="-17" y="-88" width="34" height="27" rx="7"/><circle class="eye" cx="-7" cy="-75" r="5"/><circle class="eye" cx="7" cy="-75" r="5"/><circle class="pupil" cx="-5.5" cy="-75" r="2.4"/><circle class="pupil" cx="8.5" cy="-75" r="2.4"/>`;
+const LEGS = (cls, a) => `<g class="${cls}"><rect class="bot-d" x="-11" y="-26" width="8" height="26" rx="3" transform="rotate(${a} -7 -26)"/><rect class="bot-d" x="3" y="-26" width="8" height="26" rx="3" transform="rotate(${-a} 7 -26)"/></g>`;
+const BUBBLE = `<g data-r="bub" visibility="hidden"><rect class="bub" data-r="bubr" x="-10" y="-146" width="120" height="34" rx="8"/><text class="bub-t" data-r="bubt" x="4" y="-123">…</text></g>`;
+function bubbleApi(R, getX, right) {
+  const bub = R('bub'), bubr = R('bubr'), bubt = R('bubt');
+  return {
+    say(t) { const w = 26 + [...t].length * 15; bubr.setAttribute('width', w); const off = getX() + w > right ? -w + 20 : -10; bubr.setAttribute('x', off); bubt.setAttribute('x', off + 13); bubt.textContent = t; bub.setAttribute('visibility', 'visible'); },
+    clearSay() { bub.setAttribute('visibility', 'hidden'); }
+  };
+}
+function walkStage(host, friendU) {
+  let ticks = '';
+  for (let u = 0; u <= 120; u += 10) ticks += `<line class="rtick" x1="${X(u)}" y1="${GY + 4}" x2="${X(u)}" y2="${GY + 12}"/><text class="tick-t" x="${X(u)}" y="${GY + 27}" text-anchor="middle">${u}</text>`;
+  host.innerHTML = `<div class="stage__frame"><svg viewBox="0 0 640 210" role="img" aria-label="실행 화면: 로봇이 땅 위를 걷고 오른쪽에 친구가 서 있다. 아래 눈금은 이동한 거리이다.">
+  <rect class="sky" x="0" y="0" width="640" height="${GY}"/><rect class="gnd" x="0" y="${GY}" width="640" height="${210 - GY}"/><line class="gnd-l" x1="0" y1="${GY}" x2="640" y2="${GY}"/>${ticks}
+  <rect class="wall" data-r="wall" x="628" y="0" width="12" height="${GY}" opacity="0"/>
+  <g data-r="friend"><rect class="fr-b" x="-9" y="-24" width="7" height="24" rx="3"/><rect class="fr-b" x="2" y="-24" width="7" height="24" rx="3"/><rect class="fr-b" x="-17" y="-56" width="34" height="34" rx="14"/><circle class="fr-b" cx="0" cy="-74" r="15"/><circle class="eye" cx="-6" cy="-76" r="4.5"/><circle class="eye" cx="6" cy="-76" r="4.5"/><circle class="pupil" cx="-7.5" cy="-76" r="2.2"/><circle class="pupil" cx="4.5" cy="-76" r="2.2"/><text class="lbl" x="0" y="-98" text-anchor="middle">친구</text></g>
+  <g class="bot" data-r="bot"><g>${ROBOT(LEGS('l0', 0) + LEGS('l1', 20))}</g>${BUBBLE}</g>
+  <text class="hud" data-r="hud" x="14" y="26"></text><text class="hud" data-r="hud2" x="626" y="26" text-anchor="end"></text></svg></div>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  const bot = R('bot'), hud = R('hud'), hud2 = R('hud2'), wall = R('wall'), friend = R('friend'), l0 = host.querySelector('.l0'), l1 = host.querySelector('.l1');
+  const s = { u: 0, shape: 0 };
+  const place = ms => { bot.style.setProperty('--mv', ms + 'ms'); bot.style.transform = `translate(${X(s.u)}px, ${GY}px)`; hud2.textContent = `위치 ${s.u}`; };
+  const api = Object.assign(bubbleApi(R, () => X(s.u), 630), {
+    setFriend(fu) { friend.setAttribute('transform', `translate(${X(fu) + 52} ${GY})`); },
+    reset() { s.u = 0; s.shape = 0; l0.style.display = ''; l1.style.display = 'none'; api.clearSay(); wall.setAttribute('opacity', 0); hud.textContent = ''; place(0); },
+    move(n) { let hitW = false; s.u += n; if (s.u > UMAX) { s.u = UMAX; hitW = true; } if (s.u < UMIN) { s.u = UMIN; hitW = true; } if (hitW) wall.setAttribute('opacity', 1); place(70); return hitW; },
+    next() { s.shape ^= 1; l0.style.display = s.shape ? 'none' : ''; l1.style.display = s.shape ? '' : 'none'; },
+    hud(t) { hud.textContent = t || ''; }, u: () => s.u, ask: askPanel(host)
+  });
+  api.setFriend(friendU == null ? 100 : friendU); api.reset();
+  return api;
+}
+
+/* ---------- 실행 화면 2: 줄넘기 타이머 (2차시). 기다리는 시간을 빠르게 돌려 본다 ---------- */
+function timerStage(host) {
+  host.innerHTML = `<div class="stage__frame"><svg viewBox="0 0 640 210" role="img" aria-label="실행 화면: 로봇이 줄넘기를 하고, 오른쪽 시계가 흐른 시간을 보여 준다.">
+  <rect class="sky" x="0" y="0" width="640" height="${GY}"/><rect class="gnd" x="0" y="${GY}" width="640" height="${210 - GY}"/><line class="gnd-l" x1="0" y1="${GY}" x2="640" y2="${GY}"/>
+  <g transform="translate(170 ${GY})" data-r="kid"><g data-r="jump">${ROBOT(LEGS('l0', 0))}<path class="rope" data-r="rope" d="M-26 -58 Q0 -150 26 -58" /></g>${BUBBLE}</g>
+  <g transform="translate(470 92)"><rect class="clock" x="-118" y="-48" width="236" height="96" rx="12"/><text class="clock-t" data-r="clock" x="0" y="20" text-anchor="middle">00:00</text><text class="clock-l" x="0" y="-26" text-anchor="middle">흐른 시간 (프로그램 속 시간)</text></g>
+  <text class="hud" data-r="real" x="352" y="186">실제로 기다린 시간 0초</text></svg></div>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  const clock = R('clock'), real = R('real'), rope = R('rope'), jump = R('jump');
+  let sim = 0, realMs = 0;
+  const fmt = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  const draw = () => { clock.textContent = fmt(sim); real.textContent = `실제로 기다린 시간 ${Math.round(realMs / 1000)}초`; const up = Math.floor(sim * 2) % 2 === 1; rope.setAttribute('d', up ? 'M-26 -58 Q0 -150 26 -58' : 'M-26 -58 Q0 30 26 -58'); jump.setAttribute('transform', up ? 'translate(0 -10)' : ''); };
+  const api = Object.assign(bubbleApi(R, () => 170, 630), {
+    reset() { sim = 0; realMs = 0; api.clearSay(); draw(); },
+    async wait(s, o) {
+      const t0 = performance.now(), start = sim, target = start + s; let last = t0;
+      while (sim < target) {
+        if (o.token.stop) throw new Error('stop');
+        await sleep(40); const now = performance.now(); realMs += now - last; last = now;
+        sim = Math.min(target, start + (now - t0) / 1000 * o.speed); draw();
+      }
+    },
+    elapsed: () => sim, ask: askPanel(host)
+  });
+  api.reset(); return api;
+}
+
+/* ---------- 실행 화면 3: 분실물 보관함 (3·4차시) ---------- */
+const ICON = {
+  bottle: `<rect x="-11" y="-30" width="22" height="8" rx="2" class="ic-d"/><rect x="-15" y="-22" width="30" height="52" rx="10" class="ic-a"/><rect x="-15" y="-4" width="30" height="14" class="ic-d"/>`,
+  phone: `<rect x="-17" y="-30" width="34" height="60" rx="6" class="ic-d"/><rect x="-13" y="-24" width="26" height="44" rx="2" class="ic-s"/><circle cx="0" cy="25" r="2.5" class="ic-s"/>`,
+  umbrella: `<path d="M-30 0 Q0 -46 30 0 Z" class="ic-a"/><path d="M-30 0 q7.5 -8 15 0 q7.5 -8 15 0 q7.5 -8 15 0 q7.5 -8 15 0" class="ic-line"/><line x1="0" y1="0" x2="0" y2="26" class="ic-line"/><path d="M0 26 q0 6 -6 6" class="ic-line"/>`,
+  pencil: `<rect x="-30" y="-14" width="60" height="28" rx="9" class="ic-a"/><line x1="-26" y1="-4" x2="26" y2="-4" class="ic-line2"/><rect x="-5" y="-17" width="10" height="7" rx="2" class="ic-d"/>`,
+  cap: `<path d="M-26 6 Q-24 -28 4 -26 Q26 -24 24 6 Z" class="ic-a"/><path d="M-26 6 L36 6 Q34 14 -26 12 Z" class="ic-d"/>`,
+  shoe: `<path d="M-24 -26 L24 -26 L28 28 L-28 28 Z" class="ic-a"/><path d="M-12 -26 Q0 -40 12 -26" class="ic-line"/><line x1="-28" y1="14" x2="28" y2="14" class="ic-line2"/>`,
+  x: `<rect x="-20" y="-20" width="40" height="40" rx="8" class="ic-x"/><path d="M-9 -9 L9 9 M9 -9 L-9 9" class="ic-xl"/>`
+};
+const ITEM_NAMES = { bottle: '물병', phone: '스마트폰', umbrella: '우산', pencil: '필통', cap: '모자', shoe: '실내화 주머니', x: '엑스 버튼' };
+function lockerStage(host, objs, onClick) {
+  const pos = { x: [86, 152] };
+  const slots = [250, 360, 470, 560];
+  const items = objs.filter(o => o !== 'x');
+  items.forEach((o, i) => { pos[o] = [slots[i] || 560, 104]; });
+  host.innerHTML = `<div class="stage__frame"><svg viewBox="0 0 640 210" role="img" aria-label="실행 화면: 분실물 보관함 액자 안에 물건들이 있고 왼쪽 아래에 엑스 버튼이 있다. 물건을 누르면 그 물건의 프로그램이 실행된다.">
+  <rect class="sky" x="0" y="0" width="640" height="210"/><rect class="frame" x="22" y="12" width="596" height="186" rx="6"/><rect class="frame-in" x="34" y="24" width="572" height="162" rx="3"/>
+  <text class="frame-t" x="320" y="58" text-anchor="middle">분실물 보관함</text>
+  ${objs.map(o => `<g class="obj" data-obj="${o}" transform="translate(${pos[o][0]} ${pos[o][1] + (o === 'x' ? 0 : 20)})" role="button" tabindex="0" aria-label="${ITEM_NAMES[o]}"><rect class="obj-hit" x="-38" y="-42" width="76" height="84" rx="8"/>${ICON[o]}${o === 'x' ? '' : `<text class="obj-t" x="0" y="52" text-anchor="middle">${ITEM_NAMES[o]}</text>`}</g>`).join('')}
+  <g transform="translate(150 86)">${BUBBLE.replace('y="-146"', 'y="-40"').replace('y="-123"', 'y="-17"')}</g></svg></div>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  host.querySelectorAll('.obj').forEach(g => { const go = () => onClick(g.dataset.obj); g.addEventListener('click', go); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
+  let cur = null;
+  const api = Object.assign(bubbleApi(R, () => 150, 600), {
+    reset() { host.querySelectorAll('.obj').forEach(g => g.style.display = ''); api.clearSay(); },
+    bind(o) { cur = o; }, hide() { const g = host.querySelector(`[data-obj="${cur}"]`); if (g) g.style.display = 'none'; },
+    shown: o => { const g = host.querySelector(`[data-obj="${o}"]`); return g && g.style.display !== 'none'; },
+    ask: askPanel(host)
+  });
+  return api;
+}
+
+/* ---------- 순서도 (3·4차시: 물건을 클릭했을 때) ---------- */
+/* spec: {item, ask, yes, no} → 노드 7개. slots: {n2:'?', n3:'?', n4:'?'} 빈칸, picked: 슬롯에 채운 글 */
+function objFlow(spec) {
+  const nm = ITEM_NAMES[spec.item] || spec.item;
+  return [
+    { id: 'n1', shape: 'term', x: 170, y: 30, w: 220, t: `${nm}을(를) 클릭했을 때` },
+    { id: 'n2', shape: 'io', x: 170, y: 100, w: 260, t: `"${spec.ask}"를 묻고 대답 기다리기` },
+    { id: 'n3', shape: 'dec', x: 170, y: 190, w: 170, t: `입력 값이 '예'인가?` },
+    { id: 'n4', shape: 'io', x: 420, y: 190, w: 220, t: `"${spec.yes}"라고 말하기` },
+    { id: 'n5', shape: 'proc', x: 420, y: 262, w: 200, t: `${nm}을(를) 화면에서 숨기기` },
+    { id: 'n6', shape: 'io', x: 170, y: 290, w: 240, t: `"${spec.no}"라고 말하기` },
+    { id: 'n7', shape: 'term', x: 170, y: 360, w: 100, t: '끝' }
+  ];
+}
+const FLOW_EDGES_OBJ = [['n1', 'n2'], ['n2', 'n3'], ['n3', 'n4', '예', 'right'], ['n4', 'n5'], ['n3', 'n6', '아니요'], ['n6', 'n7'], ['n5', 'n7', '', 'back']];
+function flowSVG(nodes, edges, o = {}) {
+  const N = Object.fromEntries(nodes.map(n => [n.id, n])), H = 46, W = o.width || 560, Ht = o.height || 400;
+  const shape = n => {
+    const x = n.x - n.w / 2, y = n.y - H / 2, slot = o.slots && o.slots[n.id] != null;
+    const cls = `fl-${n.shape}${slot ? ' fl-slot' : ''}${o.mark && o.mark[n.id] ? ' ' + o.mark[n.id] : ''}`;
+    let s;
+    if (n.shape === 'term') s = `<rect class="${cls}" x="${x}" y="${y}" width="${n.w}" height="${H}" rx="${H / 2}"/>`;
+    else if (n.shape === 'io') s = `<path class="${cls}" d="M${x + 14} ${y} H${x + n.w} L${x + n.w - 14} ${y + H} H${x} Z"/>`;
+    else if (n.shape === 'dec') s = `<path class="${cls}" d="M${n.x} ${y - 10} L${n.x + n.w / 2} ${n.y} L${n.x} ${y + H + 10} L${n.x - n.w / 2} ${n.y} Z"/>`;
+    else s = `<rect class="${cls}" x="${x}" y="${y}" width="${n.w}" height="${H}" rx="3"/>`;
+    const text = slot ? (o.slots[n.id] || '빈칸을 눌러 채우기') : n.t;
+    const lines = wrap(text, Math.floor((n.w - (n.shape === 'dec' ? 50 : 24)) / 13));
+    const ty = n.y - (lines.length - 1) * 8 + 5;
+    return `<g class="fl-node${o.tap ? ' fl-tap' : ''}" data-node="${n.id}" ${o.tap ? 'role="button" tabindex="0"' : ''}>${s}${lines.map((l, i) => `<text class="fl-t${slot && !o.slots[n.id] ? ' fl-t--ph' : ''}" x="${n.x}" y="${ty + i * 16}" text-anchor="middle">${esc(l)}</text>`).join('')}</g>`;
+  };
+  const edge = ([a, b, label, mode]) => {
+    const A = N[a], B = N[b]; let d, lx, ly;
+    const bottom = n => n.y + H / 2 + (n.shape === 'dec' ? 10 : 0), top = n => n.y - H / 2 - (n.shape === 'dec' ? 10 : 0);
+    if (mode === 'right') { d = `M${A.x + A.w / 2} ${A.y} H${B.x - B.w / 2 - 2}`; lx = A.x + A.w / 2 + 16; ly = A.y - 8; }
+    else if (mode === 'back') { const yy = B.y; d = `M${A.x} ${bottom(A)} V${yy} H${B.x + B.w / 2 + 2}`; }
+    else if (mode === 'side') { d = `M${A.x + A.w / 2} ${A.y} H${A.x + A.w / 2 + 40} V${B.y} H${B.x + B.w / 2 + 2}`; lx = A.x + A.w / 2 + 6; ly = A.y - 8; }
+    else { d = `M${A.x} ${bottom(A)} V${top(B) - 2}`; lx = A.x + 8; ly = bottom(A) + 16; }
+    return `<path class="fl-e" d="${d}" marker-end="url(#ah)"/>${label ? `<text class="fl-l" x="${lx}" y="${ly}">${label}</text>` : ''}`;
+  };
+  return `<svg class="flow" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${esc(o.label || '순서도')}"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="fl-ah"/></marker></defs>${edges.map(edge).join('')}${nodes.map(shape).join('')}</svg>`;
+}
+function wrap(t, n) { const out = []; let cur = ''; for (const w of String(t).split(' ')) { if ((cur + ' ' + w).trim().length > n && cur) { out.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); } if (cur) out.push(cur); return out.slice(0, 3); }
+/* 순서도 → 블록 (노드 id를 블록 u로 써서 실행 중 순서도 칸에 불이 들어오게 한다) */
+function flowToBlocks(spec) {
+  return [P('click', 0, {}, 'n1'), P('ask', 0, { t: spec.ask }, 'n2'), P('if', 0, { t: '예' }, 'n3'), P('say', 1, { t: spec.yes, n: 2 }, 'n4'), P('hide', 1, {}, 'n5'), P('else', 0, {}, 'n3e'), P('say', 1, { t: spec.no, n: 2 }, 'n6')];
+}
+
+
+/* ---------- 실행 화면 4: 센서와 기기 (보강 1). 슬라이더가 입력, 블록이 처리, 문·전등이 출력 ---------- */
+const SENSORS = [['거리', 0, 100, 50, '가까움', '멂'], ['밝기', 0, 100, 70, '어두움', '밝음'], ['소리', 0, 200, 20, '조용함', '시끄러움']];
+function sensorStage(host) {
+  host.innerHTML = `<div class="stage__frame"><svg viewBox="0 0 640 210" role="img" aria-label="실행 화면: 왼쪽에 자동문, 오른쪽에 전등이 있다. 아래 슬라이더가 센서 값이다.">
+  <rect class="sky" x="0" y="0" width="640" height="${GY}"/><rect class="gnd" x="0" y="${GY}" width="640" height="${210 - GY}"/><line class="gnd-l" x1="0" y1="${GY}" x2="640" y2="${GY}"/>
+  <g transform="translate(150 ${GY})"><rect class="dr-f" x="-78" y="-150" width="156" height="150" rx="6"/><rect class="dr-in" x="-70" y="-142" width="140" height="142"/>
+    <g data-r="dl"><rect class="dr-p" x="-70" y="-142" width="70" height="142"/><line class="dr-h" x1="-10" y1="-80" x2="-10" y2="-60"/></g><g data-r="dr"><rect class="dr-p" x="0" y="-142" width="70" height="142"/><line class="dr-h" x1="10" y1="-80" x2="10" y2="-60"/></g>
+    <rect class="dr-s" x="-30" y="-168" width="60" height="14" rx="4"/><text class="lbl" x="0" y="-176" text-anchor="middle">자동문</text><text class="sc-t" data-r="dtxt" x="0" y="26" text-anchor="middle">닫힘</text></g>
+  <g transform="translate(470 ${GY})"><line class="lp-pole" x1="0" y1="0" x2="0" y2="-120"/><path class="lp-arm" d="M0 -120 Q0 -140 24 -140"/><circle class="lp-glow" data-r="glow" cx="24" cy="-128" r="34" opacity="0"/><circle class="lp-bulb" data-r="bulb" cx="24" cy="-128" r="12"/><text class="lbl" x="24" y="-176" text-anchor="middle">전등</text><text class="sc-t" data-r="ltxt" x="24" y="26" text-anchor="middle">꺼짐</text>
+    <g data-r="bub" visibility="hidden"><rect class="bub" data-r="bubr" x="-110" y="-70" width="120" height="34" rx="8"/><text class="bub-t" data-r="bubt" x="-96" y="-47">…</text></g></g>
+  <text class="hud" data-r="hud" x="14" y="26"></text></svg></div>
+  <div class="sens" data-r="sens">${SENSORS.map(([n, mn, mx, d, lo, hi]) => `<label class="sens__row"><span class="sens__n">${n} 센서</span><input type="range" min="${mn}" max="${mx}" value="${d}" data-s="${n}" aria-label="${n} 센서 값"><span class="sens__v" data-v="${n}">${d}</span><span class="sens__lo">${lo}</span><span class="sens__hi">${hi}</span></label>`).join('')}</div>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  const dl = R('dl'), dr = R('dr'), dtxt = R('dtxt'), glow = R('glow'), bulb = R('bulb'), ltxt = R('ltxt'), hud = R('hud');
+  const val = {}; SENSORS.forEach(([n, , , d]) => { val[n] = d; });
+  const sens = R('sens');
+  sens.addEventListener('input', e => { const i = e.target.closest('[data-s]'); if (!i) return; val[i.dataset.s] = +i.value; sens.querySelector(`[data-v="${i.dataset.s}"]`).textContent = i.value; api.onInput && api.onInput(i.dataset.s, +i.value); });
+  const s = { door: false, led: false };
+  const api = Object.assign(bubbleApi(R, () => 360, 630), {
+    reset() { s.door = false; s.led = false; api.door(false); api.led(false); api.clearSay(); hud.textContent = ''; },
+    sensor(n) { return val[n] == null ? 0 : val[n]; },
+    set(n, v) { val[n] = +v; const i = sens.querySelector(`[data-s="${n}"]`); if (i) { i.value = v; sens.querySelector(`[data-v="${n}"]`).textContent = v; } },
+    door(open) { s.door = !!open; dl.setAttribute('transform', open ? 'translate(-62 0)' : ''); dr.setAttribute('transform', open ? 'translate(62 0)' : ''); dtxt.textContent = open ? '열림' : '닫힘'; },
+    led(on) { s.led = !!on; glow.setAttribute('opacity', on ? 0.55 : 0); bulb.setAttribute('class', on ? 'lp-bulb is-on' : 'lp-bulb'); ltxt.textContent = on ? '켜짐' : '꺼짐'; },
+    state: () => ({ door: s.door, led: s.led, v: Object.assign({}, val) }),
+    hud(t) { hud.textContent = t || ''; }, u: () => 0, ask: askPanel(host)
+  });
+  api.reset(); return api;
+}
+
+/* ---------- 작업대 ---------- */
+/* makeBench(host, kind): kind 'walk' | 'timer' | 'locker'
+   mode: title, hint, items, friendU, editable, counts, onTap(u)→true면 선택 안 함, onChange(items), onRun(tr), checks(tr)→[{ok,txt}], canRun()→문자열이면 막음, speeds
+   locker 모드: objs[], scripts{obj:items}, flows{obj:spec}(블록 대신 순서도), intro(말), onObjRun(obj,tr) */
+function makeBench(host, kind) {
+  kind = kind || 'walk';
+  host.innerHTML = `<section class="bench">
+    <header class="bench__head"><p class="bench__title"><span class="dia" aria-hidden="true">◆</span><span data-r="title"></span></p><p class="bench__hint" data-r="hint"></p></header>
+    <div class="bench__prog"><div class="mn-tools" data-r="tools" hidden></div><div class="obj-tabs" data-r="otabs" hidden></div><div class="mn-program" data-r="prog"></div></div>
+    <div class="stage"><div data-r="stage"></div>
+      <div class="stage__bar"><button type="button" class="mn-btn mn-btn--run" data-r="run">▶ 시작하기</button><button type="button" class="mn-btn" data-r="stop" disabled>■ 멈추기</button>
+        <div class="mn-seg" role="group" aria-label="실행 빠르기" data-r="seg"></div></div>
+      <div data-r="msg" aria-live="polite"></div><ul class="mn-checks" data-r="checks"></ul></div></section>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  const progEl = R('prog'), toolsEl = R('tools'), runB = R('run'), stopB = R('stop'), msg = R('msg'), checksEl = R('checks'), seg = R('seg'), otabs = R('otabs');
+  let m = {}, items = [], sel = null, running = false, speed = 1, token = { stop: false }, mark = {}, live = false, curObj = null;
+  const api = {};
+  let st;
+  const onObj = async o => {
+    if (!live) { api.say('먼저 ▶ 시작하기를 눌러 주세요.', 'info'); return; }
+    if (running) return;
+    if (o === 'x' && m.xSay) { st.say(m.xSay); setTimeout(() => st.clearSay(), 1600); live = false; stopB.disabled = true; api.say('엑스 버튼: 프로그램을 끝냈어요. 다시 하려면 ▶ 시작하기를 누르세요.', 'info'); m.onObjRun && m.onObjRun('x', { log: [] }); return; }
+    const scr = m.flows ? (m.flows[o] && flowToBlocks(m.flows[o])) : (m.scripts && m.scripts[o]);
+    if (!scr) { api.say(`${ITEM_NAMES[o]}에는 아직 프로그램이 없어요.`, 'info'); return; }
+    showObj(o); st.bind(o);
+    const tr = await exec(m.flows ? fresh(scr) : items, { keep: true });
+    if (tr && m.onObjRun) m.onObjRun(o, tr);
+  };
+  if (kind === 'timer') st = timerStage(R('stage')); else if (kind === 'locker') st = { reset() {} }; else if (kind === 'sensor') st = sensorStage(R('stage')); else st = walkStage(R('stage'), 100);
+  const opts = () => ({ tap: !!(m.editable || m.onTap), sel: m.editable ? sel : null, counts: m.counts !== false, mark });
+  function draw() {
+    if (m.flows) { const spec = m.flows[curObj]; progEl.innerHTML = spec ? flowSVG(objFlow(spec), FLOW_EDGES_OBJ, { mark, label: `${ITEM_NAMES[curObj]} 순서도` }) : ''; progEl.classList.add('is-flow'); }
+    else { progEl.classList.remove('is-flow'); progEl.innerHTML = progHTML(items, opts()); }
+    drawTools();
+  }
+  function drawTools() {
+    if (!m.editable) { toolsEl.hidden = true; return; }
+    toolsEl.hidden = false;
+    const i = items.findIndex(x => x.u === sel);
+    if (i < 0) { toolsEl.innerHTML = `<p class="mn-tools__hint">바꿀 블록을 누르세요. 옮기기 단추와 값 칸이 여기에 나와요.</p>`; return; }
+    const it = items[i], d = BT[it.t], dis = running ? 'disabled' : '';
+    const b = (op, t) => `<button type="button" class="mn-btn mn-btn--s" data-op="${op}" ${canDo(items, i, op) && !running ? '' : 'disabled'}>${t}</button>`;
+    let h = `<div class="mn-tools__row">${b('up', '▲ 위로')}${b('down', '▼ 아래로')}${b('in', '안으로 넣기')}${b('out', '밖으로 빼기')}</div>`;
+    if (d.f.length) {
+      h += `<div class="mn-tools__row">`;
+      for (const f of d.f) {
+        if (f.sel) h += `<select class="mn-input mn-input--sel" id="${it.u}-${f.k}" data-f="${f.k}" aria-label="고르기" ${dis}>${f.sel.map(x => `<option value="${esc(x)}" ${String(it.v[f.k]) === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>`;
+        else if (f.text) h += `<label class="mn-tools__lbl" for="${it.u}-${f.k}">글자</label><input class="mn-input mn-input--txt" type="text" id="${it.u}-${f.k}" data-f="${f.k}" maxlength="${f.max}" value="${esc(it.v[f.k])}" ${dis}>`;
+        else h += `<span class="mn-stepper"><button type="button" class="mn-btn mn-btn--s" data-step="${f.k}" data-dir="-1" aria-label="값 줄이기" ${dis}>−</button><input class="mn-input mn-input--num" type="number" inputmode="decimal" id="${it.u}-${f.k}" data-f="${f.k}" min="${f.min}" max="${f.max}" step="${f.step}" value="${it.v[f.k]}" aria-label="값" ${dis}><button type="button" class="mn-btn mn-btn--s" data-step="${f.k}" data-dir="1" aria-label="값 늘리기" ${dis}>+</button></span>`;
+      }
+      h += `</div>`;
+    }
+    toolsEl.innerHTML = h;
+  }
+  function showObj(o) {
+    curObj = o;
+    if (m.scripts && !m.flows) { items = normalize(m.scripts[o] || []); }
+    otabs.querySelectorAll('[data-o]').forEach(b => b.setAttribute('aria-pressed', b.dataset.o === o));
+    draw();
+  }
+  const changed = () => { if (m.scripts && !m.flows) m.scripts[curObj] = items; m.onChange && m.onChange(items, curObj); };
+  const spec = (it, k) => BT[it.t].f.find(f => f.k === k);
+  const clampV = (f, v) => { v = Math.round((+v || 0) / f.step) * f.step; return Math.min(f.max, Math.max(f.min, +v.toFixed(1))); };
+  progEl.addEventListener('click', e => {
+    const el = e.target.closest('.mn-block'); if (!el || running || el.tagName !== 'BUTTON') return;
+    const u = el.dataset.u;
+    if (m.onTap && m.onTap(u, curObj) === true) return;
+    if (m.editable) { sel = sel === u ? null : u; draw(); }
+  });
+  otabs.addEventListener('click', e => { const b = e.target.closest('[data-o]'); if (!b || running) return; showObj(b.dataset.o); });
+  toolsEl.addEventListener('click', e => {
+    const i = items.findIndex(x => x.u === sel); if (i < 0) return;
+    const ob = e.target.closest('[data-op]'); if (ob) { items = doOp(items, i, ob.dataset.op); draw(); changed(); return; }
+    const sb = e.target.closest('[data-step]'); if (sb) {
+      const it = items[i], f = spec(it, sb.dataset.step); it.v[f.k] = clampV(f, (+it.v[f.k]) + f.step * (+sb.dataset.dir));
+      progEl.innerHTML = progHTML(items, opts()); const inp = toolsEl.querySelector(`[data-f="${f.k}"]`); if (inp) inp.value = it.v[f.k]; changed();
+    }
+  });
+  toolsEl.addEventListener('change', e => {
+    const inp = e.target.closest('[data-f]'); const i = items.findIndex(x => x.u === sel); if (!inp || i < 0) return;
+    const it = items[i], f = spec(it, inp.dataset.f);
+    it.v[f.k] = f.sel ? inp.value : f.text ? inp.value.trim().slice(0, f.max) : clampV(f, inp.value); inp.value = it.v[f.k];
+    progEl.innerHTML = progHTML(items, opts()); changed();
+  });
+  seg.addEventListener('click', e => {
+    const b = e.target.closest('[data-s]'); if (!b) return; speed = +b.dataset.s;
+    seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  });
+  const showChecks = list => { checksEl.innerHTML = (list || []).map(c => `<li class="${c.ok == null ? '' : c.ok ? 'is-ok' : 'is-no'}">${esc(c.txt)}</li>`).join(''); };
+  api.say = (html, kind2) => { msg.innerHTML = html ? `<p class="mn-msg mn-msg--${kind2 || 'info'}">${html}</p>` : ''; };
+  async function exec(list, extra) {
+    running = true; token = { stop: false }; runB.disabled = true; stopB.disabled = false; if (kind !== 'sensor') api.say(''); drawTools();
+    progEl.querySelectorAll('.mn-block__count').forEach(c => { c.hidden = true; c.textContent = '0'; });
+    let last = null; const mine = m;
+    const light = (u, on) => { if (!u) return; const e = progEl.querySelector(`[data-u="${u}"], [data-node="${u}"]`); if (e) e.classList.toggle('is-running', on); };
+    const tr = await runProgram(list, st, Object.assign({
+      get speed() { return speed; }, token, onLoop: m.onLoop, maxLoops: m.maxLoops,
+      onBlock: u => { light(last, false); last = u; light(u, true); },
+      onCount: (u, n) => { const c = progEl.querySelector(`[data-cnt="${u}"]`); if (c) { c.hidden = false; c.textContent = '×' + n; } }
+    }, extra || {}));
+    running = false; runB.disabled = kind === 'sensor' && live; stopB.disabled = !live; if (kind !== 'sensor' || !live) drawTools();
+    if (mine !== m) return null;
+    if (tr.error === 'nostart') { api.say('맨 위에 <b>시작하기</b> 블록이 있어야 실행돼요.', 'no'); return null; }
+    if (tr.stopped) { api.say('실행을 멈췄어요.', 'info'); return null; }
+    if (m.checks) showChecks(m.checks(tr, items));
+    return tr;
+  }
+  async function run() {
+    if (running) return;
+    const block = m.canRun && m.canRun(); if (typeof block === 'string') { api.say(block, 'info'); return; }
+    if (kind === 'sensor') {
+      if (!items.length || !isHat(items[0].t)) { api.say('맨 위에 <b>시작하기</b> 블록이 있어야 실행돼요.', 'no'); return; }
+      st.reset(); live = true; stopB.disabled = false; let n = 0, last = null; const mine = m;
+      api.say('실행 중이에요. 아래 슬라이더(센서)를 움직여 보세요. 끝내려면 ■ 멈추기.', 'info');
+      while (live && mine === m) {
+        const tr = await exec(items, { keep: true }); if (!tr) break; tr.state = st.state(); last = tr;
+        m.onTick && m.onTick(tr.state, n++, tr);
+        await sleep(Math.max(80, 240 / speed));
+      }
+      live = false; stopB.disabled = true; runB.disabled = false; drawTools();
+      if (mine === m) { api.say('멈췄어요. 값을 바꾸려면 블록을 누르고, 다시 ▶ 시작하기.', 'info'); m.onRun && m.onRun(last, items); }
+      return;
+    }
+    if (kind === 'locker') {
+      st.reset(); live = true; stopB.disabled = false;
+      if (m.intro) { st.say(m.intro); await sleep(1600); st.clearSay(); }
+      api.say('보관함의 물건을 눌러 보세요.', 'info'); m.onStart && m.onStart(); return;
+    }
+    const tr = await exec(items);
+    if (tr) m.onRun && m.onRun(tr, items);
+  }
+  runB.addEventListener('click', run);
+  stopB.addEventListener('click', () => { token.stop = true; if (kind === 'sensor') live = false; if (kind === 'locker' && !running) { live = false; stopB.disabled = true; api.say('멈췄어요. 다시 하려면 ▶ 시작하기를 누르세요.', 'info'); } });
+  api.configure = mode => {
+    token.stop = true; live = false; m = mode; sel = null; mark = {}; runB.disabled = false;
+    R('title').textContent = mode.title || ''; R('hint').innerHTML = mode.hint || '';
+    const sp = mode.speeds || [['0.5', '천천히'], ['1', '보통'], ['3', '빠르게']];
+    speed = +((sp.find(x => x[2]) || sp[1] || sp[0])[0]);
+    seg.innerHTML = sp.map(([v, l]) => `<button type="button" data-s="${v}" aria-pressed="${+v === speed}">${l}</button>`).join('');
+    if (kind === 'locker') {
+      st = lockerStage(R('stage'), mode.objs, onObj);
+      otabs.hidden = !!mode.flows || !mode.scripts; otabs.innerHTML = (mode.objs || []).filter(o => mode.scripts && mode.scripts[o]).map(o => `<button type="button" class="mn-btn mn-btn--s" data-o="${o}" aria-pressed="false">${ITEM_NAMES[o]}</button>`).join('');
+      const first = mode.first || (mode.objs || [])[0]; curObj = first; items = mode.scripts && mode.scripts[first] ? normalize(mode.scripts[first]) : [];
+      stopB.disabled = true; showObj(first);
+    } else {
+      items = normalize(mode.items || []); if (st.setFriend) st.setFriend(mode.friendU == null ? 100 : mode.friendU); st.reset(); draw();
+    }
+    api.say(''); showChecks(mode.checks ? mode.checks(null, items) : []);
+  };
+  api.setItems = list => { items = normalize(list); sel = null; mark = {}; st.reset(); api.say(''); showChecks(m.checks ? m.checks(null, items) : []); draw(); };
+  api.items = () => items;
+  api.cur = () => curObj;
+  api.mark = mk => { mark = mk || {}; draw(); };
+  api.isRunning = () => running || live;
+  api.isLive = () => live;
+  api.stopLive = () => { live = false; token.stop = true; };
+  api.stage = () => st;
+  api.showChecks = showChecks;
+  return api;
+}
+
+/* kit.js — 차시 페이지에서 함께 쓰는 조각: 선택지, 체크 목록, 스스로 평가, 고장 찾기 4단계, 두 번 눌러 확인 */
+const CIRC = ['①', '②', '③', '④', '⑤'];
+const DEBUG_STEPS = ['실행해 본다', '생각과 다른 장면을 찾는다', '그 장면을 만든 블록을 찾는다', '고치고 다시 실행한다'];
+const LV = [['3', '잘함'], ['2', '보통'], ['1', '노력 요함']];
+const smooth = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
+function choiceGroup(host, cfg) {
+  const draw = val => {
+    const judged = cfg.answer != null && val != null;
+    host.innerHTML = `<div class="mn-choices" role="group">${cfg.options.map((o, i) => {
+      let cls = 'mn-choice', mark = '';
+      if (judged && o.v === val) { if (o.v === cfg.answer) { cls += ' is-right'; mark = '✓ 맞아요'; } else { cls += ' is-wrong'; mark = '✗ 다시 생각해 봐요'; } }
+      return `<button type="button" class="${cls}" data-v="${o.v}" aria-pressed="${o.v === val}" ${cfg.locked && cfg.locked() ? 'disabled' : ''}><span class="mn-choice__no">${CIRC[i]}</span><span>${o.t}</span><span class="mn-choice__mark">${mark}</span></button>`;
+    }).join('')}</div>`;
+  };
+  host.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b || b.disabled) return; cfg.onPick(b.dataset.v); draw(b.dataset.v); });
+  draw(cfg.value);
+  return { redraw: draw };
+}
+const msgHTML = (ok, okT, noT) => ok == null ? '' : `<p class="mn-msg mn-msg--${ok ? 'ok' : 'no'}">${ok ? '✓ ' + okT : '✗ ' + noT}</p>`;
+/* 채점하는 문항: S[bag][key]에 답을 저장 */
+function quiz(ctx, bag, key, opts, answer, okT, noT) {
+  const S = ctx.S; S[bag] = S[bag] || {};
+  const fb = ctx.R(key + 'fb'); const show = () => { fb.innerHTML = S[bag][key] == null ? '' : msgHTML(S[bag][key] === answer, okT, noT); };
+  choiceGroup(ctx.R(key), { options: opts, answer, value: S[bag][key], onPick: v => { S[bag][key] = v; ctx.save(); show(); } }); show();
+}
+const qHTML = (key, t) => `<div class="q"><p class="q__t">${t}</p><div data-r="${key}"></div><div data-r="${key}fb"></div></div>`;
+function ticks(ctx, key, list) {
+  const S = ctx.S; S[key] = S[key] || []; const host = ctx.R(key);
+  const draw = () => { host.innerHTML = list.map((t, i) => `<li><button type="button" class="tick" data-i="${i}" aria-pressed="${!!S[key][i]}"><span class="tick__box" aria-hidden="true">${S[key][i] ? '✓' : ''}</span>${t}</button></li>`).join(''); };
+  host.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; S[key][+b.dataset.i] = !S[key][+b.dataset.i]; ctx.save(); draw(); });
+  draw();
+}
+function evals(ctx, key, list) {
+  const S = ctx.S; S[key] = S[key] || {}; const host = ctx.R(key);
+  const draw = () => { host.innerHTML = list.map((t, i) => `<div class="eval"><p>${t}</p><div class="mn-seg" role="group" aria-label="${t}">${LV.map(([v, l]) => `<button type="button" data-i="${i}" data-v="${v}" aria-pressed="${S[key][i] === v}">${l}</button>`).join('')}</div></div>`).join(''); };
+  host.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; S[key][b.dataset.i] = b.dataset.v; ctx.save(); draw(); });
+  draw();
+}
+const debugList = ph => `<ol class="debug">${DEBUG_STEPS.map((s, i) => `<li class="${i < ph ? 'is-done' : i === ph ? 'is-now' : ''}">${s}</li>`).join('')}</ol>`;
+const oneline = (label, text) => `<div class="oneline"><span class="oneline__l">${label}</span><p>${text}</p></div>`;
+function twice(btn, label, fn) { let armed = false; btn.addEventListener('click', () => { if (!armed) { armed = true; btn.textContent = '한 번 더 누르면 실행돼요'; setTimeout(() => { armed = false; btn.textContent = label; }, 4000); return; } fn(); }); }
+
+/* 고장 찾기 4단계 과제: 실행 → 다른 장면 고르기 → 블록 찾기 → 고치기
+   cfg: key, bench, base(블록), what{options,answer}, isBug(item)→bool, fixed(tr,S)→bool, sheet(host), title, intro, findHint, kind */
+function debugTask(ctx, cfg) {
+  const S = ctx.S, st = S[cfg.key] = Object.assign({ phase: 'run', done: false, items: null }, S[cfg.key] || {});
+  const host = ctx.R(cfg.key);
+  function drawSheet() {
+    const ph = st.done ? 4 : { run: 0, what: 1, find: 2, fix: 3 }[st.phase];
+    let h = `<h3>${cfg.title}</h3><p>${cfg.intro}</p>${debugList(ph)}`;
+    if (!st.done && st.phase === 'run') h += `<p class="mn-msg">아래 실행해 보는 곳에서 ▶ 시작하기를 눌러 실행해 보세요.${cfg.runHint ? ' ' + cfg.runHint : ''}</p>`;
+    if (!st.done && st.phase === 'what') h += `<p class="q__t">생각과 다른 장면은 무엇이었나요?</p><div data-r="${cfg.key}-what"></div>`;
+    if (!st.done && st.phase === 'find') h += `<p class="mn-msg">그 장면을 만든 블록을 아래 프로그램에서 눌러 보세요.</p>`;
+    if (!st.done && st.phase === 'fix') h += `<p class="mn-msg">${cfg.fixHint}</p>`;
+    if (st.done) h += `<p class="mn-msg mn-msg--ok">✓ 고쳤어요. 무엇이 문제였고 어떻게 고쳤는지 짝에게 설명해 보세요.</p>`;
+    h += `<div><button type="button" class="mn-btn mn-btn--quiet" data-r="${cfg.key}-reset">이 과제 처음 상태로</button></div>`;
+    host.innerHTML = h;
+    const w = host.querySelector(`[data-r="${cfg.key}-what"]`);
+    if (w) choiceGroup(w, { options: cfg.what.options, answer: cfg.what.answer, onPick: v => { if (v === cfg.what.answer) { st.phase = 'find'; ctx.save(); setTimeout(drawSheet, 600); } } });
+    host.querySelector(`[data-r="${cfg.key}-reset"]`).addEventListener('click', () => { Object.assign(st, { phase: 'run', done: false, items: null }); ctx.save(); drawSheet(); cfg.bench.configure(mode()); });
+  }
+  function mode() {
+    return Object.assign({
+      title: cfg.benchTitle || '실행해 보는 곳', hint: cfg.benchHint || '', items: fresh(st.items || cfg.base), editable: true,
+      onChange: items => { st.items = plain(items); ctx.save(); },
+      onTap: u => {
+        if (st.done || st.phase === 'fix') return false;
+        if (st.phase !== 'find') { cfg.bench.say(st.phase === 'run' ? '먼저 ▶ 시작하기로 실행해 보세요.' : '먼저 위에서 생각과 다른 장면을 골라 주세요.', 'info'); return true; }
+        const it = cfg.bench.items().find(x => x.u === u); const ok = cfg.isBug(it); const mk = {}; mk[u] = ok ? 'is-right' : 'is-wrong'; cfg.bench.mark(mk);
+        if (ok) { st.phase = 'fix'; ctx.save(); drawSheet(); cfg.bench.say('찾았어요. ' + cfg.fixHint, 'ok'); } else cfg.bench.say(cfg.findHint, 'no');
+        return true;
+      },
+      onRun: tr => {
+        if (st.phase === 'run') { st.phase = 'what'; ctx.save(); drawSheet(); }
+        else if (st.phase === 'fix' && cfg.fixed(tr, st)) { st.done = true; ctx.save(); drawSheet(); cfg.bench.say('✓ 생각한 대로 움직여요.', 'ok'); }
+        else if (st.phase === 'fix') cfg.bench.say(cfg.notYet || '아직 생각과 다르게 움직여요. 다시 살펴보세요.', 'info');
+      }
+    }, cfg.extra || {});
+  }
+  drawSheet();
+  return { mode, st };
+}
+
+/* lessons.js — 4차시 학생용 내용과 교사용 지도안 */
+const isHello = t => String(t).replace(/[\s!.~]/g, '').includes('만나서반가워');
+const ANSWER1 = [P('start'), P('repeat', 0, { n: 10 }), P('move', 1, { n: 10 }), P('next', 1), P('wait', 1, { n: 1 }), P('say', 0, { t: '만나서 반가워!', n: 4 })];
+const BUG1 = [P('start'), P('repeat', 0, { n: 10 }), P('move', 1, { n: 10 }), P('next', 1), P('wait', 1, { n: 1 }), P('say', 1, { t: '만나서 반가워!', n: 1 })];
+const ROPE = [P('start'), P('wait', 0, { n: 120 }), P('say', 0, { t: '2분이 지났어요!', n: 2 }), P('ask', 0, { t: '줄넘기를 1분 더 해 볼까요?' }), P('if', 0, { t: '예' }), P('wait', 1, { n: 60 }), P('say', 1, { t: '정해진 시간 동안 줄넘기를 다했어요!', n: 2 })];
+const ROPE_BUG_A = ROPE.map(b => b.t === 'if' ? P('if', 0, { t: '네' }) : b);
+const ROPE_BUG_B = [P('start'), P('wait', 0, { n: 120 }), P('say', 0, { t: '2분이 지났어요!', n: 2 }), P('ask', 0, { t: '줄넘기를 1분 더 해 볼까요?' }), P('if', 0, { t: '예' }), P('say', 1, { t: '정해진 시간 동안 줄넘기를 다했어요!', n: 2 }), P('wait', 0, { n: 60 })];
+const BOTTLE = { item: 'bottle', ask: "내 물병이면 '예'를 입력해요.", yes: '분실물 보관함에서 물병을 찾아가세요.', no: '분실물 보관함에는 찾는 물건이 없어요. 감사합니다.' };
+const PHONE = { item: 'phone', ask: "내 스마트폰이면 '예'를 입력해요.", yes: '분실물 보관함에서 스마트폰을 찾아가세요.', no: '분실물 보관함에는 찾는 물건이 없어요. 감사합니다.' };
+const INTRO = '분실물 보관함에 물건이 있어요. 잃어버린 물건을 누르거나 엑스 버튼을 누르세요.';
+const XSAY = '이용해 주셔서 감사합니다.';
+const ROPE_SPEEDS = [['1', '×1 실제 빠르기'], ['10', '×10'], ['60', '×60', 1]];
+
+/* ================= 1차시 ================= */
+const L1 = {
+  key: 'l1', no: 1, stage: '읽고 예측하기', title: ['10걸음 걷고', '인사하기.'], short: '10걸음 걷고 인사하기', pg: '교과서 111쪽 소재',
+  goal: '반복 블록이 든 프로그램을 읽고 결과를 예측할 수 있다. 숫자와 블록 위치를 바꾸어 원하는 대로 움직이게 하고, 고장 난 곳을 찾아 고칠 수 있다.',
+  defaults: () => ({ open: false, pred: {}, locked: false, ran: null, inv: {}, m: { tab: 'm1' }, entry: [], quiz: {}, ev: {} }),
+  steps: [
+    { id: 's1', name: '생각 열기', lead: '오늘은 프로그램을 만들기 전에 먼저 읽어 봐요.', html: () => `
+      <div class="card"><p>이미 만들어진 프로그램을 읽고, 무슨 일이 일어날지 예측하고, 실행해서 확인한 다음, 조금씩 바꿔 봅니다. 왼쪽 목차에서 어느 단계든 눌러 볼 수 있지만, 위에서부터 차례대로 하는 것을 권해요.</p>
+        <h3>블록 프로그램 읽는 법</h3><ol class="rules"><li>위에서 아래로, 한 블록씩 차례대로 실행해요.</li><li>반복 블록 안(파란 C자 안쪽)에 있는 블록은 정해진 횟수만큼 되풀이해요.</li><li>반복이 끝나면 반복 블록 아래에 있는 블록으로 넘어가요.</li></ol></div>
+      ${oneline('프로그램이란', '컴퓨터가 일할 수 있도록 일의 순서와 방법을 알려 주는 명령을 모아 놓은 것 (교과서 110쪽)')}
+      <div><button type="button" class="mn-btn mn-btn--primary" data-r="open">예측하러 가기</button></div>` },
+    { id: 's2', name: '예측하기', lead: '실행하지 말고 프로그램을 읽기만 하고, 세 가지를 예측해요.', html: () => `
+      <div data-r="b2"></div>
+      <div class="card"><div class="q"><p class="q__t">① 로봇은 모두 몇 번 움직일까요?</p><div data-r="q1"></div></div>
+        <div class="q"><p class="q__t">② "만나서 반가워!"라고 몇 번 말할까요?</p><div data-r="q2"></div></div>
+        <div class="q"><p class="q__t">③ 로봇은 어디에서 멈출까요?</p><div data-r="q3"></div></div>
+        <p class="aside-t">왜 그렇게 예측했는지, 어느 블록을 보고 판단했는지 짝에게 말해 보세요.</p>
+        <div><button type="button" class="mn-btn mn-btn--primary" data-r="lock">예측 확정하기</button></div><div data-r="lockmsg"></div></div>` },
+    { id: 's3', name: '실행하기', lead: '▶ 시작하기를 눌러 실행하고, 내 예측과 비교해요.', html: () => `
+      <div data-r="b3"></div><div class="card" data-r="cmp"><p class="aside-t">아직 실행하지 않았어요. ▶ 시작하기를 누르면 여기에 내 예측과 실제 결과가 나란히 나와요.</p></div>` },
+    { id: 's4', name: '살펴보기', lead: '같은 프로그램을 자세히 살펴봐요. ‘천천히’로 실행하면 블록 옆에 실행 횟수(×)가 나와요.', html: () => `
+      <div class="card"><p class="q__t">① 로봇의 다리를 움직이게 하는 블록을 아래 프로그램에서 눌러 보세요.</p><div data-r="i1fb"></div></div>
+      <div data-r="b4"></div>
+      <div class="card">${qHTML('i2', '② ‘이동 방향으로 10만큼 움직이기’ 블록은 모두 몇 번 실행되나요?')}${qHTML('i3', '③ ‘만나서 반가워!’ 말하기 블록이 반복 블록 <b>밖(아래)</b>에 있는 까닭은 무엇일까요?')}${qHTML('i4', '④ ‘1 초 기다리기’ 블록이 없다면 어떻게 될까요?')}</div>` },
+    { id: 's5', name: '바꿔 보기', lead: '이제 프로그램을 직접 바꿔요. 블록을 누르면 옮기기 단추와 값 칸이 나와요.', html: () => `
+      <div class="tabs" role="tablist" data-r="tabs"><button type="button" class="mn-btn" data-tab="m1">과제 1</button><button type="button" class="mn-btn" data-tab="m2">과제 2</button><button type="button" class="mn-btn" data-tab="m3">더 해 보기</button></div>
+      <div class="card" data-r="mtask"></div><div class="card" data-r="dbg1" hidden></div><div data-r="b5"></div>` },
+    { id: 's6', name: '엔트리에서 만들기', lead: '읽고 바꿔 본 프로그램을 이제 엔트리에서 직접 만들어요.', html: () => `
+      <div class="two"><div class="card"><ol class="howto">
+        <li>엔트리를 열고 [만들기] → [교과형 만들기]를 골라요. (교과서 110쪽)<br><a class="mn-btn mn-btn--s" href="https://playentry.org" target="_blank" rel="noopener">엔트리 열기</a></li>
+        <li>블록은 색으로 찾아요. 초록은 시작, 파랑은 흐름(반복, 기다리기), 보라는 움직임, 분홍은 생김새(모양 바꾸기, 말하기)예요.</li>
+        <li>블록을 손가락으로 끌어 블록 조립소에 놓고, 옆의 프로그램과 같은 순서로 조립해요. 숫자나 글자 칸을 누르면 값을 바꿀 수 있어요.</li>
+        <li>[▶ 시작하기]를 눌러 실행해요.</li><li>숫자 하나를 바꾸기 전에 결과를 먼저 예측하고, 바꿔서 실행해 봐요.</li></ol></div>
+        <div class="card"><h3>엔트리에서 만들 프로그램</h3><div class="mn-program" data-r="p6"></div><p class="aside-t">엔트리 블록은 모양이 조금 다르지만 색과 글은 같아요.</p></div></div>
+      <div class="two"><div class="card"><h3>엔트리에서 확인해요</h3><ul class="ticks" data-r="entry"></ul></div><div class="card"><h3>안 될 때는 고장 찾기 4단계</h3>${debugList(-1)}</div></div>` },
+    { id: 's7', name: '정리와 스스로 평가', lead: '', html: () => `
+      <div class="card">${qHTML('q7a', '반복 블록 안에 있는 블록은 어떻게 실행되나요?')}${qHTML('q7b', '프로그램이 생각대로 움직이지 않을 때 가장 먼저 할 일은?')}</div>
+      <div class="card"><h3>스스로 평가</h3><div class="evals" data-r="ev"></div></div>${oneline('다음 시간', '줄넘기 타이머 프로그램을 살펴보고, 고장 난 곳을 고쳐 봐요.')}` }
+  ],
+  done: {
+    s1: S => S.open, s2: S => S.locked, s3: S => !!S.ran, s4: S => !!(S.inv.i1 && S.inv.i2 === '10' && S.inv.i3 === 'b' && S.inv.i4 === 'b'),
+    s5: S => !!(S.m.m1done && S.dbg1 && S.dbg1.done), s6: S => (S.entry || []).filter(Boolean).length >= 4, s7: S => S.quiz.q7a === 'b' && S.quiz.q7b === 'b' && Object.keys(S.ev).length >= 4
+  },
+  init(ctx) {
+    const { S, R, save, goTo } = ctx;
+    R('open').addEventListener('click', () => { S.open = true; save(); goTo('s2'); });
+    const b2 = makeBench(R('b2'));
+    b2.configure({ title: '읽을 프로그램', hint: '로봇은 위치 0, 친구는 위치 100 앞', items: fresh(ANSWER1), counts: false, canRun: () => '여기서는 실행하지 않아요. 예측을 확정하면 3. 실행하기에서 실행해요.' });
+    const Q = { q1: [{ v: '1', t: '1번' }, { v: '10', t: '10번' }, { v: '11', t: '11번' }], q2: [{ v: '1', t: '1번' }, { v: '10', t: '10번' }], q3: [{ v: '10', t: '위치 10' }, { v: '100', t: '위치 100, 친구 앞' }, { v: 'wall', t: '친구를 지나 벽까지' }] };
+    const lockBtn = R('lock');
+    const lockState = () => { lockBtn.disabled = S.locked || !(S.pred.q1 && S.pred.q2 && S.pred.q3); lockBtn.textContent = S.locked ? '예측을 확정했어요' : '예측 확정하기'; R('lockmsg').innerHTML = S.locked ? '<p class="mn-msg">예측을 확정했어요. 아래 3. 실행하기에서 확인해요.</p>' : ''; };
+    const qg = {};
+    ['q1', 'q2', 'q3'].forEach(q => { qg[q] = choiceGroup(R(q), { options: Q[q], value: S.pred[q], locked: () => S.locked, onPick: v => { S.pred[q] = v; save(); lockState(); } }); });
+    lockBtn.addEventListener('click', () => { S.locked = true; save(); lockState(); ['q1', 'q2', 'q3'].forEach(q => qg[q].redraw(S.pred[q])); goTo('s3'); });
+    lockState();
+    const posLabel = u => u === 100 ? '100' : (u >= 130 ? 'wall' : String(u));
+    const compare = () => {
+      if (!S.ran) return;
+      const act = { q1: String(S.ran.moves), q2: String(S.ran.says), q3: posLabel(S.ran.u) };
+      const name = (q, v) => (Q[q].find(o => o.v === v) || { t: q === 'q3' ? '위치 ' + v : v + '번' }).t;
+      R('cmp').innerHTML = `<h3>내 예측과 실제</h3><div class="tbl"><table class="mn-table"><thead><tr><th scope="col">질문</th><th scope="col">내 예측</th><th scope="col">실제</th><th scope="col">비교</th></tr></thead><tbody>${['q1', 'q2', 'q3'].map((q, i) => { const same = S.pred[q] === act[q]; return `<tr><th scope="row">${['① 움직인 횟수', '② 말한 횟수', '③ 멈춘 곳'][i]}</th><td>${S.pred[q] ? name(q, S.pred[q]) : '-'}</td><td>${name(q, act[q])}</td><td class="${same ? 'is-ok' : 'is-no'}">${same ? '✓ 같아요' : '✗ 달라요'}</td></tr>`; }).join('')}</tbody></table></div><p class="aside-t">예측과 다른 것이 있었다면 4. 살펴보기에서 까닭을 찾아봐요.</p>`;
+    };
+    const b3 = makeBench(R('b3'));
+    b3.configure({ title: '실행해 보기', hint: '▶ 시작하기 → 아래 표에서 비교', items: fresh(ANSWER1), canRun: () => S.locked || S.all ? true : '먼저 예측을 확정해 주세요.',
+      onRun: tr => { S.ran = { moves: tr.moves, says: tr.says.length, u: tr.u }; save(); compare(); } });
+    compare();
+    const HINT = { start: '이 블록은 프로그램을 시작하게 해요.', repeat: '이 블록은 안에 든 블록을 되풀이하게 해요.', move: '이 블록은 로봇을 앞으로 옮겨요. 다리 모양을 바꾸는 블록은 따로 있어요.', wait: '이 블록은 로봇을 잠깐 멈추게 해요.', say: '이 블록은 말풍선을 띄워요.' };
+    const showI1 = () => { if (S.inv.i1) R('i1fb').innerHTML = `<p class="mn-msg mn-msg--ok">✓ 맞아요. <b>다음 모양으로 바꾸기</b>가 다리 모양을 바꿔서 걷는 것처럼 보이게 해요.</p>`; };
+    const b4 = makeBench(R('b4'));
+    b4.configure({ title: '살펴보기', hint: '블록을 눌러 보고 ‘천천히’로 실행', items: fresh(ANSWER1),
+      onTap: u => { const it = b4.items().find(x => x.u === u); const ok = it.t === 'next'; const mk = {}; mk[u] = ok ? 'is-right' : 'is-wrong'; b4.mark(mk);
+        if (ok) { S.inv.i1 = true; save(); showI1(); } else R('i1fb').innerHTML = `<p class="mn-msg mn-msg--no">✗ ${HINT[it.t]} 다시 찾아보세요.</p>`; return true; } });
+    showI1();
+    quiz(ctx, 'inv', 'i2', [{ v: '1', t: '1번' }, { v: '10', t: '10번' }, { v: '11', t: '11번' }], '10', '반복 블록 안에 있는 블록은 반복 횟수만큼, 10번 실행돼요.', '위 프로그램을 ‘천천히’로 실행하고 블록 옆 숫자(×)를 다시 확인해 보세요.');
+    quiz(ctx, 'inv', 'i3', [{ v: 'a', t: '걸을 때마다 인사하게 하려고' }, { v: 'b', t: '다 걸은 다음 한 번만 인사하게 하려고' }, { v: 'c', t: '위치는 아무 상관이 없어서' }], 'b', '반복 밖에 있으니 반복이 끝난 뒤 한 번만 실행돼요.', '반복 안에 있는 블록과 밖에 있는 블록은 실행되는 횟수가 달라요.');
+    quiz(ctx, 'inv', 'i4', [{ v: 'a', t: '로봇이 더 천천히 걷는다' }, { v: 'b', t: '아주 빠르게 움직여서 걷는 모습이 잘 안 보인다' }, { v: 'c', t: '로봇이 움직이지 않는다' }], 'b', '5. 바꿔 보기의 ‘더 해 보기’에서 기다리기 값을 0으로 바꿔 직접 확인해 보세요.', '기다리기 블록은 걸음과 걸음 사이를 멈추게 해요. 이 멈춤이 없으면 어떻게 될까요?');
+
+    /* 5 바꿔 보기: 과제 1, 과제 2(고장 찾기), 더 해 보기 */
+    const b5 = makeBench(R('b5'));
+    const dbg = debugTask(ctx, { key: 'dbg1', bench: b5, base: BUG1, title: '과제 2. 고장 난 프로그램', intro: '친구가 만든 프로그램인데, 생각대로 움직이지 않는대요. <b>고장 찾기 4단계</b>로 고쳐 보세요.',
+      what: { options: [{ v: 'a', t: '걸을 때마다 인사했다' }, { v: 'b', t: '로봇이 움직이지 않았다' }, { v: 'c', t: '친구를 지나쳐 갔다' }], answer: 'a' },
+      isBug: it => it.t === 'say', findHint: '이 블록은 제 역할을 하고 있어요. 걸을 때마다 인사하게 만든 블록을 찾아보세요.',
+      fixHint: '그 블록을 눌러 ‘밖으로 빼기’로 고친 다음, 다시 실행해서 확인하세요.',
+      fixed: tr => tr.says.length === 1 && tr.moves === 10 && tr.says[0].mb === 10 && tr.u === 100, benchTitle: '과제 2. 고장 난 프로그램', benchHint: '고장 찾기 4단계',
+      extra: { checks: tr => [ck(tr && tr.says.length === 1, '인사를 한 번만 하나요?'), ck(tr && tr.says.length >= 1 && tr.says[tr.says.length - 1].mb === tr.moves && tr.moves === 10, '10번 걸은 뒤에 인사하나요?'), ck(tr && tr.u === 100, '친구 앞(위치 100)에서 멈추나요?')] } });
+    const C1 = tr => [ck(tr && tr.u === 50, '친구 앞(위치 50)에서 멈추나요?'), ck(tr && tr.moves > 0 && tr.nexts >= tr.moves, '걸을 때마다 다리 모양을 바꾸나요?'), ck(tr && tr.says.length === 1 && tr.says[0].mb === tr.moves && isHello(tr.says[0].t), '다 걸은 뒤 "만나서 반가워!"라고 한 번 말하나요?')];
+    const modes = {
+      m1: () => ({ title: '과제 1. 위치 50에서 멈추기', hint: '바꾸기 전에 먼저 예측', items: fresh(S.m.m1 || ANSWER1), friendU: 50, editable: true, checks: C1,
+        onChange: it => { S.m.m1 = plain(it); save(); }, onRun: tr => { if (C1(tr).every(c => c.ok)) { S.m.m1done = true; save(); drawTask(); } } }),
+      m2: () => dbg.mode(),
+      m3: () => ({ title: '더 해 보기', hint: '바꾸기 전에 먼저 예측', items: fresh(S.m.m3 || ANSWER1), editable: true, onChange: it => { S.m.m3 = plain(it); save(); },
+        onRun: tr => b5.say(`움직인 횟수 <b>${tr.moves}번</b>, 멈춘 위치 <b>${tr.u}</b>, 말한 횟수 <b>${tr.says.length}번</b>${tr.wall ? ', 벽에 닿았어요' : ''}. 내 예측과 같았나요?`, 'info') })
+    };
+    function drawTask() {
+      const cur = S.m.tab;
+      R('tabs').querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === cur, fin = (b.dataset.tab === 'm1' && S.m.m1done) || (b.dataset.tab === 'm2' && S.dbg1 && S.dbg1.done); b.setAttribute('aria-pressed', on); b.textContent = { m1: '과제 1', m2: '과제 2', m3: '더 해 보기' }[b.dataset.tab] + (fin ? ' ✓' : ''); });
+      R('dbg1').hidden = cur !== 'm2'; R('mtask').hidden = cur === 'm2';
+      if (cur === 'm1') R('mtask').innerHTML = `<h3>과제 1. 친구가 다가왔어요</h3><p>친구가 <b>위치 50</b>으로 다가왔어요. 로봇이 친구 앞에서 멈추고 인사하도록 아래 프로그램의 숫자를 바꿔 보세요. 바꾸기 전에 결과를 먼저 예측해요.</p>` + (S.m.m1done ? `<p class="mn-msg mn-msg--ok">✓ 성공했어요. 어떤 숫자를 바꿨나요? 다른 숫자를 바꿔서도 같은 결과를 만들 수 있을까요?</p>` : '');
+      if (cur === 'm3') R('mtask').innerHTML = `<h3>더 해 보기</h3><p>숫자나 글자를 마음대로 바꿔 보세요. <b>바꾸기 전에 결과를 먼저 예측</b>하고 실행해요.</p><ul class="howto howto--plain"><li>기다리기를 0으로 바꾸면?</li><li>움직이기를 -10으로 바꾸면?</li><li>반복을 20번으로 바꾸면?</li></ul>`;
+    }
+    R('tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b || b5.isRunning()) return; S.m.tab = b.dataset.tab; save(); drawTask(); b5.configure(modes[S.m.tab]()); });
+    drawTask(); b5.configure(modes[S.m.tab]());
+
+    R('p6').innerHTML = progHTML(fresh(ANSWER1), {});
+    ticks(ctx, 'entry', ['엔트리봇이 모양을 바꾸며 걷나요?', '같은 동작을 10번 반복하나요?', '"만나서 반가워!"라고 한 번 말하나요?', '내가 생각한 대로 엔트리봇이 움직이나요?', '숫자 하나를 바꾸기 전에 결과를 예측하고 실행해 보았나요?']);
+    quiz(ctx, 'quiz', 'q7a', [{ v: 'a', t: '한 번만 실행된다' }, { v: 'b', t: '반복 횟수만큼 되풀이해 실행된다' }], 'b', '맞아요.', '4. 살펴보기의 ② 문항을 다시 떠올려 보세요.');
+    quiz(ctx, 'quiz', 'q7b', [{ v: 'a', t: '블록을 모두 지우고 처음부터 다시 만든다' }, { v: 'b', t: '실행해 보고 생각과 다른 장면을 찾는다' }], 'b', '고장 찾기 4단계의 첫 단계예요.', '고장 찾기 4단계를 떠올려 보세요.');
+    evals(ctx, 'ev', ['프로그램을 실행하기 전에 결과를 예측할 수 있나요?', '반복 블록 안과 밖의 블록이 몇 번 실행되는지 말할 수 있나요?', '프로그램이 생각대로 움직이지 않을 때 잘못된 블록을 찾아 고칠 수 있나요?', '엔트리에서 프로그램을 만들고 바꿔서 실행할 수 있나요?']);
+  }
+};
+const ck = (ok, txt) => ({ ok: ok == null ? null : !!ok, txt });
+
+/* ================= 2차시 ================= */
+const FLOW2 = [
+  { id: 'n1', shape: 'term', x: 170, y: 30, w: 120, t: '시작' }, { id: 'n2', shape: 'proc', x: 170, y: 98, w: 200, t: '120초 기다리기' },
+  { id: 'n3', shape: 'io', x: 170, y: 166, w: 240, t: '줄넘기 시간 종료 알리기' }, { id: 'n4', shape: 'io', x: 170, y: 240, w: 290, t: '1분 더 할 것인지 묻고 대답 기다리기' },
+  { id: 'n5', shape: 'dec', x: 170, y: 326, w: 180, t: "대답이 '예'인가?" }, { id: 'n6', shape: 'proc', x: 440, y: 326, w: 170, t: '1분 기다리기' },
+  { id: 'n7', shape: 'io', x: 440, y: 398, w: 200, t: '추가 시간 성공 알리기' }, { id: 'n8', shape: 'term', x: 170, y: 440, w: 100, t: '끝' }
+];
+const EDGE2 = [['n1', 'n2'], ['n2', 'n3'], ['n3', 'n4'], ['n4', 'n5'], ['n5', 'n6', '예', 'right'], ['n6', 'n7'], ['n5', 'n8', '아니요'], ['n7', 'n8', '', 'back']];
+const L2 = {
+  key: 'l2', no: 2, stage: '살펴보고 고치기', title: ['줄넘기', '타이머.'], short: '줄넘기 타이머', pg: '교과서 112~113쪽 소재',
+  goal: '조건(만일) 블록이 든 프로그램을 순서도와 함께 읽고 두 갈래 길을 모두 시험할 수 있다. 시험할 때의 값을 쓰고, 고장 난 곳을 찾아 고칠 수 있다.',
+  defaults: () => ({ open: false, trace: { yes: [], no: [] }, yes: false, no: false, inv: {}, tested: false, restored: false, tab: 'a', entry: [], quiz: {}, ev: {} }),
+  steps: [
+    { id: 's1', name: '생각 열기', lead: '오늘 다룰 문제를 알아보고, 지난 시간의 고장 찾기 4단계를 떠올려요.', html: () => `
+      <div class="card"><h3>문제 상황 (교과서 112쪽)</h3><p>요즘 체력이 약해져서 줄넘기하는 시간을 조금씩 늘려서 체력을 기르고 싶어요. 프로그램이 정해진 시간을 재어 주고, 시간이 끝나면 더 할 것인지 물어보게 하려고 해요.</p>
+        ${qHTML('p1', '지금 상태(현재 상태)는 무엇일까요?')}${qHTML('p2', '오늘 프로그램이 새로 하는 일은 무엇일까요?')}</div>
+      ${oneline('지난 시간', '고장 찾기 4단계: 실행해 본다 → 생각과 다른 장면을 찾는다 → 그 장면을 만든 블록을 찾는다 → 고치고 다시 실행한다')}
+      <div><button type="button" class="mn-btn mn-btn--primary" data-r="open">순서도 읽으러 가기</button></div>` },
+    { id: 's2', name: '순서도 따라가기', lead: '순서도를 손가락으로 따라가며 읽어요. 길이 두 갈래로 나뉘는 곳을 찾아보세요.', html: () => `
+      <div class="two"><div class="card"><h3>줄넘기 타이머 순서도</h3><div class="flow-card" data-r="flow2"></div></div>
+        <div class="card"><div class="tabs" data-r="ptabs"><button type="button" class="mn-btn" data-p="yes">대답이 ‘예’일 때</button><button type="button" class="mn-btn" data-p="no">대답이 ‘아니요’일 때</button></div>
+          <p data-r="pmsg">왼쪽 순서도에서 <b>시작</b>부터 <b>끝</b>까지 지나가는 칸을 차례대로 눌러 보세요.</p><div data-r="pfb"></div>
+          <button type="button" class="mn-btn mn-btn--quiet" data-r="preset">이 길 다시 따라가기</button>
+          ${oneline('마름모 칸', '조건에 대한 판단이에요. 대답이 무엇이냐에 따라 길이 두 갈래로 나뉘어요. (교과서 107쪽 순서도 기호)')}</div></div>` },
+    { id: 's3', name: '두 갈래 길 실행하기', lead: '순서도와 같은 프로그램을 실행해요. 시간이 오래 걸리니 시계를 빠르게 돌려 봐요.', html: () => `
+      <div class="card">${qHTML('r1', '실제 빠르기(×1)로 실행하면 "2분이 지났어요!"라는 말을 들을 때까지 얼마나 기다려야 할까요?')}</div>
+      <div data-r="b3"></div>
+      <div class="card"><h3>두 갈래 길을 모두 시험했나요?</h3><ul class="mn-checks" data-r="paths"></ul>${qHTML('r2', "‘아니요’라고 대답했을 때 실행되지 않은 블록은 무엇일까요? (블록 옆 ×숫자를 보세요)")}</div>` },
+    { id: 's4', name: '시험할 때의 값', lead: '엔트리에서는 시계를 빠르게 돌릴 수 없어요. 그럼 어떻게 빨리 시험할까요?', html: () => `
+      <div class="card"><p>교과서대로 만들면 한 번 확인하는 데 2분이 넘게 걸리고, ‘예’라고 하면 3분이 넘게 걸려요. 고칠 때마다 다시 기다려야 해요.</p>
+        ${oneline('시험값', '프로그램을 시험할 때만 잠깐 쓰는 작은 값이에요. 시험이 끝나면 꼭 원래 값으로 되돌려요.')}
+        <ol class="howto"><li>아래 프로그램에서 <b>120</b>을 <b>5</b>로, <b>60</b>을 <b>3</b>으로 바꿔요.</li><li>실제 빠르기로 실행해서 ‘예’와 ‘아니요’를 모두 시험해요.</li><li>시험이 끝나면 다시 <b>120</b>과 <b>60</b>으로 되돌려요.</li></ol><div data-r="t4"></div></div>
+      <div data-r="b4"></div>` },
+    { id: 's5', name: '고장 고치기', lead: '친구들이 만든 줄넘기 타이머 두 개가 고장 났어요. 고장 찾기 4단계로 고쳐요.', html: () => `
+      <div class="tabs" data-r="btabs"><button type="button" class="mn-btn" data-b="a">고장 A</button><button type="button" class="mn-btn" data-b="b">고장 B</button></div>
+      <div class="card" data-r="bugA"></div><div class="card" data-r="bugB" hidden></div><div data-r="b5"></div>` },
+    { id: 's6', name: '엔트리에서 만들기', lead: '이제 엔트리에서 줄넘기 타이머를 만들어요. 시험할 때는 시험값을 써요.', html: () => `
+      <div class="two"><div class="card"><ol class="howto">
+        <li>필요 없는 오브젝트는 지우고 [+ 오브젝트 추가하기]에서 ‘줄넘기하는 아이’를 찾아 추가해요. (교과서 113쪽)</li>
+        <li>오른쪽 프로그램처럼 블록을 조립해요. ‘대답’ 블록은 [자료], ‘=’ 블록은 [판단] 꾸러미에 있어요. (교과서 113쪽)</li>
+        <li>시험할 때는 120을 5로, 60을 3으로 바꿔서 ‘예’와 ‘아니요’를 모두 시험해요.</li>
+        <li>다 되면 120과 60으로 되돌려요.</li></ol><a class="mn-btn mn-btn--s" href="https://playentry.org" target="_blank" rel="noopener">엔트리 열기</a></div>
+        <div class="card"><h3>엔트리에서 만들 프로그램</h3><div class="mn-program" data-r="p6"></div></div></div>
+      <div class="card"><h3>엔트리에서 확인해요</h3><ul class="ticks" data-r="entry"></ul></div>` },
+    { id: 's7', name: '정리와 스스로 평가', lead: '', html: () => `
+      <div class="card">${qHTML('q7a', '‘만일 ~(이)라면’ 블록 안에 있는 블록은 언제 실행되나요?')}${qHTML('q7b', '시험할 때 120초를 5초로 바꿨다면, 시험이 끝난 뒤 해야 할 일은?')}</div>
+      <div class="card"><h3>스스로 평가</h3><div class="evals" data-r="ev"></div></div>${oneline('다음 시간', '분실물 보관함 프로그램을 내 물건으로 설계해 봐요.')}` }
+  ],
+  done: {
+    s1: S => S.open && S.inv.p1 === 'a' && S.inv.p2 === 'b', s2: S => S.trace.yesDone && S.trace.noDone, s3: S => S.yes && S.no && S.inv.r1 === 'c' && S.inv.r2 === 'c',
+    s4: S => S.tested && S.restored, s5: S => !!(S.bugA && S.bugA.done && S.bugB && S.bugB.done), s6: S => (S.entry || []).filter(Boolean).length >= 4, s7: S => S.quiz.q7a === 'a' && S.quiz.q7b === 'b' && Object.keys(S.ev).length >= 4
+  },
+  init(ctx) {
+    const { S, R, save, goTo } = ctx;
+    quiz(ctx, 'inv', 'p1', [{ v: 'a', t: '체력이 약해져 줄넘기하는 시간을 늘리고 싶은 상태' }, { v: 'b', t: '줄넘기를 아주 오래 할 수 있는 상태' }], 'a', '교과서 112쪽의 현재 상태와 같아요.', '문제 상황을 다시 읽어 보세요.');
+    quiz(ctx, 'inv', 'p2', [{ v: 'a', t: '줄넘기 횟수를 세어 준다' }, { v: 'b', t: '시간이 끝나면 1분 더 할지 묻고, 대답에 따라 다르게 움직인다' }, { v: 'c', t: '음악을 틀어 준다' }], 'b', '대답에 따라 다르게 움직이는 것이 오늘의 새 내용이에요.', '문제 상황의 마지막 문장을 다시 읽어 보세요.');
+    R('open').addEventListener('click', () => { S.open = true; save(); goTo('s2'); });
+
+    /* 2 순서도 따라가기 */
+    const PATH = { yes: ['n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8'], no: ['n1', 'n2', 'n3', 'n4', 'n5', 'n8'] };
+    let pcur = S.trace.yesDone && !S.trace.noDone ? 'no' : 'yes';
+    const drawFlow = (wrong) => {
+      const mark = {}; (S.trace[pcur] || []).forEach(id => mark[id] = 'is-path'); if (wrong) mark[wrong] = 'is-wrong';
+      R('flow2').innerHTML = flowSVG(FLOW2, EDGE2, { tap: true, mark, height: 470, label: '줄넘기 타이머 순서도' });
+      R('ptabs').querySelectorAll('[data-p]').forEach(b => { b.setAttribute('aria-pressed', b.dataset.p === pcur); b.textContent = (b.dataset.p === 'yes' ? '대답이 ‘예’일 때' : '대답이 ‘아니요’일 때') + (S.trace[b.dataset.p + 'Done'] ? ' ✓' : ''); });
+    };
+    R('flow2').addEventListener('click', e => {
+      const g = e.target.closest('[data-node]'); if (!g) return;
+      const path = PATH[pcur], got = S.trace[pcur] = S.trace[pcur] || [];
+      if (S.trace[pcur + 'Done']) return;
+      const want = path[got.length];
+      if (g.dataset.node === want) {
+        got.push(want);
+        if (got.length === path.length) { S.trace[pcur + 'Done'] = true; R('pfb').innerHTML = `<p class="mn-msg mn-msg--ok">✓ ${pcur === 'yes' ? '‘예’ 길은 1분 기다리기와 추가 시간 성공 알리기를 지나요.' : '‘아니요’ 길은 마름모에서 바로 끝으로 가요.'}</p>`; if (!S.trace.noDone && pcur === 'yes') { pcur = 'no'; setTimeout(() => { R('pfb').innerHTML += '<p class="mn-msg">이제 ‘아니요’ 길도 따라가 보세요.</p>'; drawFlow(); }, 300); } }
+        else R('pfb').innerHTML = '';
+        save(); drawFlow();
+      } else { R('pfb').innerHTML = `<p class="mn-msg mn-msg--no">✗ 그 칸은 지금 지나가는 칸이 아니에요. 화살표를 따라가 보세요.</p>`; drawFlow(g.dataset.node); }
+    });
+    R('ptabs').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; pcur = b.dataset.p; R('pfb').innerHTML = ''; drawFlow(); });
+    R('preset').addEventListener('click', () => { S.trace[pcur] = []; S.trace[pcur + 'Done'] = false; save(); R('pfb').innerHTML = ''; drawFlow(); });
+    drawFlow();
+
+    /* 3 두 갈래 길 실행 */
+    quiz(ctx, 'inv', 'r1', [{ v: 'a', t: '2초' }, { v: 'b', t: '60초' }, { v: 'c', t: '120초(2분)' }], 'c', '‘120초 기다리기’가 먼저 실행되니까요. 그래서 시계를 빠르게 돌려서 시험해요.', '첫 블록 ‘120 초 기다리기’를 다시 보세요.');
+    const drawPaths = () => { R('paths').innerHTML = `<li class="${S.yes ? 'is-ok' : ''}">‘예’라고 대답해 보았나요?</li><li class="${S.no ? 'is-ok' : ''}">‘아니요’라고 대답해 보았나요?</li>`; };
+    const b3 = makeBench(R('b3'), 'timer');
+    b3.configure({ title: '줄넘기 타이머 실행', hint: '시계를 ×60으로 돌리면 1분이 1초', items: fresh(ROPE), speeds: ROPE_SPEEDS,
+      onRun: tr => { const a = tr.answers[0]; if (a === '예') S.yes = true; else if (a != null) S.no = true; save(); drawPaths(); b3.say(a === '예' ? '‘예’ 길: 1분을 더 기다리고 성공을 알렸어요.' : '‘아니요’ 길: 만일 블록 안은 실행하지 않고 끝났어요. 블록 옆 ×숫자를 보세요.', 'info'); } });
+    drawPaths();
+    quiz(ctx, 'inv', 'r2', [{ v: 'a', t: '120 초 기다리기' }, { v: 'b', t: '묻고 대답 기다리기' }, { v: 'c', t: '만일 블록 안의 60 초 기다리기와 말하기' }], 'c', '조건이 맞지 않으면 만일 블록 안은 건너뛰어요.', '‘아니요’로 실행한 뒤 블록 옆 ×숫자가 없는 블록을 찾아보세요.');
+
+    /* 4 시험값 */
+    const vals = items => items.filter(b => b.t === 'wait').map(b => +b.v.n);
+    const drawT4 = () => { R('t4').innerHTML = `<ul class="mn-checks"><li class="${S.tested ? 'is-ok' : ''}">시험값(10초 이하)으로 ‘예’와 ‘아니요’를 모두 시험했나요?</li><li class="${S.restored ? 'is-ok' : ''}">시험이 끝난 뒤 120과 60으로 되돌렸나요?</li></ul>`; };
+    const t4 = S.t4 = S.t4 || { yes: false, no: false };
+    const b4 = makeBench(R('b4'), 'timer');
+    b4.configure({ title: '시험값으로 시험하기', hint: '엔트리처럼 실제 빠르기만', items: fresh(S.t4items || ROPE), editable: true, speeds: [['1', '×1 실제 빠르기', 1]],
+      onChange: items => { S.t4items = plain(items); const v = vals(items); if (S.tested && v[0] === 120 && v[1] === 60) S.restored = true; save(); drawT4(); },
+      onRun: tr => { const v = vals(b4.items()); if (v.every(x => x <= 10)) { if (tr.answers[0] === '예') t4.yes = true; else if (tr.answers[0] != null) t4.no = true; if (t4.yes && t4.no) S.tested = true; } save(); drawT4();
+        b4.say(v.every(x => x <= 10) ? (S.tested ? '두 길을 모두 시험했어요. 이제 120과 60으로 되돌려요.' : `시험값으로 ${tr.answers[0] === '예' ? '‘예’' : '‘아니요’'} 길을 시험했어요. 다른 길도 시험해 보세요.`) : '기다리는 값이 커서 오래 걸려요. 시험값으로 바꿔 보세요.', 'info'); } });
+    drawT4();
+
+    /* 5 고장 고치기 */
+    const b5 = makeBench(R('b5'), 'timer');
+    const bugA = debugTask(ctx, { key: 'bugA', bench: b5, base: ROPE_BUG_A, title: '고장 A. 1분 더 하겠다고 했는데…', intro: '‘예’라고 대답했는데 줄넘기 시간이 늘어나지 않는대요.', runHint: '질문에 ‘예’라고 대답해 보세요.',
+      what: { options: [{ v: 'a', t: '‘예’라고 했는데 1분 더 기다리지 않고 끝났다' }, { v: 'b', t: '처음부터 아무 말도 하지 않았다' }, { v: 'c', t: '‘아니요’라고 했는데 1분 더 기다렸다' }], answer: 'a' },
+      isBug: it => it.t === 'if', findHint: '이 블록은 제 역할을 하고 있어요. ‘예’라는 대답을 확인하는 블록을 찾아보세요.',
+      fixHint: '만일 블록을 눌러 글자 칸의 값을 알맞게 고친 다음, 다시 실행해서 ‘예’라고 대답해 보세요.',
+      fixed: tr => tr.answers[0] === '예' && tr.branch.yes === 1, notYet: '‘예’라고 대답했을 때 1분을 더 기다리는지 확인하세요.', benchTitle: '고장 A', benchHint: '시계 ×60', extra: { speeds: ROPE_SPEEDS } });
+    const bugB = debugTask(ctx, { key: 'bugB', bench: b5, base: ROPE_BUG_B, title: '고장 B. 그만하겠다고 했는데…', intro: '‘아니요’라고 대답했는데도 1분을 더 기다린대요.', runHint: '질문에 ‘아니요’라고 대답해 보세요.',
+      what: { options: [{ v: 'a', t: '‘아니요’라고 했는데도 1분을 더 기다렸다' }, { v: 'b', t: '2분이 지났다는 말을 하지 않았다' }, { v: 'c', t: '질문을 하지 않았다' }], answer: 'a' },
+      isBug: it => it.t === 'wait' && +it.v.n === 60, findHint: '이 블록은 제 역할을 하고 있어요. ‘아니요’일 때도 실행된 블록을 찾아보세요.',
+      fixHint: '그 블록을 ‘안으로 넣기’와 ‘▲ 위로’로 만일 블록 안, 말하기보다 위로 옮긴 다음 ‘예’와 ‘아니요’로 다시 실행해 보세요.',
+      fixed: (tr, st) => { const l = tr.log.join('|'); if (tr.answers[0] === '아니요' && !l.includes('w60')) st.okNo = true; if (tr.answers[0] === '예' && l.indexOf('w60') > -1 && l.indexOf('w60') < l.indexOf('s:정해진')) st.okYes = true; return !!(st.okNo && st.okYes); },
+      notYet: '‘예’와 ‘아니요’를 모두 시험해 보세요. ‘예’일 때는 1분을 기다린 다음에 성공을 알려야 해요.', benchTitle: '고장 B', benchHint: '시계 ×60', extra: { speeds: ROPE_SPEEDS } });
+    S.tab = S.tab || 'a';
+    const drawB = () => { R('btabs').querySelectorAll('[data-b]').forEach(b => { b.setAttribute('aria-pressed', b.dataset.b === S.tab); const d = S['bug' + b.dataset.b.toUpperCase()]; b.textContent = '고장 ' + b.dataset.b.toUpperCase() + (d && d.done ? ' ✓' : ''); }); R('bugA').hidden = S.tab !== 'a'; R('bugB').hidden = S.tab !== 'b'; };
+    R('btabs').addEventListener('click', e => { const b = e.target.closest('[data-b]'); if (!b || b5.isRunning()) return; S.tab = b.dataset.b; save(); drawB(); b5.configure((S.tab === 'a' ? bugA : bugB).mode()); });
+    drawB(); b5.configure((S.tab === 'a' ? bugA : bugB).mode());
+
+    R('p6').innerHTML = progHTML(fresh(ROPE), {});
+    ticks(ctx, 'entry', ['120초 기다린 뒤 2분이 지났음을 알려 주나요? (시험값으로 확인)', '줄넘기 시간을 더 추가할지 묻나요?', '대답이 ‘예’라면 60초를 더 기다리나요?', '의도한 대로 프로그램이 실행되나요?', '시험이 끝난 뒤 120과 60으로 되돌렸나요?']);
+    quiz(ctx, 'quiz', 'q7a', [{ v: 'a', t: '조건이 맞을 때만' }, { v: 'b', t: '언제나' }, { v: 'c', t: '실행되지 않는다' }], 'a', '조건이 맞지 않으면 건너뛰어요.', '3단계에서 ‘아니요’로 실행했을 때를 떠올려 보세요.');
+    quiz(ctx, 'quiz', 'q7b', [{ v: 'a', t: '5초 그대로 둔다' }, { v: 'b', t: '원래 값(120초)으로 되돌린다' }], 'b', '시험값은 시험할 때만 써요.', '시험값의 뜻을 다시 읽어 보세요.');
+    evals(ctx, 'ev', ['순서도에서 조건에 따라 나뉘는 두 길을 따라갈 수 있나요?', '만일 블록 안의 블록이 언제 실행되는지 말할 수 있나요?', '시험값으로 빨리 시험하고 원래 값으로 되돌릴 수 있나요?', '프로그램이 제대로 작동하지 않을 때 잘못된 부분을 찾아 고칠 수 있나요?']);
+  }
+};
+
+/* ================= 3차시 ================= */
+const MYITEMS = ['umbrella', 'pencil', 'cap', 'shoe'];
+const josa = (w, a, b) => { const c = w.charCodeAt(w.length - 1); return (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28) ? a : b; };
+const mySpec = item => { const n = ITEM_NAMES[item]; return { item, ask: `내 ${n}${josa(n, '이면', '면')} '예'를 입력해요.`, yes: `분실물 보관함에서 ${n}${josa(n, '을', '를')} 찾아가세요.`, no: '분실물 보관함에는 찾는 물건이 없어요. 감사합니다.' }; };
+const L3 = {
+  key: 'l3', no: 3, stage: '내가 설계하기', title: ['우리 반', '보관함 설계.'], short: '우리 반 보관함 설계', pg: '교과서 114~115쪽 소재',
+  goal: '분실물 보관함 순서도를 읽고 실행해 보며, 내가 고른 물건의 순서도를 직접 설계하고 시뮬레이션으로 시험할 수 있다.',
+  defaults: () => ({ inv: {}, b2: {}, slots: {}, phoneDone: false, design: null, t5: {}, plan: [], quiz: {}, ev: {} }),
+  steps: [
+    { id: 's1', name: '문제 이해하기', lead: '교과서 114쪽의 문제 상황을 읽고, 현재 상태와 목표 상태를 정해요.', html: () => `
+      <div class="card"><h3>문제 상황</h3><p>분실물 보관함의 물건을 확인하기가 불편해서 사람들이 물건을 찾아가지 않아요. 보관함에 남아 있는 물건을 알 수 있으면 좋겠어요.</p>
+        ${qHTML('c1', '현재 상태는 무엇일까요?')}${qHTML('c2', '목표 상태는 무엇일까요?')}</div>
+      ${oneline('오늘 할 일', '프로그램을 만들기 전에 순서도로 먼저 설계해요. 다음 시간에는 이 설계로 엔트리에서 만들어요.')}` },
+    { id: 's2', name: '물병 순서도 실행해 보기', lead: '물병 순서도를 읽고, 보관함에서 물병을 눌러 직접 실행해 봐요.', html: () => `
+      <div data-r="b2"></div>
+      <div class="card"><ul class="mn-checks" data-r="b2c"></ul>${qHTML('c3', '‘아니요’라고 대답하면 물병은 어떻게 되나요?')}</div>` },
+    { id: 's3', name: '스마트폰 순서도 완성하기', lead: '물병 순서도를 참고해 스마트폰 순서도의 빈칸 세 개를 채워요. (교과서 115쪽)', html: () => `
+      <div class="two"><div class="card"><h3>스마트폰 순서도</h3><div class="flow-card" data-r="flow3"></div></div>
+        <div class="card"><p>순서도의 <b>빈칸</b>을 누른 다음, 아래 보기에서 알맞은 것을 눌러요.</p><div class="cards" data-r="cards"></div><div data-r="f3fb"></div>
+          <div><button type="button" class="mn-btn mn-btn--primary" data-r="f3check">확인하기</button> <button type="button" class="mn-btn mn-btn--quiet" data-r="f3reset">빈칸 비우기</button></div></div></div>
+      <div data-r="b3" hidden></div>` },
+    { id: 's4', name: '내 물건 설계하기', lead: '보관함에 넣을 물건을 하나 골라 순서도를 설계해요. 교과서의 ‘더 하기 활동’을 직접 해 보는 거예요.', html: () => `
+      <div class="two"><div class="card"><h3>① 물건 고르기</h3><div class="cards" data-r="pick"></div>
+        <h3>② 말 정하기</h3>
+        <label class="field">묻는 말<input class="mn-input" data-f="ask" maxlength="24"></label>
+        <label class="field">‘예’일 때 하는 말<input class="mn-input" data-f="yes" maxlength="24"></label>
+        <label class="field">‘아니요’일 때 하는 말<input class="mn-input" data-f="no" maxlength="24"></label>
+        <p class="aside-t">말은 짧게, 듣는 사람이 무엇을 하면 되는지 알 수 있게 써요.</p></div>
+        <div class="card"><h3>내 순서도</h3><div class="flow-card" data-r="flow4"><p class="aside-t">물건을 고르면 순서도가 나타나요.</p></div></div></div>` },
+    { id: 's5', name: '설계 시험하기', lead: '보관함에 내 물건을 넣고 직접 눌러 시험해요. 모든 길을 시험해야 해요.', html: () => `
+      <div data-r="b5"></div><div class="card"><h3>시험 기록</h3><ul class="mn-checks" data-r="t5c"></ul></div>` },
+    { id: 's6', name: '모둠 계획 세우기', lead: '다음 시간에는 모둠이 함께 보관함 프로그램을 만들어요. 역할과 물건을 정해요. (교과서 114쪽)', html: () => `
+      <div class="card"><div class="tbl"><table class="mn-table"><thead><tr><th scope="col">역할</th><th scope="col">하는 일</th></tr></thead><tbody><tr><th scope="row">이끔이</th><td>모둠을 이끌고, 시험 계획대로 시험하는지 챙긴다</td></tr><tr><th scope="row">꾸밈이</th><td>글상자, 액자, 물건 오브젝트로 화면을 구성한다</td></tr><tr><th scope="row">작성이</th><td>순서도를 보고 블록으로 프로그램을 작성한다</td></tr></tbody></table></div>
+        <ul class="ticks" data-r="plan"></ul></div>` },
+    { id: 's7', name: '정리와 스스로 평가', lead: '', html: () => `
+      <div class="card">${qHTML('q7a', '순서도에서 마름모(◇) 칸은 무엇을 나타내나요?')}${qHTML('q7b', '프로그램을 만들기 전에 순서도로 설계하는 까닭은?')}</div>
+      <div class="card"><h3>스스로 평가</h3><div class="evals" data-r="ev"></div></div>${oneline('다음 시간', '오늘 설계한 순서도를 엔트리에서 블록으로 만들고, 친구와 서로 시험해 봐요.')}` }
+  ],
+  done: {
+    s1: S => S.inv.c1 === 'a' && S.inv.c2 === 'b', s2: S => S.b2.yes && S.b2.no && S.inv.c3 === 'b', s3: S => S.phoneDone, s4: S => !!S.design, s5: S => S.t5.yes && S.t5.no && S.t5.x,
+    s6: S => (S.plan || []).filter(Boolean).length >= 3, s7: S => S.quiz.q7a === 'a' && S.quiz.q7b === 'a' && Object.keys(S.ev).length >= 4
+  },
+  init(ctx) {
+    const { S, R, save } = ctx;
+    quiz(ctx, 'inv', 'c1', [{ v: 'a', t: '분실물 보관함에 어떤 물건이 있는지 모르는 상태' }, { v: 'b', t: '물건을 모두 찾아간 상태' }], 'a', '교과서 114쪽의 현재 상태와 같아요.', '문제 상황을 다시 읽어 보세요.');
+    quiz(ctx, 'inv', 'c2', [{ v: 'a', t: '분실물 보관함을 없앤 상태' }, { v: 'b', t: '보관함에 남아 있는 물건을 알고 찾아갈 수 있는 상태' }], 'b', '문제가 해결된 상태예요.', '문제가 해결되면 어떤 모습일지 떠올려 보세요.');
+    /* 2 물병 */
+    const drawB2 = () => { R('b2c').innerHTML = `<li class="${S.b2.yes ? 'is-ok' : ''}">물병을 누르고 ‘예’라고 대답해 보았나요?</li><li class="${S.b2.no ? 'is-ok' : ''}">물병을 누르고 ‘아니요’라고 대답해 보았나요?</li>`; };
+    const b2 = makeBench(R('b2'), 'locker');
+    b2.configure({ title: '물병 순서도', hint: '▶ 시작하기 → 물병 누르기', objs: ['bottle', 'phone', 'x'], flows: { bottle: BOTTLE }, first: 'bottle', intro: '분실물 보관함에 물병과 스마트폰이 있어요.', xSay: XSAY,
+      onObjRun: (o, tr) => { if (o !== 'bottle') return; const a = tr.answers[0]; if (a === '예') S.b2.yes = true; else if (a != null) S.b2.no = true; save(); drawB2(); } });
+    drawB2();
+    quiz(ctx, 'inv', 'c3', [{ v: 'a', t: '화면에서 사라진다' }, { v: 'b', t: '화면에 그대로 남아 있다' }], 'b', '숨기기는 ‘예’ 길에만 있어요.', '순서도에서 ‘아니요’ 길에 있는 칸을 보세요.');
+    /* 3 스마트폰 빈칸 */
+    const CARDS = [{ id: 'c1', slot: 'n2', t: "\"내 스마트폰이면 '예'를 입력해요.\"를 묻고 대답 기다리기" }, { id: 'c2', slot: 'n3', t: "입력 값이 '예'인가?" }, { id: 'c3', slot: 'n4', t: '"분실물 보관함에서 스마트폰을 찾아가세요."라고 말하기' }, { id: 'c4', slot: null, t: '스마트폰을 화면에서 숨기기' }, { id: 'c5', slot: null, t: '"물병을 찾아가세요."라고 말하기' }];
+    let selSlot = 'n2';
+    const drawF3 = (res) => {
+      const slots = {}; ['n2', 'n3', 'n4'].forEach(k => { const c = CARDS.find(x => x.id === S.slots[k]); slots[k] = c ? c.t : ''; });
+      const mark = {}; if (selSlot) mark[selSlot] = 'is-picked'; if (res) Object.keys(res).forEach(k => mark[k] = res[k] ? 'is-path' : 'is-wrong');
+      R('flow3').innerHTML = flowSVG(objFlow(PHONE), FLOW_EDGES_OBJ, { slots: S.phoneDone ? null : slots, tap: !S.phoneDone, mark, label: '스마트폰 순서도' });
+      R('cards').innerHTML = CARDS.map(c => `<button type="button" class="mn-btn mn-btn--s" data-c="${c.id}" ${S.phoneDone ? 'disabled' : ''}>${esc(c.t)}</button>`).join('');
+    };
+    R('flow3').addEventListener('click', e => { const g = e.target.closest('[data-node]'); if (!g || S.phoneDone || !['n2', 'n3', 'n4'].includes(g.dataset.node)) return; selSlot = g.dataset.node; drawF3(); });
+    R('cards').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b || !selSlot) return; S.slots[selSlot] = b.dataset.c; const nextEmpty = ['n2', 'n3', 'n4'].find(k => !S.slots[k]); selSlot = nextEmpty || null; save(); R('f3fb').innerHTML = ''; drawF3(); });
+    R('f3check').addEventListener('click', () => {
+      const res = {}; let all = true; ['n2', 'n3', 'n4'].forEach(k => { const c = CARDS.find(x => x.id === S.slots[k]); res[k] = !!c && c.slot === k; if (!res[k]) all = false; });
+      if (all) { S.phoneDone = true; save(); R('f3fb').innerHTML = '<p class="mn-msg mn-msg--ok">✓ 완성했어요. 아래 보관함에서 스마트폰을 눌러 실행해 보세요.</p>'; drawF3(); showB3(); }
+      else { R('f3fb').innerHTML = '<p class="mn-msg mn-msg--no">✗ 빨간 칸을 다시 생각해 보세요. 물병 순서도와 같은 자리에는 무엇이 있었나요?</p>'; drawF3(res); }
+    });
+    R('f3reset').addEventListener('click', () => { if (S.phoneDone) return; S.slots = {}; selSlot = 'n2'; save(); R('f3fb').innerHTML = ''; drawF3(); });
+    const b3 = makeBench(R('b3'), 'locker');
+    const showB3 = () => { R('b3').hidden = false; b3.configure({ title: '스마트폰 순서도 실행', hint: '▶ 시작하기 → 스마트폰 누르기', objs: ['bottle', 'phone', 'x'], flows: { bottle: BOTTLE, phone: PHONE }, first: 'phone', intro: '분실물 보관함에 물병과 스마트폰이 있어요.', xSay: XSAY }); };
+    drawF3(); if (S.phoneDone) showB3();
+    /* 4 내 물건 설계 */
+    const fields = () => ['ask', 'yes', 'no'].forEach(k => { const inp = ctx.view.querySelector(`[data-f="${k}"]`); inp.value = S.design ? S.design[k] : ''; inp.disabled = !S.design; });
+    const drawPick = () => { R('pick').innerHTML = MYITEMS.map(i => `<button type="button" class="mn-btn mn-btn--s" data-i="${i}" aria-pressed="${!!S.design && S.design.item === i}">${ITEM_NAMES[i]}</button>`).join(''); };
+    const drawF4 = () => { if (S.design) R('flow4').innerHTML = flowSVG(objFlow(S.design), FLOW_EDGES_OBJ, { label: '내 물건 순서도' }); };
+    R('pick').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; S.design = mySpec(b.dataset.i); S.t5 = {}; save(); drawPick(); fields(); drawF4(); configB5(); });
+    ctx.view.querySelectorAll('[data-f]').forEach(inp => inp.addEventListener('input', () => { if (!S.design) return; S.design[inp.dataset.f] = inp.value.trim() || mySpec(S.design.item)[inp.dataset.f]; save(); drawF4(); }));
+    drawPick(); fields(); drawF4();
+    /* 5 시험 */
+    const drawT5 = () => { const n = S.design ? ITEM_NAMES[S.design.item] : '내 물건', eul = n + josa(n, '을', '를'), iga = n + josa(n, '이', '가'); R('t5c').innerHTML = `<li class="${S.t5.yes ? 'is-ok' : ''}">${eul} 누르고 ‘예’ → ${iga} 사라지고 찾아가라는 말이 나오나요?</li><li class="${S.t5.no ? 'is-ok' : ''}">${eul} 누르고 ‘아니요’ → ${iga} 그대로 있고 없다는 말이 나오나요?</li><li class="${S.t5.x ? 'is-ok' : ''}">엑스 버튼 → 인사하고 끝나나요?</li>`; };
+    const b5 = makeBench(R('b5'), 'locker');
+    function configB5() {
+      if (!S.design) { b5.configure({ title: '내 설계 시험하기', hint: '4단계에서 내 물건을 고르면 여기에 나타나요', objs: ['bottle', 'phone', 'x'], flows: { bottle: BOTTLE, phone: PHONE }, first: 'bottle', intro: INTRO, xSay: XSAY }); return; }
+      const it = S.design.item;
+      b5.configure({ title: '내 설계 시험하기', hint: '▶ 시작하기 → 물건 누르기', objs: ['bottle', 'phone', it, 'x'], flows: { bottle: BOTTLE, phone: PHONE, [it]: S.design }, first: it, intro: INTRO, xSay: XSAY,
+        onObjRun: (o, tr) => { if (o === 'x') S.t5.x = true; else if (o === it) { const a = tr.answers[0]; if (a === '예' && tr.hides) S.t5.yes = true; if (a != null && a !== '예' && !tr.hides) S.t5.no = true; } save(); drawT5(); } });
+      drawT5();
+    }
+    configB5(); drawT5();
+    ticks(ctx, 'plan', ['모둠 보관함에 넣을 물건을 정했나요?', '이끔이, 꾸밈이, 작성이를 정했나요?', '내 순서도를 모둠 친구들에게 설명했나요?']);
+    quiz(ctx, 'quiz', 'q7a', [{ v: 'a', t: '조건에 대한 판단' }, { v: 'b', t: '시작과 끝' }, { v: 'c', t: '자료의 입력과 출력' }], 'a', '교과서 107쪽 순서도 기호와 같아요.', '대답에 따라 길이 나뉘던 칸을 떠올려 보세요.');
+    quiz(ctx, 'quiz', 'q7b', [{ v: 'a', t: '무엇을 어떤 순서로 만들지 미리 정하려고' }, { v: 'b', t: '엔트리를 쓰지 않으려고' }], 'a', '설계가 있으면 만들 때와 고칠 때 모두 쉬워요.', '설계를 하면 무엇이 편해지는지 생각해 보세요.');
+    evals(ctx, 'ev', ['순서도를 읽고 프로그램이 어떻게 움직일지 말할 수 있나요?', '빈칸이 있는 순서도를 완성할 수 있나요?', '내 물건의 순서도를 직접 설계할 수 있나요?', '설계한 순서도를 모든 길로 시험해 볼 수 있나요?']);
+  }
+};
+
+/* ================= 4차시 ================= */
+const PARSONS = [{ k: 'p1', b: P('click') }, { k: 'p2', b: P('ask', 0, { t: BOTTLE.ask }) }, { k: 'p3', b: P('if', 0, { t: '예' }) }, { k: 'p4', b: P('say', 1, { t: BOTTLE.yes, n: 2 }) }, { k: 'p5', b: P('hide', 1) }, { k: 'p6', b: P('else') }, { k: 'p7', b: P('say', 1, { t: BOTTLE.no, n: 2 }) }];
+const SHUF = ['p4', 'p6', 'p2', 'p7', 'p1', 'p5', 'p3'];
+const BOTTLE_BUG = [P('click'), P('ask', 0, { t: BOTTLE.ask }), P('if', 0, { t: '예' }), P('say', 1, { t: BOTTLE.yes, n: 2 }), P('else'), P('say', 1, { t: BOTTLE.no, n: 2 }), P('hide', 1)];
+const L4 = {
+  key: 'l4', no: 4, stage: '만들고 시험하기', title: ['보관함 만들고', '공유하기.'], short: '보관함 만들고 공유하기', pg: '교과서 116~117쪽 소재',
+  goal: '순서도를 블록 프로그램으로 옮겨 엔트리에서 만들고, 시험 계획에 따라 친구와 서로 시험해 오류를 고친 뒤 공유할 수 있다.',
+  defaults: () => ({ start: false, order: [], parsons: false, fix: { phase: 'run' }, entry: [], tests: {}, share: [], quiz: {}, ev: {} }),
+  steps: [
+    { id: 's1', name: '내 설계 다시 보기', lead: '지난 시간에 설계한 순서도를 다시 보고, 오늘 할 일을 확인해요.', html: () => `
+      <div class="two"><div class="card"><h3>내 순서도</h3><div class="flow-card" data-r="myflow"></div><p class="aside-t" data-r="mynote"></p></div>
+        <div class="card"><h3>오늘 할 일</h3><ol class="howto"><li>순서도를 블록으로 옮기는 연습을 해요.</li><li>고장 난 블록 프로그램을 고쳐요.</li><li>모둠이 엔트리에서 보관함 프로그램을 만들어요.</li><li>시험 계획대로 친구가 시험해 주고, 고친 뒤 공유해요.</li></ol>
+          <div><button type="button" class="mn-btn mn-btn--primary" data-r="start">시작하기</button></div></div></div>` },
+    { id: 's2', name: '순서도를 블록으로', lead: '물병 순서도의 칸 하나가 블록 하나예요. 블록을 순서대로 눌러 프로그램을 만들어요. (교과서 116쪽)', html: () => `
+      <div class="two"><div class="card"><h3>물병 순서도</h3><div class="flow-card" data-r="bflow"></div></div>
+        <div class="card"><h3>블록 고르기</h3><div class="pool" data-r="pool"></div><h3>내가 만든 프로그램</h3><div class="mn-program" data-r="built"></div>
+          <div class="tabs"><button type="button" class="mn-btn mn-btn--s" data-r="undo">하나 빼기</button><button type="button" class="mn-btn mn-btn--s" data-r="clear">처음부터</button></div><div data-r="pfb"></div></div></div>
+      <div data-r="b2" hidden></div>` },
+    { id: 's3', name: '고장 찾기', lead: '친구 모둠의 물병 프로그램이 이상하대요. 고장 찾기 4단계로 고쳐요.', html: () => `<div class="card" data-r="fixs"></div><div data-r="b3"></div>` },
+    { id: 's4', name: '엔트리에서 만들기', lead: '모둠이 역할을 나눠 엔트리에서 보관함 프로그램을 만들어요. (교과서 116~117쪽)', html: () => `
+      <div class="two"><div class="card"><ol class="howto">
+        <li><b>꾸밈이</b>: [+ 오브젝트 추가하기]에서 글상자(‘분실물 보관함’), 액자(2), 엑스 버튼, 물병, 스마트폰과 모둠 물건을 추가해요.</li>
+        <li><b>작성이</b>: 순서도를 보며 오브젝트마다 블록을 조립해요. 물건은 ‘오브젝트를 클릭했을 때’로 시작해요.</li>
+        <li><b>이끔이</b>: 순서도의 칸이 모두 블록이 되었는지 하나씩 짚어 확인해요.</li>
+        <li>엑스 버튼은 ‘이용해 주셔서 감사합니다.’라고 말한 뒤 ‘모든 코드 멈추기’를 해요.</li></ol><a class="mn-btn mn-btn--s" href="https://playentry.org" target="_blank" rel="noopener">엔트리 열기</a></div>
+        <div class="card"><h3>엔트리에서 확인해요</h3><ul class="ticks" data-r="entry"></ul></div></div>` },
+    { id: 's5', name: '친구가 시험하기', lead: '다른 모둠 친구가 우리 작품을 시험 계획표대로 시험해 줘요. 결과를 그대로 적어요.', html: () => `
+      <div class="card"><div class="tbl"><table class="mn-table"><thead><tr><th scope="col">시험할 것</th><th scope="col">기대하는 결과</th><th scope="col">친구가 해 본 결과</th></tr></thead><tbody data-r="tests"></tbody></table></div>
+        <label class="field">고칠 점<textarea class="mn-input" data-r="fixnote" maxlength="200"></textarea></label><p class="aside-t">117쪽: 프로그램이 제대로 작동하지 않는다면 친구들과 함께 잘못된 부분을 찾아 고쳐요.</p></div>` },
+    { id: 's6', name: '고치고 공유하기', lead: '고칠 점을 고치고 다시 시험한 뒤, 작품을 공유해요. (교과서 117쪽)', html: () => `
+      <div class="two"><div class="card"><h3>공유하는 방법</h3><ol class="howto"><li>저장 단추를 눌러 저장한 뒤 엔트리의 메인 페이지로 이동해요.</li><li>[공유하기] → [작품 공유하기]를 누른 뒤 [작품 공유하기 +]를 눌러요.</li><li>공유할 작품을 고르고 [다음] → 작품 정보를 입력하고 [완료]를 눌러요.</li></ol></div>
+        <div class="card"><ul class="ticks" data-r="share"></ul></div></div>` },
+    { id: 's7', name: '정리와 스스로 평가', lead: '', html: () => `
+      <div class="card">${qHTML('q7a', '친구가 내 작품을 시험해 주면 좋은 점은 무엇일까요?')}</div>
+      <div class="card"><h3>스스로 평가</h3><div class="evals" data-r="ev"></div></div>${oneline('네 차시를 마치며', '읽고 예측하기 → 살펴보고 고치기 → 설계하기 → 만들고 시험하기. 다음에 프로그램을 만들 때도 이 순서를 써 보세요.')}` }
+  ],
+  done: {
+    s1: S => S.start, s2: S => S.parsons, s3: S => !!S.fix.done, s4: S => (S.entry || []).filter(Boolean).length >= 4,
+    s5: S => Object.keys(S.tests).length >= 4, s6: S => (S.share || []).filter(Boolean).length >= 3, s7: S => S.quiz.q7a === 'a' && Object.keys(S.ev).length >= 4
+  },
+  init(ctx) {
+    const { S, R, save, goTo } = ctx;
+    const l3 = store.get('l3', {}), my = l3.design;
+    R('myflow').innerHTML = flowSVG(objFlow(my || BOTTLE), FLOW_EDGES_OBJ, { label: '내 순서도' });
+    R('mynote').textContent = my ? '3차시에 이 기기에서 설계한 순서도예요.' : '이 기기에 3차시 설계가 없어서 물병 순서도를 보여 줘요.';
+    R('start').addEventListener('click', () => { S.start = true; save(); goTo('s2'); });
+    /* 2 블록 순서 맞추기 */
+    R('bflow').innerHTML = flowSVG(objFlow(BOTTLE), FLOW_EDGES_OBJ, { label: '물병 순서도' });
+    const blockOf = k => PARSONS.find(x => x.k === k).b;
+    function orderItems() { let inBox = false; return S.order.map(k => { const b = blockOf(k); let d = 0; if (isBox(b.t)) inBox = true; else if (isHat(b.t)) inBox = false; else d = inBox ? 1 : 0; return { u: 'q' + k, t: b.t, d, v: Object.assign({}, b.v) }; }); }
+    const drawP = () => {
+      R('pool').innerHTML = SHUF.filter(k => !S.order.includes(k)).map(k => blockHTML(Object.assign({}, blockOf(k), { u: k }), { tap: true })).join('') || '<p class="aside-t">블록을 모두 골랐어요.</p>';
+      R('built').innerHTML = progHTML(orderItems(), {});
+    };
+    R('pool').addEventListener('click', e => {
+      const b = e.target.closest('.mn-block'); if (!b || S.parsons) return; S.order.push(b.dataset.u); save(); drawP();
+      if (S.order.length === PARSONS.length) {
+        const wrong = S.order.findIndex((k, i) => k !== PARSONS[i].k);
+        if (wrong < 0) { S.parsons = true; save(); R('pfb').innerHTML = '<p class="mn-msg mn-msg--ok">✓ 순서도와 똑같은 순서예요. 아래 보관함에서 물병을 눌러 실행해 보세요.</p>'; showB2(); }
+        else R('pfb').innerHTML = `<p class="mn-msg mn-msg--no">✗ ${wrong + 1}번째 블록부터 순서도와 달라요. 순서도의 칸을 위에서부터 하나씩 짚어 보세요.</p>`;
+      }
+    });
+    R('undo').addEventListener('click', () => { if (S.parsons) return; S.order.pop(); save(); R('pfb').innerHTML = ''; drawP(); });
+    R('clear').addEventListener('click', () => { if (S.parsons) return; S.order = []; save(); R('pfb').innerHTML = ''; drawP(); });
+    const b2 = makeBench(R('b2'), 'locker');
+    const showB2 = () => { R('b2').hidden = false; b2.configure({ title: '내가 만든 물병 프로그램', hint: '▶ 시작하기 → 물병 누르기', objs: ['bottle', 'phone', 'x'], scripts: { bottle: orderItems() }, first: 'bottle', intro: '분실물 보관함에 물병과 스마트폰이 있어요.', xSay: XSAY }); };
+    drawP(); if (S.parsons) { R('pfb').innerHTML = '<p class="mn-msg mn-msg--ok">✓ 순서도와 똑같은 순서예요.</p>'; showB2(); }
+    /* 3 고장 찾기 (보관함) */
+    const F = S.fix; const b3 = makeBench(R('b3'), 'locker');
+    const items3 = () => F.done || F.moved ? [P('click'), P('ask', 0, { t: BOTTLE.ask }), P('if', 0, { t: '예' }), P('say', 1, { t: BOTTLE.yes, n: 2 }), P('hide', 1), P('else'), P('say', 1, { t: BOTTLE.no, n: 2 })] : BOTTLE_BUG;
+    function drawFix() {
+      const ph = F.done ? 4 : { run: 0, what: 1, find: 2, fix: 3 }[F.phase];
+      let h = `<h3>물병이 이상해요</h3><p>‘아니요’라고 대답했는데 물병이 사라지고, ‘예’라고 대답했는데 물병이 그대로 남아 있대요.</p>${debugList(ph)}`;
+      if (!F.done && F.phase === 'run') h += '<p class="mn-msg">▶ 시작하기를 누르고 물병을 눌러 ‘아니요’라고 대답해 보세요.</p>';
+      if (!F.done && F.phase === 'what') h += '<p class="q__t">생각과 다른 장면은 무엇이었나요?</p><div data-r="fwhat"></div>';
+      if (!F.done && F.phase === 'find') h += '<p class="mn-msg">그 장면을 만든 블록을 아래 프로그램에서 눌러 보세요.</p>';
+      if (!F.done && F.phase === 'fix') h += `<p class="mn-msg">찾은 블록을 어디로 옮겨야 할까요?</p><button type="button" class="mn-btn mn-btn--primary" data-r="move" ${F.moved ? 'disabled' : ''}>모양 숨기기 블록을 ‘만일’ 쪽(말하기 아래)으로 옮기기</button>${F.moved ? '<p class="mn-msg">옮겼어요. 물병을 눌러 ‘예’와 ‘아니요’를 모두 다시 시험해 보세요.</p>' : ''}`;
+      if (F.done) h += '<p class="mn-msg mn-msg--ok">✓ 고쳤어요. ‘예’일 때만 숨기도록 블록 위치를 바꿨어요.</p>';
+      R('fixs').innerHTML = h;
+      const w = R('fixs').querySelector('[data-r="fwhat"]');
+      if (w) choiceGroup(w, { options: [{ v: 'a', t: '‘아니요’라고 했는데 물병이 사라졌다' }, { v: 'b', t: '물병을 눌러도 질문하지 않았다' }, { v: 'c', t: '엑스 버튼이 사라졌다' }], answer: 'a', onPick: v => { if (v === 'a') { F.phase = 'find'; save(); setTimeout(drawFix, 600); } } });
+      const mv = R('fixs').querySelector('[data-r="move"]'); if (mv) mv.addEventListener('click', () => { F.moved = true; save(); drawFix(); conf3(); });
+    }
+    function conf3() {
+      b3.configure({ title: '친구 모둠의 물병 프로그램', hint: '▶ 시작하기 → 물병 누르기', objs: ['bottle', 'phone', 'x'], scripts: { bottle: fresh(items3()) }, first: 'bottle', intro: '분실물 보관함에 물병과 스마트폰이 있어요.', xSay: XSAY,
+        onTap: u => { if (F.done || F.phase === 'fix') return true; if (F.phase !== 'find') { b3.say(F.phase === 'run' ? '먼저 실행해서 ‘아니요’라고 대답해 보세요.' : '먼저 위에서 생각과 다른 장면을 골라 주세요.', 'info'); return true; }
+          const it = b3.items().find(x => x.u === u); const ok = it.t === 'hide'; const mk = {}; mk[u] = ok ? 'is-right' : 'is-wrong'; b3.mark(mk);
+          if (ok) { F.phase = 'fix'; save(); drawFix(); } else b3.say('이 블록은 제 역할을 하고 있어요. 물건을 사라지게 하는 블록을 찾아보세요.', 'no'); return true; },
+        onObjRun: (o, tr) => { if (o !== 'bottle') return; const a = tr.answers[0];
+          if (F.phase === 'run' && a != null && a !== '예' && tr.hides) { F.phase = 'what'; save(); drawFix(); }
+          if (F.moved && !F.done) { if (a === '예' && tr.hides) F.yes = true; if (a != null && a !== '예' && !tr.hides) F.no = true; if (F.yes && F.no) F.done = true; save(); drawFix(); } } });
+    }
+    drawFix(); conf3();
+    /* 4~7 */
+    ticks(ctx, 'entry', ['글상자, 액자, 엑스 버튼, 물건 오브젝트로 화면을 구성했나요?', '물건마다 순서도대로 블록을 만들었나요?', '▶ 시작하기를 누르면 보관함 안내 말을 하나요?', '엑스 버튼을 누르면 인사하고 멈추나요?', '모둠 물건도 순서도대로 작동하나요?']);
+    const TESTS = [['▶ 시작하기', '보관함에 있는 물건을 알려 준다'], ['물건 누르고 ‘예’', '찾아가라고 말하고 물건이 사라진다'], ['물건 누르고 ‘아니요’', '찾는 물건이 없다고 말하고 물건은 남는다'], ['엑스 버튼', '인사하고 프로그램이 멈춘다']];
+    const drawTests = () => { R('tests').innerHTML = TESTS.map(([a, b], i) => `<tr><th scope="row">${a}</th><td>${b}</td><td><div class="mn-seg" role="group" aria-label="${a} 결과"><button type="button" data-t="${i}" data-v="ok" aria-pressed="${S.tests[i] === 'ok'}">됐어요</button><button type="button" data-t="${i}" data-v="no" aria-pressed="${S.tests[i] === 'no'}">안 됐어요</button></div></td></tr>`).join(''); };
+    R('tests').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; S.tests[b.dataset.t] = b.dataset.v; save(); drawTests(); });
+    drawTests();
+    const fn = R('fixnote'); fn.value = S.fixnote || ''; fn.addEventListener('input', () => { S.fixnote = fn.value; save(); });
+    ticks(ctx, 'share', ['친구가 찾은 고칠 점을 고쳤나요?', '고친 뒤 시험 계획표대로 다시 시험했나요?', '작품을 저장하고 공유했나요?', '친구 작품에 칭찬이나 격려의 댓글을 달았나요?']);
+    quiz(ctx, 'quiz', 'q7a', [{ v: 'a', t: '내가 생각하지 못한 오류를 찾을 수 있다' }, { v: 'b', t: '내가 시험하지 않아도 된다' }], 'a', '만든 사람은 자기가 생각한 대로만 시험하기 쉬워요.', '친구는 나와 다르게 눌러 볼 수 있어요.');
+    evals(ctx, 'ev', ['완성한 프로그램으로 문제를 해결했나요? (교과서 117쪽)', '모둠원과 협력하여 프로그램을 작성했나요? (교과서 117쪽)', '문제 해결 과정에 적극적으로 참여했나요? (교과서 117쪽)', '프로그램이 제대로 작동하지 않을 때 잘못된 부분을 찾아 고칠 수 있나요? (교과서 118쪽)']);
+  }
+};
+const LESSONS = [L1, L2, L3, L4];
+
+/* ================= 교사용 지도안 ================= */
+const OBS_FIELDS = [['date', '날짜와 교시', 'input'], ['n', '참여 학생 수', 'input'], ['a', '단계별로 본 것 (예측, 실행, 고치기 등)', 'ta'], ['stuck', '막힌 곳과 걸린 시간', 'ta'], ['entry', '엔트리: 태블릿 조작, 화면, 완성 정도', 'ta'], ['diff', '계획과 달라진 점', 'ta'], ['next', '다음 차시에 고칠 점', 'ta']];
+const TEACH = [
+  { no: 1, pg: '110~111쪽', std: '[6실05-02] 요지: 컴퓨터에 명령하는 방법을 체험하고 기초적인 프로그램을 작성한다.', goal: L1.goal,
+    diff: [['필요한 블록 6개와 역할을 먼저 알려 주고, 조립 화면대로 만든다.', '완성된 프로그램을 먼저 읽고 결과를 예측한 뒤, 실행해서 확인한다.', '영국 PRIMM과 미국 Use-Modify-Create는 남의 프로그램을 읽고 예측하는 단계를 만들기 앞에 둔다. 따라 만들기부터 하면 블록의 역할을 설명하지 못한 채 완성할 수 있다고 보았다.'], ['값 2개(2초→1초, ‘안녕’→‘만나서 반가워!’)를 지시대로 바꾼다.', '목표(친구가 위치 50)를 주고, 바꿀 값은 학생이 정한다. 방법이 여러 가지다.', '바꿔 보기 단계에서 값의 뜻을 이해했는지가 드러난다.'], ['고치는 활동이 없다. 117쪽 말풍선과 118쪽 자기평가 5번에만 나온다.', '고장 난 프로그램을 ‘고장 찾기 4단계’로 고친다.', '118쪽 자기평가 문항에 답할 근거가 되는 경험을 1차시부터 쌓는다.']],
+    flow: [['도입', '0~4', '1 생각 열기: 프로그램의 뜻, 블록 프로그램 읽는 법', '"컴퓨터는 프로그램을 어떤 순서로 실행할까요?"', '링크(QR)로 학생용 페이지에 들어왔는지 확인한다.'], ['예측', '4~9', '2 예측하기: 세 질문에 답하고 예측을 확정한다', '"왜 10번이라고 생각했나요? 어느 블록을 보고 판단했나요?"', '틀린 예측도 괜찮다고 먼저 말한다.'], ['실행', '9~12', '3 실행하기: 결과와 예측 비교', '"예측과 다른 것이 있었나요?"', '예측을 확정하기 전에는 실행 단추가 동작하지 않는다(예측 먼저).'], ['살펴보기', '12~19', '4 살펴보기: 블록 찾기, 실행 횟수(×) 읽기, 말하기 블록 위치의 까닭', '"말하기 블록을 반복 안으로 옮기면 어떻게 될까요?"', '‘천천히’로 실행하면 실행 횟수를 읽기 쉽다.'], ['바꿔 보기', '19~28', '5 과제 1(위치 50), 과제 2(고장 찾기 4단계)', '"생각과 다른 장면을 만든 블록은 무엇인가요?"', '빨리 끝낸 학생은 ‘더 해 보기’.'], ['엔트리', '28~37', '6 엔트리에서 조립하고 숫자 하나를 예측 후 바꿔 실행', '"바꾸기 전에 결과를 먼저 말해 보세요."', '저장은 하지 않는다.'], ['정리', '37~40', '7 정리 문항, 스스로 평가', '"고칠 때 가장 먼저 한 일은?"', '다음 차시 예고.']],
+    evals: [['결과 예측과 설명', '관찰, 발문', '세 질문을 예측하고 근거가 된 블록을 말한다.', '예측은 했으나 근거를 말하지 못한다.', '예측하지 않고 실행부터 하려 한다.'], ['값 바꾸기', '페이지 점검(과제 1)', '도움 없이 통과하고 다른 방법도 찾는다.', '도움 없이 통과한다.', '교사의 도움으로 통과한다.'], ['고장 찾아 고치기', '페이지 점검(과제 2), 관찰', '4단계를 따라 고치고 까닭을 말한다.', '고쳤으나 까닭을 말하지 못한다.', '교사의 도움으로 고친다.'], ['엔트리 구현', '관찰', '조립하고 숫자 하나를 예측대로 바꿔 실행한다.', '조립해서 실행한다.', '일부만 조립한다.']],
+    notes: ['엔트리 접속은 교과서 110쪽 안내([만들기] → [교과형 만들기])를 따른다. 교과형 화면이 교과서 캡처와 다를 수 있으므로 수업 전에 확인한다. <span class="chk">[확인 필요]</span>', '페이지의 블록은 엔트리 블록을 단순하게 본뜬 것이라 모양이 다르다. 색 범주는 교과서 111쪽에 맞췄다.', '학생은 왼쪽 목차에서 어느 단계든 바로 열 수 있다. 수업에서는 단계 순서대로 진행하고, 막힌 학생은 다음 단계를 먼저 보게 할 수 있다.', '1차시에는 작품을 저장하거나 공유하지 않는다. 엔트리 저장에 로그인이 필요한지는 <span class="chk">[확인 필요]</span>.', '시간이 모자라면 4단계 ④ 문항과 ‘더 해 보기’를 뺀다.'] },
+  { no: 2, pg: '112~113쪽', std: '[6실05-01] 요지: 일상생활 속 문제를 해결하기 위한 알고리즘을 다양한 방법으로 표현한다. [6실05-02] 요지: 컴퓨터에 명령하는 방법을 체험하고 기초적인 프로그램을 작성한다.', goal: L2.goal,
+    diff: [['순서도와 코드를 모두 제시하고 따라 조립한다.', '순서도를 손가락으로 따라가며 ‘예’와 ‘아니요’ 두 길을 읽고, 시뮬레이터에서 두 길을 모두 실행한다.', 'PRIMM의 살펴보기 단계. 조건 블록은 두 길을 모두 시험해야 이해했는지 드러난다.'], ['‘120초 기다리기’를 그대로 실행한다. 한 번 확인에 2분 이상, ‘예’ 길은 3분 이상 걸린다.', '시뮬레이터는 시계를 빠르게 돌린다. 엔트리에서는 시험값(5초, 3초)으로 시험한 뒤 원래 값으로 되돌린다.', '40분 수업에서 고칠 때마다 2~3분씩 기다리면 시험을 거의 하지 못한다.'], ['고치는 활동이 없다.', '고장 난 프로그램 2개(조건 값 오류, 블록 위치 오류)를 4단계로 고친다.', '1차시의 고장 찾기를 조건 블록에 다시 적용한다.']],
+    flow: [['도입', '0~4', '1 문제 이해, 고장 찾기 4단계 떠올리기', '"오늘 프로그램이 새로 하는 일은?"', ''], ['순서도', '4~10', '2 순서도에서 두 길 따라가기', '"길이 나뉘는 칸은 어디인가요?"', '마름모 기호(107쪽)를 짚는다.'], ['실행', '10~17', '3 ×60으로 두 길 실행, 실행되지 않은 블록 찾기', '"‘아니요’면 어떤 블록을 건너뛰나요?"', '×1로 실행하면 2분을 기다려야 함을 먼저 예측하게 한다.'], ['시험값', '17~22', '4 120→5, 60→3으로 시험 후 되돌리기', '"엔트리에서 2분을 기다리지 않고 시험하려면?"', ''], ['고치기', '22~30', '5 고장 A(조건 값), 고장 B(블록 위치)', '"생각과 다른 장면은 무엇이었나요?"', '고장 B는 ‘안으로 넣기’와 ‘위로’를 함께 써야 한다.'], ['엔트리', '30~37', '6 엔트리에서 만들기, 시험값으로 시험', '"시험이 끝나면 무엇을 해야 하나요?"', '‘대답’은 [자료], ‘=’는 [판단] 꾸러미(113쪽).'], ['정리', '37~40', '7 정리, 스스로 평가', '', '다음 차시 예고.']],
+    evals: [['순서도 읽기', '페이지 점검(2단계)', '두 길을 모두 따라가고 나뉘는 까닭을 말한다.', '두 길을 따라간다.', '도움을 받아 따라간다.'], ['조건 이해', '발문, 페이지 문항', '만일 블록 안이 언제 실행되는지 설명한다.', '‘예’일 때 실행된다고 답한다.', '설명하지 못한다.'], ['시험값', '페이지 점검(4단계), 관찰', '시험값으로 두 길을 시험하고 되돌린다.', '시험은 했으나 되돌리지 않는다.', '시험값을 쓰지 않는다.'], ['고장 고치기', '페이지 점검(5단계)', '두 고장을 4단계로 고치고 까닭을 말한다.', '하나만 고친다.', '도움을 받아 고친다.']],
+    notes: ['시간을 빠르게 돌리는 기능은 이 페이지의 시뮬레이터에만 있다. 엔트리에서는 시험값을 쓴다. 엔트리의 실행 속도 조절 기능 여부는 <span class="chk">[확인 필요]</span>.', '고장 A의 조건 값은 ‘네’로 되어 있다. 학생이 ‘예’라고 답하면 조건이 맞지 않는다.', '고장 B는 60초 기다리기가 만일 블록 밖에 있어서 ‘아니요’에도 기다린다.', '이 차시는 아직 학급에 적용하지 않았다.'] },
+  { no: 3, pg: '114~115쪽', std: '[6실05-01] 요지: 일상생활 속 문제를 해결하기 위한 알고리즘을 다양한 방법으로 표현한다. [6실05-03] 관련(협력 계획). <span class="chk">[확인 필요: 원문 대조]</span>', goal: L3.goal,
+    diff: [['순서도 3개(액자, 엑스 버튼, 물병)를 제시하고 스마트폰 순서도의 빈칸 3곳을 채운다.', '물병 순서도를 보관함 시뮬레이터에서 실행해 읽은 뒤, 스마트폰 빈칸을 채우고 실행해 확인한다.', '빈칸을 채운 순서도가 맞는지 실행으로 확인할 수 있다.'], ['다른 물건을 추가하는 일은 ‘더 하기 활동’에만 있다.', '내 물건 순서도 설계를 본활동으로 한다. 설계를 시뮬레이터에서 모든 길로 시험한다.', '학생이 스스로 설계하는 차시가 없다는 문제에 대한 재구성.'], ['역할(이끔이, 꾸밈이, 작성이)을 정한다.', '역할을 유지하고, 다음 차시 제작을 위한 모둠 계획을 세운다.', '교과서의 협력 목표를 그대로 둔다.']],
+    flow: [['도입', '0~5', '1 문제 이해(현재 상태, 목표 상태)', '"문제가 해결되면 어떤 모습일까요?"', ''], ['읽기', '5~12', '2 물병 순서도 실행(예, 아니요)', '"‘아니요’면 물병은 어떻게 되나요?"', ''], ['완성', '12~19', '3 스마트폰 순서도 빈칸 채우기', '"물병 순서도의 같은 자리에는 무엇이 있었나요?"', ''], ['설계', '19~28', '4 내 물건 고르고 말 정하기', '"듣는 사람이 무엇을 하면 되는지 알 수 있나요?"', '물건은 우산, 필통, 모자, 실내화 주머니 중에서 고른다.'], ['시험', '28~34', '5 내 설계를 모든 길로 시험', '"아직 시험하지 않은 길이 있나요?"', ''], ['계획', '34~38', '6 역할과 물건 정하기', '', ''], ['정리', '38~40', '7 정리, 스스로 평가', '', '설계는 기기에 저장되어 4차시에 다시 보인다.']],
+    evals: [['순서도 읽기', '페이지 점검(2단계)', '두 길을 실행하고 결과를 설명한다.', '두 길을 실행한다.', '한 길만 실행한다.'], ['순서도 완성', '페이지 점검(3단계)', '한 번에 맞게 채운다.', '다시 생각해 맞게 채운다.', '도움을 받아 채운다.'], ['설계', '페이지(4~5단계), 관찰', '설계를 모든 길로 시험하고 고친다.', '설계하고 시험한다.', '설계만 한다.']],
+    notes: ['설계와 시험 기록은 그 기기의 브라우저에만 저장된다. 4차시에 같은 기기를 쓰도록 안내한다.', '이 차시는 아직 학급에 적용하지 않았다.'] },
+  { no: 4, pg: '116~117쪽', std: '[6실05-03] 요지: 생활 속 문제를 해결하는 프로그램을 협력하여 작성하고 공유한다. <span class="chk">[확인 필요: 원문 대조]</span>', goal: L4.goal,
+    diff: [['완성 코드를 제시하고 붙임딱지(부록 3)로 빈칸을 채운다.', '순서도의 칸 하나를 블록 하나로 옮기는 순서 맞추기를 하고, 실행해 확인한다.', '순서도(설계)와 블록(구현)을 잇는 연습.'], ['117쪽 말풍선 "친구들과 함께 잘못된 부분을 찾아 고쳐야 해요"', '고장 난 프로그램 고치기와, 시험 계획표에 따라 다른 모둠이 시험해 주는 활동으로 만들었다.', '시험하고 고치는 단계가 없다는 문제에 대한 재구성.'], ['완성 후 공유한다.', '친구 시험 → 고치기 → 다시 시험 → 공유 순서로 한다.', '공유 전에 시험과 수정을 거친다.']],
+    flow: [['도입', '0~3', '1 내 설계 다시 보기', '', ''], ['옮기기', '3~10', '2 순서도를 블록으로(순서 맞추기)', '"이 칸은 어떤 블록이 되나요?"', ''], ['고치기', '10~15', '3 고장 찾기(숨기기 블록 위치)', '"‘아니요’인데 왜 사라졌을까요?"', ''], ['만들기', '15~28', '4 모둠이 엔트리에서 만들기', '"순서도의 칸이 모두 블록이 되었나요?"', '역할: 이끔이, 꾸밈이, 작성이(114쪽).'], ['시험', '28~34', '5 다른 모둠이 시험 계획표대로 시험', '"기대한 결과와 같았나요?"', '결과는 본 그대로 적는다.'], ['공유', '34~38', '6 고치고 다시 시험한 뒤 공유', '', '공유 절차는 117쪽. 로그인 필요 여부 [확인 필요].'], ['정리', '38~40', '7 정리, 스스로 평가', '', '네 차시의 흐름을 되짚는다.']],
+    evals: [['순서도를 블록으로', '페이지 점검(2단계)', '순서도를 보며 한 번에 맞게 옮긴다.', '다시 생각해 맞게 옮긴다.', '도움을 받아 옮긴다.'], ['시험과 수정', '시험 계획표, 관찰', '친구의 시험 결과로 오류를 고치고 다시 시험한다.', '오류를 고친다.', '시험 결과를 쓰지 않는다.'], ['협력과 공유', '관찰', '역할을 맡아 완성하고 공유한다.', '역할을 맡아 참여한다.', '참여가 적다.']],
+    notes: ['엔트리 작품 저장·공유에 로그인이 필요한지, 학급 계정이 준비되어 있는지 수업 전에 확인한다. <span class="chk">[확인 필요]</span>', '3차시 설계는 각 기기에만 저장되어 있다. 다른 기기를 쓰면 물병 순서도가 대신 보인다.', '이 차시는 아직 학급에 적용하지 않았다.'] }
+];
+
+/* extra.js — 보강 2차시: 교과서에 없는 것 더하기 (B1 컴퓨팅 시스템, B2 데이터). 기존 4차시와 같은 틀·같은 엔진. */
+
+/* ================= 데이터 위젯 (B2) ================= */
+const fmtNum = v => (v === '' || v == null) ? '' : (typeof v === 'number' ? v.toLocaleString('ko-KR', { maximumFractionDigits: 1 }) : String(v));
+/* 표: rows [{k, name, v}], 열 이름, 칸 누르기(onCell), 강조(hi), 깃발(flags) */
+function dataTable(host, cfg) {
+  const draw = () => {
+    host.innerHTML = `<div class="tbl"><table class="mn-table dl-table"><thead><tr><th scope="col">${cfg.cols[0]}</th><th scope="col" class="num">${cfg.cols[1]}</th></tr></thead><tbody>${cfg.rows.map(r => {
+      const fl = cfg.flags && cfg.flags[r.k], fx = cfg.fixed && cfg.fixed[r.k], hi = cfg.hi && cfg.hi.includes(r.k);
+      const cell = cfg.onCell ? `<td class="dl-cell${fl ? ' is-flag' : ''}${fx ? ' is-fixed' : ''}"><button type="button" data-k="${r.k}" aria-pressed="${!!fl}">${fmtNum(r.v) || '　'}${fl ? ' ⚑' : ''}</button></td>` : `<td class="num">${fmtNum(r.v)}</td>`;
+      return `<tr class="${hi ? 'is-hi' : ''}"><th scope="row">${r.name}</th>${cell}</tr>`; }).join('')}</tbody></table></div>${cfg.src ? `<p class="dl-src">${cfg.src}</p>` : ''}`;
+  };
+  if (cfg.onCell) host.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; cfg.onCell(b.dataset.k); });
+  draw(); return { redraw: draw, set: p => { Object.assign(cfg, p); draw(); } };
+}
+/* 그래프: type 'bar' | 'line', rows [{name, v}], hi [name], unit */
+function chartSVG(cfg) {
+  const rows = cfg.rows.filter(r => typeof r.v === 'number'), W = 640, H = 300, L = 64, Rm = 18, T = 34, B = 54;
+  const max = Math.max(1, ...rows.map(r => r.v)), nice = Math.pow(10, Math.floor(Math.log10(max))), top = Math.ceil(max / nice) * nice;
+  const y = v => T + (H - T - B) * (1 - v / top), n = rows.length, iw = (W - L - Rm) / n;
+  let g = '';
+  for (let i = 0; i <= 4; i++) { const v = top / 4 * i; g += `<line class="ch-grid" x1="${L}" y1="${y(v)}" x2="${W - Rm}" y2="${y(v)}"/><text class="ch-t" x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${fmtNum(v)}</text>`; }
+  let m = '';
+  if (cfg.type === 'bar') {
+    rows.forEach((r, i) => { const x = L + iw * i + iw * 0.18, w = iw * 0.64, hi = cfg.hi && cfg.hi.includes(r.name), dim = cfg.hi && cfg.hi.length && !hi;
+      m += `<rect class="ch-bar${hi ? ' is-hi' : ''}${dim ? ' is-dim' : ''}" x="${x}" y="${y(r.v)}" width="${w}" height="${H - B - y(r.v)}" rx="3"/><text class="ch-v" x="${x + w / 2}" y="${y(r.v) - 6}" text-anchor="middle">${fmtNum(r.v)}</text><text class="ch-t" x="${x + w / 2}" y="${H - B + 20}" text-anchor="middle">${r.name}</text>`; });
+  } else {
+    const pts = rows.map((r, i) => [L + iw * i + iw / 2, y(r.v)]);
+    m += `<path class="ch-line" d="${pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ')}"/>`;
+    if (cfg.divider) { const di = rows.findIndex(r => r.name === cfg.divider.after); if (di >= 0 && di < n - 1) { const dx = L + iw * (di + 1); m += `<line class="ch-div" x1="${dx}" y1="${T}" x2="${dx}" y2="${H - B}"/><text class="ch-dt" x="${dx + 6}" y="${T + 12}">${cfg.divider.label}</text>`; } }
+    rows.forEach((r, i) => { const hi = cfg.hi && cfg.hi.includes(r.name); m += `<circle class="ch-dot${hi ? ' is-hi' : ''}" cx="${pts[i][0]}" cy="${pts[i][1]}" r="${hi ? 7 : 4.5}"/>${hi || cfg.labels ? `<text class="ch-v" x="${pts[i][0]}" y="${pts[i][1] - 12}" text-anchor="middle">${fmtNum(r.v)}</text>` : ''}<text class="ch-t" x="${pts[i][0]}" y="${H - B + 20}" text-anchor="middle">${r.name}</text>`; });
+  }
+  return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${cfg.title || ''}"><text class="ch-tt" x="${L}" y="18">${cfg.title || ''}</text><text class="ch-t" x="${W - Rm}" y="18" text-anchor="end">${cfg.unit || ''}</text>${g}<line class="ch-ax" x1="${L}" y1="${T}" x2="${L}" y2="${H - B}"/><line class="ch-ax" x1="${L}" y1="${H - B}" x2="${W - Rm}" y2="${H - B}"/>${m}</svg></div>`;
+}
+
+/* ================= B1 ================= */
+const AUTO = [P('live'), P('ifs', 0, { s: '거리', o: '<', n: 20 }), P('dopen', 1), P('else'), P('dclose', 1)];
+const AUTO_BUG = [P('live'), P('ifs', 0, { s: '거리', o: '>', n: 20 }), P('dopen', 1), P('else'), P('dclose', 1)];
+const LAMP = [P('live'), P('ifs', 0, { s: '밝기', o: '<', n: 30 }), P('lon', 1), P('else'), P('loff', 1)];
+const CLAP = [P('live'), P('ifs', 0, { s: '소리', o: '>', n: 150 }), P('lon', 1), P('else'), P('loff', 1)];
+const IPO_CARDS = [['거리 센서가 사람을 알아챈다', 'i'], ['손가락으로 화면을 누른다', 'i'], ['빛 센서가 어두워진 것을 잰다', 'i'], ['프로그램이 ‘만일 ~이면’으로 판단한다', 'p'], ['컴퓨터(제어 장치)가 명령을 정한다', 'p'], ['앱의 규칙대로 계산한다', 'p'], ['문이 열린다', 'o'], ['불이 켜진다', 'o'], ['화면이 밝아진다', 'o']];
+const IPO_NAME = { i: '입력', p: '처리', o: '출력' };
+const B1 = {
+  key: 'b1', no: 'b1', label: '보강 1', group: 'extra', stage: '교과서에 없는 것 더하기 · 컴퓨팅 시스템', title: ['컴퓨터는', '어떻게 일할까.'], short: '입력·처리·출력', pg: '교과서에 없는 내용 · 7단원 2절 다음',
+  goal: '생활 속 기기에서 입력·처리·출력을 찾아 말할 수 있다. 센서 값에 따라 다르게 동작하는 프로그램을 읽고 예측하고, 값을 바꾸고, 고장을 고치고, 스스로 설계해 시험할 수 있다.',
+  defaults: () => ({ ipo: {}, pred: {}, locked: false, rec: {}, inv: {}, m: { tab: 'm1' }, m1: null, m1done: false, bug: { phase: 'run', done: false, items: null, saw: {} }, dz: { kind: null, items: null, tests: {} }, obs: ['', '', ''], quiz: {}, ev: {} }),
+  steps: [
+    { id: 's1', name: '생각 열기', lead: '자동문은 어떻게 사람이 오는 줄 알까요? 기기가 일하는 세 단계를 찾아봐요.', html: () => `
+      <div class="card"><p>컴퓨터가 들어 있는 기기는 모두 같은 순서로 일해요. 바깥의 신호를 <b>받아들이고(입력)</b>, 프로그램이 <b>판단하고(처리)</b>, 무엇인가를 <b>바꿔요(출력)</b>.</p>
+        <div class="ipo"><div>입력<span>센서·버튼·손가락이 신호를 넣어요</span></div><div>처리<span>프로그램이 ‘만일 ~이면’으로 판단해요</span></div><div>출력<span>문·불·화면·소리가 바뀌어요</span></div></div>
+        <p class="q__t">아래 아홉 장면이 입력·처리·출력 중 무엇인지 고르세요.</p><div class="bins" data-r="bins"></div><div data-r="binsfb"></div></div>
+      ${oneline('6학년에서는', '로봇 단원에서 이것을 감지 장치·제어 장치·구동 장치라고 불러요. 로봇이 없어도 원리는 같아요.')}` },
+    { id: 's2', name: '읽고 예측하기', lead: '자동문 프로그램을 실행하지 말고 읽기만 하고, 세 가지를 예측해요.', html: () => `
+      <div data-r="b2"></div>
+      <div class="card"><p>이 프로그램은 시작하면 <b>센서를 계속 읽으면서</b> 반복 실행돼요. 거리 센서 값은 사람이 가까울수록 작아져요.</p>
+        <div class="q"><p class="q__t">① 거리 센서 값이 50일 때 문은?</p><div data-r="q1"></div></div>
+        <div class="q"><p class="q__t">② 거리 센서 값이 10일 때 문은?</p><div data-r="q2"></div></div>
+        <div class="q"><p class="q__t">③ 거리 센서 값이 딱 20일 때 문은?</p><div data-r="q3"></div></div>
+        <p class="aside-t">어느 블록의 어느 숫자를 보고 판단했는지 짝에게 말해 보세요.</p>
+        <div><button type="button" class="mn-btn mn-btn--primary" data-r="lock">예측 확정하기</button></div><div data-r="lockmsg"></div></div>` },
+    { id: 's3', name: '실행하기', lead: '▶ 시작하기를 누르고, 슬라이더를 50·10·20에 맞춘 뒤 ‘지금 값 기록’을 눌러 내 예측과 비교해요.', html: () => `
+      <div data-r="b3"></div>
+      <div class="card"><div class="rec"><button type="button" class="mn-btn mn-btn--primary" data-r="rec">지금 값 기록</button><span class="aside-t" data-r="recmsg">실행 중에 거리 슬라이더를 50, 10, 20에 맞추고 누르세요.</span></div><div data-r="cmp"></div>
+        <div class="q"><p class="q__t">④ 거리 값을 천천히 줄여 보세요. 몇이 되는 순간 문이 열리나요?</p><div data-r="q4"></div><div data-r="q4fb"></div></div></div>` },
+    { id: 's4', name: '살펴보기', lead: '같은 프로그램에서 입력·처리·출력을 찾아요.', html: () => `
+      <div class="card"><p class="q__t">① <b>센서 값을 읽어서 판단하는</b> 블록을 아래 프로그램에서 눌러 보세요.</p><div data-r="i1fb"></div><p class="q__t">② <b>바깥 세상을 바꾸는(출력)</b> 블록을 눌러 보세요.</p><div data-r="i2fb"></div></div>
+      <div data-r="b4"></div>
+      <div class="card">${qHTML('i3', '③ 슬라이더를 움직이지 않으면 문이 가만히 있는 까닭은?')}${qHTML('i4', '④ 이 프로그램에서 ‘입력’은 무엇인가요?')}</div>` },
+    { id: 's5', name: '바꿔 보기', lead: '프로그램을 직접 바꿔요. 블록을 누르면 센서 종류·부등호·숫자를 바꿀 수 있어요.', html: () => `
+      <div class="tabs" role="tablist" data-r="tabs"><button type="button" class="mn-btn" data-tab="m1">과제 1</button><button type="button" class="mn-btn" data-tab="m2">과제 2</button><button type="button" class="mn-btn" data-tab="m3">더 해 보기</button></div>
+      <div class="card" data-r="mtask"></div><div data-r="b5"></div>` },
+    { id: 's6', name: '내가 설계하기', lead: '가로등이나 박수 스위치 중 하나를 골라 조건을 설계하고, 시험 계획표대로 시험해요.', html: () => `
+      <div class="card"><p class="q__t">무엇을 만들까요?</p><div data-r="dzk"></div></div>
+      <div class="card" data-r="dzsheet" hidden></div><div data-r="b6" hidden></div>` },
+    { id: 's7', name: '실제와 잇기, 정리와 스스로 평가', lead: '', html: () => `
+      <div class="card"><h3>오늘 학교에서 센서 찾기</h3><p>입력(센서)이 있는 기기를 세 개 찾아 적어요. 예: 자동문, 복도 전등, 화장실 수도꼭지, 태블릿의 화면 밝기.</p>
+        <div class="obs">${[0, 1, 2].map(i => `<label for="obs${i}">기기 ${i + 1}<input class="mn-input" id="obs${i}" data-r="obs${i}" data-obs="${i}" type="text" maxlength="30" placeholder="기기 이름 — 무엇을 재는지"></label>`).join('')}</div></div>
+      <div class="card">${qHTML('q7a', '기기가 일하는 세 단계의 순서는?')}${qHTML('q7b', '‘만일 ~이면’ 블록은 세 단계 중 어디에 해당하나요?')}</div>
+      <div class="card"><h3>스스로 평가</h3><div class="evals" data-r="ev"></div></div>${oneline('다음에는', '데이터로 보는 우리 부산 — 해수욕장 방문객 표를 읽고 그래프로 그려요.')}` }
+  ],
+  done: {
+    s1: S => IPO_CARDS.every((c, i) => S.ipo[i] === c[1]), s2: S => S.locked, s3: S => Object.keys(S.rec).length >= 3 && S.inv.q4 === '19',
+    s4: S => !!(S.inv.i1 && S.inv.i2 && S.inv.i3 === 'b' && S.inv.i4 === 'a'), s5: S => !!(S.m1done && S.bug.done),
+    s6: S => !!(S.dz.kind && Object.keys(S.dz.tests).length >= 3), s7: S => (S.obs || []).filter(x => x && x.trim()).length >= 3 && S.quiz.q7a === 'b' && S.quiz.q7b === 'b' && Object.keys(S.ev).length >= 4
+  },
+  init(ctx) {
+    const { S, R, save, goTo } = ctx;
+    /* 1 짝짓기 */
+    const drawBins = () => {
+      R('bins').innerHTML = IPO_CARDS.map((c, i) => { const v = S.ipo[i]; const ok = v == null ? '' : v === c[1] ? ' is-ok' : ' is-no';
+        return `<div class="bin${ok}"><span class="bin__t">${c[0]}</span><div class="mn-seg" role="group" aria-label="${c[0]}">${['i', 'p', 'o'].map(k => `<button type="button" data-i="${i}" data-v="${k}" aria-pressed="${v === k}">${IPO_NAME[k]}</button>`).join('')}</div></div>`; }).join('');
+      const n = IPO_CARDS.filter((c, i) => S.ipo[i] === c[1]).length, tried = Object.keys(S.ipo).length;
+      R('binsfb').innerHTML = tried === 9 ? (n === 9 ? '<p class="mn-msg mn-msg--ok">✓ 아홉 장면을 모두 맞게 나눴어요. 센서는 입력, 판단은 처리, 문·불·화면은 출력이에요.</p>' : `<p class="mn-msg mn-msg--no">✗ ${9 - n}개가 달라요. 빨간 줄을 다시 생각해 보세요. 신호를 받으면 입력, 판단하면 처리, 바깥이 바뀌면 출력이에요.</p>`) : '';
+    };
+    R('bins').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; S.ipo[b.dataset.i] = b.dataset.v; save(); drawBins(); });
+    drawBins();
+    /* 2 예측 */
+    const b2 = makeBench(R('b2'), 'sensor');
+    b2.configure({ title: '읽을 프로그램 — 자동문', hint: '여기서는 실행하지 않아요', items: fresh(AUTO), counts: false, canRun: () => '여기서는 실행하지 않아요. 예측을 확정하면 3. 실행하기에서 실행해요.' });
+    const DOOR = [{ v: 'open', t: '열림' }, { v: 'close', t: '닫힘' }];
+    const lockBtn = R('lock'), qg = {};
+    const lockState = () => { lockBtn.disabled = S.locked || !(S.pred.q1 && S.pred.q2 && S.pred.q3); lockBtn.textContent = S.locked ? '예측을 확정했어요' : '예측 확정하기'; R('lockmsg').innerHTML = S.locked ? '<p class="mn-msg">예측을 확정했어요. 아래 3. 실행하기에서 확인해요.</p>' : ''; };
+    ['q1', 'q2', 'q3'].forEach(q => { qg[q] = choiceGroup(R(q), { options: DOOR, value: S.pred[q], locked: () => S.locked, onPick: v => { S.pred[q] = v; save(); lockState(); } }); });
+    lockBtn.addEventListener('click', () => { S.locked = true; save(); lockState(); ['q1', 'q2', 'q3'].forEach(q => qg[q].redraw(S.pred[q])); goTo('s3'); });
+    lockState();
+    /* 3 실행·기록 */
+    const b3 = makeBench(R('b3'), 'sensor');
+    b3.configure({ title: '실행해 보기 — 자동문', hint: '▶ 시작하기 → 거리 슬라이더 움직이기', items: fresh(AUTO), canRun: () => S.locked || S.all ? true : '먼저 예측을 확정해 주세요.' });
+    const TARGETS = [50, 10, 20], name = v => v === 'open' ? '열림' : '닫힘';
+    const compare = () => {
+      const rows = TARGETS.map((t, i) => { const r = S.rec[t]; const act = r == null ? null : (r ? 'open' : 'close'); const p = S.pred['q' + (i + 1)];
+        return `<tr><th scope="row">거리 ${t}</th><td>${p ? name(p) : '-'}</td><td>${act ? name(act) : '<span class="aside-t">아직</span>'}</td><td class="${act == null ? '' : act === p ? 'is-ok' : 'is-no'}">${act == null ? '' : act === p ? '✓ 같아요' : '✗ 달라요'}</td></tr>`; }).join('');
+      R('cmp').innerHTML = `<h3>내 예측과 실제</h3><div class="tbl"><table class="mn-table"><thead><tr><th scope="col">센서 값</th><th scope="col">내 예측</th><th scope="col">실제</th><th scope="col">비교</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    };
+    R('rec').addEventListener('click', () => {
+      if (!b3.isLive()) { R('recmsg').textContent = '먼저 ▶ 시작하기를 눌러 실행한 뒤에 기록해요.'; return; }
+      const st = b3.stage().state(), d = st.v['거리'];
+      const t = TARGETS.find(x => Math.abs(x - d) <= 2);
+      if (t == null) { R('recmsg').textContent = `지금 거리 값은 ${d}이에요. 50, 10, 20에 맞춘 뒤 눌러 주세요.`; return; }
+      S.rec[t] = st.door; save(); compare(); R('recmsg').textContent = `거리 ${t}: 문 ${st.door ? '열림' : '닫힘'}으로 기록했어요.`;
+    });
+    compare();
+    quiz(ctx, 'inv', 'q4', [{ v: '20', t: '20' }, { v: '19', t: '19' }, { v: '0', t: '0' }], '19', '20보다 작아야(<) 열려요. 20은 열리지 않고 19부터 열려요.', '‘거리 센서 값 < 20’은 20보다 작을 때예요. 20일 때도 열리나요?');
+    /* 4 살펴보기 */
+    const b4 = makeBench(R('b4'), 'sensor');
+    const fb = (k, ok, okT, noT) => { R(k + 'fb').innerHTML = `<p class="mn-msg mn-msg--${ok ? 'ok' : 'no'}">${ok ? '✓ ' + okT : '✗ ' + noT}</p>`; };
+    const showInv = () => { if (S.inv.i1) fb('i1', true, '맞아요. ‘만일 거리 센서 값 < 20’ 블록이 입력(센서 값)을 읽어 판단하는 처리예요.'); if (S.inv.i2) fb('i2', true, '맞아요. 문 열기·문 닫기가 바깥을 바꾸는 출력이에요.'); };
+    b4.configure({ title: '살펴보기 — 자동문', hint: '블록을 눌러 보세요', items: fresh(AUTO), canRun: () => '여기서는 블록을 눌러 찾기만 해요.',
+      onTap: u => { const it = b4.items().find(x => x.u === u); const mk = {};
+        if (!S.inv.i1) { const ok = it.t === 'ifs'; mk[u] = ok ? 'is-right' : 'is-wrong'; b4.mark(mk); if (ok) { S.inv.i1 = true; save(); showInv(); } else fb('i1', false, it.t === 'live' ? '이 블록은 프로그램을 시작하고 반복하게 해요.' : '이 블록은 결과를 바꾸는 쪽이에요. 센서 값을 읽어 판단하는 블록을 찾아보세요.'); return true; }
+        if (!S.inv.i2) { const ok = it.t === 'dopen' || it.t === 'dclose'; mk[u] = ok ? 'is-right' : 'is-wrong'; b4.mark(mk); if (ok) { S.inv.i2 = true; save(); showInv(); } else fb('i2', false, '이 블록은 바깥을 바꾸지 않아요. 문을 움직이는 블록을 찾아보세요.'); return true; }
+        return true; } });
+    showInv();
+    quiz(ctx, 'inv', 'i3', [{ v: 'a', t: '프로그램이 멈춰 있어서' }, { v: 'b', t: '입력(센서 값)이 그대로라서 판단 결과도 그대로여서' }, { v: 'c', t: '문이 고장 나서' }], 'b', '입력이 바뀌지 않으면 처리 결과도, 출력도 바뀌지 않아요.', '프로그램은 계속 실행 중이에요. 무엇이 바뀌어야 문이 움직일까요?');
+    quiz(ctx, 'inv', 'i4', [{ v: 'a', t: '거리 센서 값' }, { v: 'b', t: '문 열기 블록' }, { v: 'c', t: '시작하기 버튼' }], 'a', '센서가 재는 값이 입력이에요.', '바깥에서 들어오는 신호가 무엇인지 생각해 보세요.');
+    /* 5 바꿔 보기 */
+    const b5 = makeBench(R('b5'), 'sensor');
+    const BUG = S.bug;
+    const bugSheet = () => {
+      const ph = BUG.done ? 4 : { run: 0, what: 1, find: 2, fix: 3 }[BUG.phase];
+      let h = `<h3>과제 2. 고장 난 자동문</h3><p>옆 반 자동문 프로그램인데, 사람이 <b>가까이 가면 닫히고 멀어지면 열린대요</b>. 고장 찾기 4단계로 고쳐 보세요.</p>${debugList(ph)}`;
+      if (!BUG.done && BUG.phase === 'run') h += '<p class="mn-msg">▶ 시작하기를 누르고 거리 슬라이더를 10과 80으로 움직여 본 뒤 ■ 멈추기를 누르세요.</p>';
+      if (!BUG.done && BUG.phase === 'what') h += '<p class="q__t">생각과 다른 장면은 무엇이었나요?</p><div data-r="bwhat"></div>';
+      if (!BUG.done && BUG.phase === 'find') h += '<p class="mn-msg">그 장면을 만든 블록을 아래 프로그램에서 눌러 보세요.</p>';
+      if (!BUG.done && BUG.phase === 'fix') h += '<p class="mn-msg">그 블록을 눌러 부등호를 고친 다음, 다시 실행해서 거리 10과 80을 모두 확인하세요.</p>';
+      if (BUG.done) h += '<p class="mn-msg mn-msg--ok">✓ 고쳤어요. 부등호 하나가 입력을 반대로 판단하게 했어요. 무엇이 문제였는지 짝에게 설명해 보세요.</p>';
+      h += `<div><button type="button" class="mn-btn mn-btn--quiet" data-r="breset">이 과제 처음 상태로</button></div>`;
+      R('mtask').innerHTML = h;
+      const w = R('mtask').querySelector('[data-r="bwhat"]');
+      if (w) choiceGroup(w, { options: [{ v: 'a', t: '가까이(10) 갔는데 문이 닫혀 있었다' }, { v: 'b', t: '문이 아예 움직이지 않았다' }, { v: 'c', t: '전등이 켜졌다' }], answer: 'a', onPick: v => { if (v === 'a') { BUG.phase = 'find'; save(); setTimeout(() => { bugSheet(); b5.configure(modes.m2()); }, 600); } } });
+      R('mtask').querySelector('[data-r="breset"]').addEventListener('click', () => { Object.assign(BUG, { phase: 'run', done: false, items: null, saw: {} }); save(); bugSheet(); b5.configure(modes.m2()); });
+    };
+    const C1 = st => [ck(st && st.v && st.v['거리'] >= 38 && st.v['거리'] <= 42 && st.door, '거리 40에서 문이 열리나요?'), ck(st && st.v && st.v['거리'] >= 78 && st.door === false, '거리 80에서는 닫혀 있나요?')];
+    const modes = {
+      m1: () => ({ title: '과제 1. 유모차도 열리게', hint: '바꾸기 전에 먼저 예측', items: fresh(S.m1 || AUTO), editable: true, speeds: [['1', '보통', 1]],
+        onChange: it => { S.m1 = plain(it); save(); },
+        onTick: st => { S.m1see = S.m1see || {}; if (st.v['거리'] >= 36 && st.v['거리'] <= 44 && st.door) S.m1see.a = true; if (st.v['거리'] >= 78 && st.door === false) S.m1see.b = true; if (S.m1see.a && S.m1see.b && !S.m1done) { S.m1done = true; save(); drawTask(); b5.say('✓ 거리 40에서 열리고 80에서 닫혀요. 성공!', 'ok'); } else { b5.showChecks([ck(S.m1see.a, '거리 40에서 문이 열리나요?'), ck(S.m1see.b, '거리 80에서는 닫혀 있나요?')]); } } }),
+      m2: () => ({ title: '과제 2. 고장 난 자동문', hint: '고장 찾기 4단계', items: fresh(BUG.items || AUTO_BUG), editable: true, speeds: [['1', '보통', 1]],
+        onChange: it => { BUG.items = plain(it); save(); },
+        onTap: u => { if (BUG.done || BUG.phase === 'fix') return false; if (BUG.phase !== 'find') { b5.say(BUG.phase === 'run' ? '먼저 ▶ 시작하기로 실행해 보세요.' : '먼저 위에서 생각과 다른 장면을 골라 주세요.', 'info'); return true; }
+          const it = b5.items().find(x => x.u === u); const ok = it.t === 'ifs'; const mk = {}; mk[u] = ok ? 'is-right' : 'is-wrong'; b5.mark(mk);
+          if (ok) { BUG.phase = 'fix'; save(); bugSheet(); b5.say('찾았어요. 이 블록의 부등호를 보세요.', 'ok'); } else b5.say('이 블록은 제 역할을 하고 있어요. 판단하는 블록을 찾아보세요.', 'no'); return true; },
+        onTick: st => { if (BUG.phase === 'fix' && !BUG.done) { if (st.v['거리'] <= 12 && st.door) BUG.saw.near = true; if (st.v['거리'] >= 78 && st.door === false) BUG.saw.far = true; if (BUG.saw.near && BUG.saw.far) { BUG.done = true; save(); bugSheet(); drawTask(); b5.say('✓ 가까우면 열리고 멀면 닫혀요.', 'ok'); } } },
+        onRun: () => { if (BUG.phase === 'run') { BUG.phase = 'what'; save(); bugSheet(); } } }),
+      m3: () => ({ title: '더 해 보기', hint: '센서 종류를 바꿔 보기', items: fresh(S.m3 || AUTO), editable: true, speeds: [['1', '보통', 1]], onChange: it => { S.m3 = plain(it); save(); } })
+    };
+    function drawTask() {
+      const cur = S.m.tab;
+      R('tabs').querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === cur, fin = (b.dataset.tab === 'm1' && S.m1done) || (b.dataset.tab === 'm2' && BUG.done); b.setAttribute('aria-pressed', on); b.textContent = { m1: '과제 1', m2: '과제 2', m3: '더 해 보기' }[b.dataset.tab] + (fin ? ' ✓' : ''); });
+      if (cur === 'm1') R('mtask').innerHTML = `<h3>과제 1. 유모차도 열리게</h3><p>유모차는 거리 <b>40</b>쯤에서 문이 열려야 부딪히지 않아요. 아래 프로그램의 숫자를 바꿔서 거리 40에서는 열리고 80에서는 닫히게 해 보세요. (40에서 열리려면 숫자가 40보다 커야 해요. 왜 그럴까요?) 바꾸기 전에 결과를 먼저 예측해요.</p>` + (S.m1done ? '<p class="mn-msg mn-msg--ok">✓ 성공했어요. 숫자를 몇으로 바꿨나요? 45로 바꿔도 될까요?</p>' : '');
+      else if (cur === 'm2') bugSheet();
+      else R('mtask').innerHTML = `<h3>더 해 보기</h3><p>센서 종류를 ‘밝기’나 ‘소리’로 바꾸고, 출력은 그대로 문으로 두면 어떤 기기가 될까요? <b>바꾸기 전에 결과를 먼저 예측</b>하고 실행해요.</p><ul class="howto howto--plain"><li>밝기 < 30이면 문 열기 → 어두워지면 열리는 문?</li><li>소리 > 150이면 문 열기 → 박수로 여는 문?</li></ul>`;
+    }
+    R('tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b || b5.isRunning()) return; S.m.tab = b.dataset.tab; save(); drawTask(); b5.configure(modes[S.m.tab]()); });
+    drawTask(); b5.configure(modes[S.m.tab]());
+    /* 6 설계 */
+    const DZ = S.dz, b6 = makeBench(R('b6'), 'sensor');
+    const KINDS = { lamp: { name: '가로등', items: LAMP, sensor: '밝기', tests: [['어두움', 10], ['밝음', 80], ['경계 값', 30]], want: v => v < 30 }, clap: { name: '박수 스위치', items: CLAP, sensor: '소리', tests: [['조용함', 20], ['박수', 180], ['경계 값', 150]], want: v => v > 150 } };
+    choiceGroup(R('dzk'), { options: [{ v: 'lamp', t: '가로등 — 어두워지면 불이 켜진다' }, { v: 'clap', t: '박수 스위치 — 손뼉 소리가 크면 불이 켜진다' }], value: DZ.kind, onPick: v => { if (DZ.kind !== v) { DZ.kind = v; DZ.items = null; DZ.tests = {}; save(); } showDz(); } });
+    function dzSheet() {
+      const K = KINDS[DZ.kind]; const rows = K.tests.map(([n, v], i) => { const r = DZ.tests[i]; return `<tr><th scope="row">${n}</th><td class="tnum">${K.sensor} ${v}</td><td>${r == null ? '<span class="aside-t">슬라이더를 맞추고 기록</span>' : r ? '켜짐' : '꺼짐'}</td></tr>`; }).join('');
+      R('dzsheet').innerHTML = `<h3>${K.name} 설계</h3><p>아래 프로그램의 <b>센서 종류·부등호·숫자</b>를 정해요. 블록을 누르면 바꿀 수 있어요. 그다음 ▶ 시작하기를 누르고 시험 계획표의 값마다 슬라이더를 맞춘 뒤 ‘지금 값 기록’을 눌러요.</p>
+        <div class="tbl"><table class="mn-table"><thead><tr><th scope="col">시험</th><th scope="col">센서 값</th><th scope="col">결과</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div class="rec"><button type="button" class="mn-btn mn-btn--primary" data-r="dzrec">지금 값 기록</button><span class="aside-t" data-r="dzmsg"></span></div>
+        ${Object.keys(DZ.tests).length >= 3 ? '<p class="mn-msg mn-msg--ok">✓ 세 가지 값을 모두 시험했어요. 결과가 생각과 같았나요? 경계 값에서는 어땠나요? 짝에게 설명해 보세요.</p>' : ''}`;
+      R('dzsheet').querySelector('[data-r="dzrec"]').addEventListener('click', () => {
+        if (!b6.isLive()) { R('dzsheet').querySelector('[data-r="dzmsg"]').textContent = '먼저 ▶ 시작하기를 눌러 실행해요.'; return; }
+        const st = b6.stage().state(), v = st.v[K.sensor]; const i = K.tests.findIndex(t => Math.abs(t[1] - v) <= 3);
+        if (i < 0) { R('dzsheet').querySelector('[data-r="dzmsg"]').textContent = `${K.sensor} 값이 ${v}이에요. 계획표의 값에 맞춰 주세요.`; return; }
+        DZ.tests[i] = st.led; save(); dzSheet();
+      });
+    }
+    function showDz() { if (!DZ.kind) return; R('dzsheet').hidden = false; R('b6').hidden = false; dzSheet();
+      b6.configure({ title: `내가 설계한 ${KINDS[DZ.kind].name}`, hint: '블록을 눌러 조건 바꾸기 → ▶ 시작하기', items: fresh(DZ.items || KINDS[DZ.kind].items), editable: true, speeds: [['1', '보통', 1]], onChange: it => { DZ.items = plain(it); save(); } }); }
+    showDz();
+    /* 7 */
+    R('obs0').closest('.obs').addEventListener('input', e => { const i = e.target.dataset.obs; if (i == null) return; S.obs[+i] = e.target.value; save(); });
+    [0, 1, 2].forEach(i => { R('obs' + i).value = S.obs[i] || ''; });
+    quiz(ctx, 'quiz', 'q7a', [{ v: 'a', t: '출력 → 처리 → 입력' }, { v: 'b', t: '입력 → 처리 → 출력' }, { v: 'c', t: '처리 → 입력 → 출력' }], 'b', '맞아요. 신호가 들어오고, 판단하고, 바깥이 바뀌어요.', '자동문에서 가장 먼저 일어나는 일은 무엇이었나요?');
+    quiz(ctx, 'quiz', 'q7b', [{ v: 'a', t: '입력' }, { v: 'b', t: '처리' }, { v: 'c', t: '출력' }], 'b', '판단하는 블록이 처리예요.', '센서 값을 보고 무엇을 할지 정하는 단계는?');
+    evals(ctx, 'ev', ['생활 속 기기에서 입력·처리·출력을 찾을 수 있나요?', '센서 값에 따라 프로그램이 어떻게 동작할지 예측할 수 있나요?', '조건의 숫자나 부등호를 바꿔 원하는 대로 동작하게 할 수 있나요?', '내가 설계한 조건을 계획표대로 시험했나요?']);
+  }
+};
+
+/* ================= B2 ================= */
+/* 데이터: 부산광역시 관광정책과 「부산광역시_해수욕장 방문 현황_20260131」(공공데이터포털 data.go.kr/data/15043252, 2026. 2. 10. 갱신, 이용허락 제한 없음). 원자료 단위 천 명 → 만 명으로 바꿔 적음. 2025년 다대포는 서측 2,059 + 동측 526(천 명). 연도별은 일곱 해수욕장 합. */
+const DATA_YEAR = '2025';
+const BEACH = [['해운대', 999.5], ['광안리', 457.4], ['송도', 302.1], ['다대포', 258.5], ['송정', 172.4], ['일광', 5.3], ['임랑', 2.7]];
+const YEARS = [['2015', 4620], ['2016', 4682], ['2017', 4856], ['2018', 4116], ['2019', 3695], ['2020', 1474], ['2021', 990], ['2022', 2101], ['2023', 1795], ['2024', 1969], ['2025', 2198]];
+const SRC_B = '출처: 부산광역시 관광정책과, 「부산광역시 해수욕장 방문 현황」(공공데이터포털, 2026. 2. 10. 갱신). 2025년 개장 기간 방문자 수. 단위: 만 명(원자료의 천 명 단위를 바꿔 적음). 다대포는 서측 205.9와 동측 52.6을 더한 값. 해운대·광안리·송정은 휴대전화 위치 정보로, 나머지 네 곳은 표본조사로 셈(부산시 설명). 2026년 여름 값은 아직 올라오지 않았어요(1년에 한 번 갱신).';
+const SRC_Y = '출처: 같은 공공데이터의 2015~2025년 일곱 해수욕장 방문자 수를 해마다 더한 값. 단위: 만 명. 2020년부터 해운대·광안리·송정은 휴대전화 위치 정보로 세는 방식으로 바뀜(부산시).';
+const BROKEN = { '송정': '', '다대포': 2585.0, '임랑': '많음' };
+const BROKEN_WHY = { '송정': 'blank', '다대포': 'unit', '임랑': 'text' };
+const SPOTS = ['해운대 바다', '광안리 바다', '감천문화마을', '태종대', '용두산 공원'];
+const rowsOf = (arr, over) => arr.map(([k, v]) => ({ k, name: k, v: over && k in over ? over[k] : v }));
+const B2 = {
+  key: 'b2', no: 'b2', label: '보강 2', group: 'extra', stage: '교과서에 없는 것 더하기 · 데이터', title: ['데이터로 보는', '우리 부산.'], short: '해수욕장 방문객', pg: '교과서에 없는 내용 · 6학년 5단원 1절과 이어짐',
+  goal: '표로 된 데이터에서 빈칸과 이상한 값을 찾아 정리할 수 있다. 질문에 맞는 그래프 종류를 고르고 그래프를 읽어 답할 수 있다. 우리 반 데이터를 같은 과정으로 모아 그래프로 나타낼 수 있다.',
+  defaults: () => ({ vote: null, q: {}, flags: {}, why: {}, fixed: {}, g: {}, read: {}, can: {}, cls: {}, sent: '', quiz: {}, ev: {} }),
+  steps: [
+    { id: 's1', name: '생각 열기', lead: '부산의 해수욕장 일곱 곳 중 2025년 여름 사람이 가장 많이 간 곳은 어디일까요?', html: () => `
+      <div class="card"><p class="q__t">① 내 예측 — 한 곳을 고르세요.</p><div data-r="vote"></div>${qHTML('q1', '② 내 예측이 맞는지 무엇을 보면 알 수 있을까요?')}</div>
+      ${oneline('데이터란', '관찰하거나 세어서 얻은 값을 모아 놓은 것. 부산시는 해마다 해수욕장에 온 사람 수를 세어 공공데이터포털에 올려요. 누구나 내려받을 수 있어요.')}` },
+    { id: 's2', name: '표 읽기', lead: '2025년 여름 부산 해수욕장 방문객 표예요. 부산시가 공개한 공공데이터를 그대로 옮겼어요. 표를 읽고 답해요.', html: () => `
+      <div class="two"><div data-r="t2"></div><div class="card">${qHTML('q2a', '① 방문객이 가장 많은 곳은?')}${qHTML('q2b', '② 두 번째로 많은 곳은?')}${qHTML('q2c', '③ 해운대는 임랑의 약 몇 배인가요?')}</div></div>` },
+    { id: 's3', name: '정리하기', lead: '같은 표인데 어딘가 이상해요. 이상한 칸을 눌러 깃발을 세우고, 까닭을 고른 뒤 고쳐요.', html: () => `
+      <div class="two"><div><div data-r="t3"></div><p class="aside-t">이 표는 연습용으로 일부러 고장 낸 표예요. 실제 자료는 2단계 표예요.</p></div><div class="card" data-r="fix"></div></div>` },
+    { id: 's4', name: '그래프 고르기', lead: '질문에 맞는 그래프 종류를 골라요. 고르면 그래프가 그려져요.', html: () => `
+      <div class="card"><p class="q__t">① "일곱 해수욕장 중 어디가 많고 어디가 적을까?" — 어떤 그래프가 좋을까요?</p><div data-r="g1"></div><div data-r="g1fb"></div><div data-r="c1"></div></div>
+      <div class="card"><p class="q__t">② "부산 해수욕장 방문객은 해마다 어떻게 변했을까?" (2015~2025년) — 어떤 그래프가 좋을까요?</p><div data-r="g2"></div><div data-r="g2fb"></div><div data-r="c2"></div></div>` },
+    { id: 's5', name: '그래프 읽기', lead: '연도별 그래프를 읽고 답해요. 그리고 이 데이터로 말할 수 있는 것과 없는 것을 가려요.', html: () => `
+      <div data-r="c5"></div>
+      <div class="card">${qHTML('r1', '① 표의 값이 가장 작았던 해는?')}${qHTML('r2', '② 한 해 사이에 표의 값이 가장 크게 줄어든 때는?')}</div>
+      <div class="card"><h3>자가 바뀌었어요</h3><p>2020년부터 해운대·광안리·송정은 <b>휴대전화 위치 정보</b>로 사람 수를 세요. 그 전에는 다른 방법으로 세었어요. 세는 방법이 바뀌면, 바뀌기 전과 후의 값을 그대로 비교하면 안 돼요. 키를 잴 때 자가 달라지면 누가 더 컸는지 말할 수 없는 것과 같아요.</p></div>
+      <div class="card"><p class="q__t">③ 이 데이터로 말할 수 있으면 ‘있음’, 없으면 ‘없음’을 고르세요.</p><div class="bins" data-r="can"></div><div data-r="canfb"></div></div>` },
+    { id: 's6', name: '우리 반 데이터', lead: '우리 반이 좋아하는 부산 명소를 손 들어 세고, 수를 넣어 그래프로 그려요.', html: () => `
+      <div class="two"><div class="card"><h3>우리 반 설문 — 가장 가고 싶은 부산 명소</h3><p class="aside-t">이름은 적지 않아요. 손 든 사람 수만 세요.</p><div class="cls-grid" data-r="cls"></div><p class="aside-t" data-r="clssum"></p></div>
+        <div><div data-r="c6"></div><div class="card"><label class="field">그래프를 보고 한 문장으로<textarea class="mn-input" data-r="sent" maxlength="120" placeholder="우리 반은 ○○를 가장 가고 싶어 한다. 22명 중 ○명이 골랐다."></textarea></label></div></div></div>` },
+    { id: 's7', name: '정리와 스스로 평가', lead: '', html: () => `
+      <div class="card">${qHTML('q7a', '그래프 종류는 무엇을 보고 고르나요?')}${qHTML('q7b', '표에서 이상한 값을 봤을 때 가장 먼저 할 일은?')}${qHTML('q7c', '우리 반 설문에 이름을 적지 않은 까닭은?')}</div>
+      <div class="card"><h3>스스로 평가</h3><div class="evals" data-r="ev"></div></div>${oneline('6학년에서는', '인공지능이 이런 데이터를 학습해서 판단해요. 데이터가 이상하면 판단도 이상해져요.')}` }
+  ],
+  done: {
+    s1: S => !!S.vote && S.q.q1 === 'c', s2: S => S.q.q2a === '해운대' && S.q.q2b === '광안리' && S.q.q2c === 'b',
+    s3: S => Object.keys(BROKEN).every(k => S.fixed[k]), s4: S => S.g.g1 === 'bar' && S.g.g2 === 'line',
+    s5: S => S.read.r1 === '2021' && S.read.r2 === '2020' && ['a', 'b', 'c', 'd', 'e'].every(k => S.can[k] != null) && S.can.a === 'y' && S.can.b === 'y' && S.can.c === 'n' && S.can.d === 'n' && S.can.e === 'n',
+    s6: S => Object.values(S.cls).reduce((a, b) => a + (+b || 0), 0) > 0 && (S.sent || '').trim().length >= 10,
+    s7: S => S.quiz.q7a === 'a' && S.quiz.q7b === 'b' && S.quiz.q7c === 'a' && Object.keys(S.ev).length >= 4
+  },
+  init(ctx) {
+    const { S, R, save } = ctx;
+    const BO = BEACH.map(([k]) => ({ v: k, t: k }));
+    choiceGroup(R('vote'), { options: BO, value: S.vote, onPick: v => { S.vote = v; save(); } });
+    quiz(ctx, 'q', 'q1', [{ v: 'a', t: '내 느낌' }, { v: 'b', t: '친구들 생각' }, { v: 'c', t: '해수욕장에 온 사람 수를 세어 놓은 자료' }], 'c', '세어 놓은 값, 데이터를 보면 알 수 있어요.', '느낌과 생각은 사람마다 달라요. 모두가 같이 볼 수 있는 것은?');
+    /* 2 */
+    const t2 = dataTable(R('t2'), { cols: ['해수욕장', '방문객(만 명)'], rows: rowsOf(BEACH), src: SRC_B, hi: [] });
+    const hi2 = () => { const h = []; if (S.q.q2a === '해운대') h.push('해운대'); if (S.q.q2b === '광안리') h.push('광안리'); t2.set({ hi: h }); };
+    quiz(ctx, 'q', 'q2a', BO, '해운대', '999.5만 명, 가장 많아요. 1,000만 명에 조금 못 미쳐요.', '표에서 수가 가장 큰 줄을 찾아보세요.'); quiz(ctx, 'q', 'q2b', BO, '광안리', '457.4만 명이에요.', '해운대 다음으로 큰 수는?');
+    quiz(ctx, 'q', 'q2c', [{ v: 'a', t: '약 37배' }, { v: 'b', t: '약 370배' }, { v: 'c', t: '약 3.7배' }], 'b', '999.5 ÷ 2.7 ≈ 370. 약 370배예요.', '1,000을 2.7로 나누면 얼마쯤일까요? 어림해 보세요.');
+    R('q2a').addEventListener('click', hi2); R('q2b').addEventListener('click', hi2); hi2();
+    /* 3 */
+    const cur3 = () => { const o = Object.assign({}, BROKEN); Object.keys(S.fixed).forEach(k => { if (S.fixed[k]) o[k] = BEACH.find(b => b[0] === k)[1]; }); return o; };
+    let t3;
+    const WHY = { blank: '값이 비어 있다', unit: '다른 값과 자릿수가 다르다(10배)', text: '숫자가 아니라 글자다' };
+    const drawFix = () => {
+      const keys = Object.keys(S.flags).filter(k => S.flags[k]);
+      let h = `<h3>이상한 칸 찾기</h3><p>표에서 이상한 칸을 눌러 ⚑ 깃발을 세우세요. 세 곳이 있어요.</p>`;
+      const wrong = keys.filter(k => !(k in BROKEN));
+      if (wrong.length) h += `<p class="mn-msg mn-msg--no">✗ ${wrong.join(', ')} 칸은 다른 값과 비교해 보면 이상하지 않아요. 다시 눌러 깃발을 내리세요.</p>`;
+      keys.filter(k => k in BROKEN).forEach(k => {
+        h += `<div class="q"><p class="q__t">${k} 칸은 왜 이상한가요?</p><div data-r="why-${k}"></div>`;
+        if (S.why[k] === BROKEN_WHY[k]) h += `<div class="fix-row">${S.fixed[k] ? `<span class="mn-msg mn-msg--ok">✓ ${BROKEN_WHY[k] === 'blank' ? '빈칸은 지어내지 않고 원래 자료에서 찾아 넣었어요(172.4).' : BROKEN_WHY[k] === 'unit' ? '258.5로 바로잡았어요. 다른 값과 자릿수를 맞췄어요.' : '글자 대신 원래 자료의 수 2.7을 넣었어요.'}</span>` : `<button type="button" class="mn-btn mn-btn--primary" data-fix="${k}">${BROKEN_WHY[k] === 'blank' ? '원래 자료에서 찾아 넣기' : '바로잡기'}</button><span class="aside-t">${BROKEN_WHY[k] === 'blank' ? '빈칸은 지어내면 안 돼요. 출처를 다시 확인해요.' : ''}</span>`}</div>`;
+        h += `</div>`;
+      });
+      if (Object.keys(BROKEN).every(k => S.fixed[k])) h += '<p class="mn-msg mn-msg--ok">✓ 세 칸을 모두 정리했어요. 이제 2단계 표와 같아졌어요.</p>';
+      R('fix').innerHTML = h;
+      keys.filter(k => k in BROKEN).forEach(k => { choiceGroup(R('fix').querySelector(`[data-r="why-${k}"]`), { options: Object.keys(WHY).map(w => ({ v: w, t: WHY[w] })), answer: BROKEN_WHY[k], value: S.why[k], onPick: v => { S.why[k] = v; save(); if (v === BROKEN_WHY[k]) setTimeout(drawFix, 500); } }); });
+      R('fix').querySelectorAll('[data-fix]').forEach(b => b.addEventListener('click', () => { S.fixed[b.dataset.fix] = true; save(); t3.set({ rows: rowsOf(BEACH, cur3()), fixed: S.fixed }); drawFix(); }));
+    };
+    t3 = dataTable(R('t3'), { cols: ['해수욕장', '방문객(만 명)'], rows: rowsOf(BEACH, cur3()), flags: S.flags, fixed: S.fixed, onCell: k => { if (S.fixed[k]) return; S.flags[k] = !S.flags[k]; save(); t3.set({ flags: S.flags }); drawFix(); } });
+    drawFix();
+    /* 4 */
+    const GOPT = [{ v: 'bar', t: '막대그래프' }, { v: 'line', t: '꺾은선그래프' }];
+    const drawG = () => {
+      R('c1').innerHTML = S.g.g1 ? chartSVG({ type: S.g.g1, rows: rowsOf(BEACH), title: '2025년 여름 부산 해수욕장 방문객', unit: '만 명' }) : '';
+      R('g1fb').innerHTML = S.g.g1 == null ? '' : msgHTML(S.g.g1 === 'bar', '막대그래프. 해수욕장은 순서가 없는 항목이라 막대 길이로 비교해요.', '꺾은선은 점 사이를 선으로 잇는데, 해운대와 광안리 ‘사이’에는 값이 없어요. 순서 없는 항목은 막대가 맞아요.');
+      R('c2').innerHTML = S.g.g2 ? chartSVG({ type: S.g.g2, rows: rowsOf(YEARS), title: '부산 해수욕장 전체 방문객, 해마다', unit: '만 명', divider: { after: '2019', label: '세는 방법 바뀜' } }) : '';
+      R('g2fb').innerHTML = S.g.g2 == null ? '' : msgHTML(S.g.g2 === 'line', '꺾은선그래프. 해는 순서대로 이어지니 선으로 변화를 봐요.', '막대로도 볼 수 있지만, ‘해마다 어떻게 변했나’는 선의 오르내림이 더 잘 보여요.');
+    };
+    choiceGroup(R('g1'), { options: GOPT, answer: 'bar', value: S.g.g1, onPick: v => { S.g.g1 = v; save(); drawG(); } });
+    choiceGroup(R('g2'), { options: GOPT, answer: 'line', value: S.g.g2, onPick: v => { S.g.g2 = v; save(); drawG(); } });
+    drawG();
+    /* 5 */
+    const drawC5 = () => { const h = []; if (S.read.r1 === '2021') h.push('2021'); if (S.read.r2 === '2020') h.push('2019', '2020'); R('c5').innerHTML = chartSVG({ type: 'line', rows: rowsOf(YEARS), title: '부산 해수욕장 전체 방문객, 해마다', unit: '만 명', hi: h, labels: true, divider: { after: '2019', label: '세는 방법 바뀜' } }) + `<p class="dl-src">${SRC_Y}</p>`; };
+    quiz(ctx, 'read', 'r1', [{ v: '2020', t: '2020년' }, { v: '2021', t: '2021년' }, { v: '2023', t: '2023년' }], '2021', '990만 명으로 가장 낮은 점이에요.', '선에서 가장 낮은 점을 찾아보세요.');
+    quiz(ctx, 'read', 'r2', [{ v: '2018', t: '2017년 → 2018년' }, { v: '2020', t: '2019년 → 2020년' }, { v: '2023', t: '2022년 → 2023년' }], '2020', '3,695만에서 1,474만으로 줄었어요. 2020년에 무슨 일이 있었는지, 그리고 세는 방법이 언제 바뀌었는지 아래 글을 보세요.', '선이 가장 가파르게 내려가는 곳은 어디인가요?');
+    R('r1').addEventListener('click', drawC5); R('r2').addEventListener('click', drawC5); drawC5();
+    const CAN = [['a', '표의 값은 2017년이 가장 크다', 'y'], ['b', '표의 값은 2019년에서 2020년 사이에 크게 줄었다', 'y'], ['c', '2020년에 실제로 바다에 온 사람은 2019년의 반도 안 되었다', 'n'], ['d', '내년에는 방문객이 더 늘어날 것이다', 'n'], ['e', '해운대가 부산에서 가장 좋은 해수욕장이다', 'n']];
+    const drawCan = () => {
+      R('can').innerHTML = CAN.map(([k, t, a]) => { const v = S.can[k]; const cls = v == null ? '' : v === a ? ' is-ok' : ' is-no'; return `<div class="bin${cls}"><span class="bin__t">${t}</span><div class="mn-seg" role="group" aria-label="${t}"><button type="button" data-k="${k}" data-v="y" aria-pressed="${v === 'y'}">있음</button><button type="button" data-k="${k}" data-v="n" aria-pressed="${v === 'n'}">없음</button></div></div>`; }).join('');
+      const all = CAN.every(([k]) => S.can[k] != null), ok = CAN.every(([k, , a]) => S.can[k] === a);
+      R('canfb').innerHTML = !all ? '' : ok ? '<p class="mn-msg mn-msg--ok">✓ 데이터는 ‘세어 본 것’만 말해요. 세는 방법이 바뀐 앞뒤, 앞날, ‘좋다·나쁘다’는 데이터가 말해 주지 않아요.</p>' : '<p class="mn-msg mn-msg--no">✗ 빨간 줄을 다시 보세요. 이 표에 있는 값으로 확인할 수 있는 말인가요?</p>';
+    };
+    R('can').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; S.can[b.dataset.k] = b.dataset.v; save(); drawCan(); });
+    drawCan();
+    /* 6 */
+    const drawCls = () => {
+      const sum = SPOTS.reduce((a, s) => a + (+S.cls[s] || 0), 0);
+      R('clssum').textContent = `지금까지 ${sum}명`;
+      R('c6').innerHTML = sum > 0 ? chartSVG({ type: 'bar', rows: SPOTS.map(s => ({ name: s, v: +S.cls[s] || 0 })), title: '우리 반이 가고 싶은 부산 명소', unit: '명' }) : '<div class="card"><p class="aside-t">수를 넣으면 여기에 막대그래프가 그려져요.</p></div>';
+    };
+    R('cls').innerHTML = SPOTS.map(s => `<label for="cls-${s}">${s}</label><input class="mn-input mn-input--num" id="cls-${s}" data-s="${s}" type="number" inputmode="numeric" min="0" max="40" value="${S.cls[s] == null ? '' : S.cls[s]}" aria-label="${s} 명">`).join('');
+    R('cls').addEventListener('input', e => { const i = e.target.closest('[data-s]'); if (!i) return; S.cls[i.dataset.s] = Math.max(0, Math.min(40, +i.value || 0)); save(); drawCls(); });
+    R('sent').value = S.sent || ''; R('sent').addEventListener('input', () => { S.sent = R('sent').value; save(); });
+    drawCls();
+    /* 7 */
+    quiz(ctx, 'quiz', 'q7a', [{ v: 'a', t: '무엇을 알고 싶은지(질문)를 보고' }, { v: 'b', t: '예쁜 쪽으로' }, { v: 'c', t: '값이 큰 쪽으로' }], 'a', '비교하려면 막대, 변화를 보려면 꺾은선이에요.', '4단계에서 그래프를 고른 기준을 떠올려 보세요.');
+    quiz(ctx, 'quiz', 'q7b', [{ v: 'a', t: '그럴듯한 값을 넣는다' }, { v: 'b', t: '깃발을 세우고 원래 자료(출처)에서 확인한다' }, { v: 'c', t: '그 줄을 지운다' }], 'b', '지어내지 않고 출처에서 확인해요.', '3단계에서 빈칸을 어떻게 했나요?');
+    quiz(ctx, 'quiz', 'q7c', [{ v: 'a', t: '누가 무엇을 골랐는지는 개인정보라서' }, { v: 'b', t: '이름이 길어서' }], 'a', '수를 모을 때 이름은 필요 없어요. 필요 없는 정보는 모으지 않는 것이 원칙이에요.', '부산시가 휴대전화 위치로 사람 수를 셀 때도 공개하는 것은 사람 수뿐이에요.');
+    evals(ctx, 'ev', ['표에서 가장 큰 값, 작은 값, 몇 배인지를 읽을 수 있나요?', '빈칸이나 이상한 값을 찾아 출처에서 확인해 고칠 수 있나요?', '질문에 맞는 그래프 종류를 고르고 까닭을 말할 수 있나요?', '데이터로 말할 수 있는 것과 없는 것을 가릴 수 있나요?']);
+  }
+};
+
+/* ================= 교사용 지도안 (보강) ================= */
+const TEACH_EXTRA = [
+  { key: 'b1', no: 'b1', pg: '교과서에 없는 내용 — 7단원 2절(110~117쪽) 다음에 둔다', unit: '보강 1 · 컴퓨팅 시스템(입력·처리·출력) — 교과서에 없는 것 더하기',
+    std: '직접 대응하는 실과 성취기준 없음. 관련: [6실05-02] 요지(컴퓨터에 명령하는 방법 체험). 6학년 7단원 로봇의 구조(제어·감지·구동, 108~109쪽)의 선행. 중학교 정보 컴퓨팅 시스템 영역으로 이어짐. 학교자율시간 성취기준 도출안 [5정보01-01](도출안)에 해당.', goal: B1.goal,
+    diff: [['5~6학년 정보 영역에 컴퓨터가 입력·처리·출력으로 동작한다는 내용이 없다. 6학년 로봇 단원이 제어·감지·구동으로 다루지만 기술 영역이고 블록 키트·AI 컨트롤러가 필요하며 "로봇 연결은 데스크톱 PC에서만 지원"(6학년 113쪽)한다.', '자동문·가로등·박수 스위치 같은 기기를 소재로, 슬라이더(입력)–블록(처리)–문·전등(출력)이 한 화면에 있는 시뮬레이터로 다룬다. 교구와 PC가 없어도 된다.', 'CSTA 2026 5학년 표준은 하드웨어·소프트웨어의 입력·출력·처리·저장 협동을, 중국 2022 과정표준 5~6학년 ‘과정과 제어’는 입력·계산·출력을 교구 없이 다룬다. 영국 Teach Computing 5학년은 조건과 센서(Crumble)를 한 단원으로 묶는다.'], ['조건 블록을 ‘대답’ 입력으로만 다룬다(5학년 113쪽).', '조건의 입력을 센서 값(숫자)으로 바꾸고 부등호와 경계 값(20일 때는?)을 다룬다.', '센서 값 조건은 중학교 피지컬 컴퓨팅의 기본 형태다.'], ['고치는 활동이 없다.', '부등호가 반대인 고장을 고장 찾기 4단계로 고친다(재구성 1·2차시와 같은 절차).', '같은 절차를 다른 내용에 다시 적용해 절차를 익힌다.']],
+    flow: [['도입', '0~5', '1 생각 열기: 아홉 장면을 입력·처리·출력으로 나누기', '"자동문은 어떻게 사람이 오는 줄 알까요?"', '틀린 것은 빨간 줄로 바로 보인다.'], ['예측', '5~11', '2 자동문 프로그램 읽고 세 값(50·10·20) 예측', '"20일 때는? 20보다 작아야 하나요, 같아도 되나요?"', '경계 값 20이 핵심 발문.'], ['실행', '11~16', '3 슬라이더로 실행, 기록, 비교, 열리는 순간 값 찾기', '"몇이 되는 순간 열렸나요?"', '기록은 실행 중에만 된다.'], ['살펴보기', '16~22', '4 판단 블록·출력 블록 찾기, 입력이 그대로면 왜 가만히 있나', '"무엇이 바뀌어야 문이 움직일까요?"', ''], ['바꾸기', '22~30', '5 과제 1(유모차, 숫자), 과제 2(부등호 고장)', '"숫자를 몇으로 바꿨나요? 다른 수도 될까요?"', '빨리 끝낸 학생은 더 해 보기.'], ['설계', '30~37', '6 가로등/박수 스위치 설계, 시험 계획표(세 값)로 시험', '"경계 값에서는 어땠나요?"', '설계는 기기에 저장된다.'], ['정리', '37~40', '7 센서 찾기 과제, 정리 문항, 스스로 평가', '"오늘 학교에서 센서를 어디서 봤나요?"', '교구가 있으면 엔트리 하드웨어 연결로 확장(선택).']],
+    evals: [['입력·처리·출력 구분', '페이지 점검(1단계), 발문', '아홉 장면을 맞게 나누고 다른 기기에서도 세 단계를 말한다.', '아홉 장면을 맞게 나눈다.', '도움을 받아 나눈다.'], ['조건 읽기와 값 바꾸기', '페이지 점검(2·3·5단계)', '경계 값을 포함해 예측하고 과제 1을 다른 방법으로도 푼다.', '예측과 과제 1을 해낸다.', '도움을 받아 해낸다.'], ['고장 고치기', '페이지 점검(5단계)', '부등호 고장을 4단계로 고치고 까닭을 말한다.', '고친다.', '도움을 받아 고친다.'], ['설계와 시험', '페이지(6단계), 관찰', '조건을 설계하고 세 값을 시험하며 경계 값 결과를 설명한다.', '설계하고 세 값을 시험한다.', '설계만 한다.']],
+    notes: ['시뮬레이터의 센서 값은 단위 없는 가상값이다. 실제 센서는 종류마다 값의 범위가 다르다는 것을 한 줄 안내한다.', '‘계속 반복’은 블록 안에 블록을 두 겹으로 넣지 않도록 시작 블록에 붙여 표시했다. 엔트리에서는 ‘계속 반복하기’ 블록 안에 ‘만일’을 넣는 모양이 된다.', '교구(마이크로비트, 햄스터 등)가 있는 학교는 6단계 설계를 엔트리 하드웨어 연결로 실제 기기에서 시험할 수 있다. 없는 학교는 시뮬레이터로 끝낸다. 두 경우 같은 차시 목표를 쓴다.', '이 차시는 아직 학급에 적용하지 않았다.'] },
+  { key: 'b2', no: 'b2', pg: '교과서에 없는 내용 — 6학년 5단원 1절(68~71쪽)과 이어진다. 5학년에서도 가능(수학 ‘자료와 가능성’ 뒤)', unit: '보강 2 · 데이터(수집·정리·시각화·해석) — 교과서에 없는 것 더하기',
+    std: '직접 대응하는 실과 성취기준 없음. 관련: [6실05-04] 요지(디지털·아날로그 데이터의 특징, 인공지능에 활용 가능한 데이터 탐색). 수학 5학년 자료와 가능성(그래프) 연계 <span class="chk">[확인 필요: 코드]</span>. 중학교 정보 데이터 영역으로 이어짐. 학교자율시간 성취기준 도출안 [5정보02-01·02](도출안)에 해당.', goal: B2.goal,
+    diff: [['6학년 교과서의 데이터는 아날로그/디지털 구분(68~69쪽)과 인공지능용 데이터 유형 분류(70쪽)에서 끝난다. 학생이 데이터를 모으고 정리하고 그래프로 그리고 읽는 활동이 없다.', '실제 부산 공공데이터(해수욕장 방문객)를 표로 읽고, 고장 난 표를 정리하고, 질문에 맞는 그래프를 골라 그리고, 말할 수 있는 것과 없는 것을 가른다. 우리 반 설문으로 같은 과정을 반복한다.', 'CSTA 2026 5학년 표준은 컴퓨팅 도구로 데이터를 수집·정리하고 변동성을 분석하게 한다. 영국 Teach Computing은 5학년 플랫파일 데이터베이스, 6학년 스프레드시트를 둔다. 중국 2022는 3~4학년에 ‘데이터와 인코딩’을 둔다.'], ['소재가 방울토마토(6학년 72쪽)나 가상 상황이다.', '부산시가 공공데이터포털에 공개한 해수욕장 방문객(2025년 해수욕장별, 2015~2025년 전체)을 쓴다. 출처, 단위 환산, 집계 방법(빅데이터·표본조사)을 표 아래에 적는다. 2020년 집계 방식 변경을 ‘자가 바뀌면 비교할 수 없다’로 다룬다.', '지역 데이터는 학생이 값의 뜻을 안다. 집계 방법은 개인정보 이야기의 입구가 된다.'], ['평가는 자기 체크뿐이다.', '그래프 읽기 문항과 한 문장 쓰기로 해석을 확인한다.', '해석까지 가야 데이터 활동이다.']],
+    flow: [['도입', '0~4', '1 예측 투표, 무엇을 보면 알 수 있나', '"느낌 말고 무엇을 보면 알 수 있을까요?"', '설문은 수업 시작에 손들기로 2분.'], ['표 읽기', '4~10', '2 표에서 최댓값·둘째·몇 배', '"해운대는 임랑의 몇 배쯤일까요?"', '어림 계산.'], ['정리', '10~17', '3 고장 난 표에서 빈칸·10배·글자 찾고 고치기', '"빈칸에 아무 수나 넣으면 왜 안 되나요?"', '빈칸은 지어내지 않고 출처에서 찾는다.'], ['그래프 고르기', '17~23', '4 질문에 맞는 그래프 종류 고르기', '"해운대와 광안리 ‘사이’에 값이 있나요?"', '틀린 종류를 고르면 왜 읽기 어려운지 보인다.'], ['읽기', '23~30', '5 연도별 그래프 읽기, 세는 방법 변경, 말할 수 있는 것/없는 것', '"2020년에 무슨 일이 있었나요?" "세는 자가 바뀌었는데 2019년과 2020년을 그대로 비교해도 되나요?"', '감염병만으로 설명하지 않도록 주의한다. 값이 준 데에는 세는 방법 변경도 섞여 있다.'], ['우리 반', '30~38', '6 설문 수 입력, 그래프, 한 문장', '"우리 반 그래프는 막대인가요, 꺾은선인가요? 왜?"', '이름은 적지 않는다.'], ['정리', '38~40', '7 정리 문항, 개인정보, 스스로 평가', '', '']],
+    evals: [['표 읽기', '페이지 점검(2단계)', '최댓값·순서·몇 배를 어림까지 읽는다.', '최댓값과 순서를 읽는다.', '도움을 받아 읽는다.'], ['정리하기', '페이지 점검(3단계)', '세 종류 이상값을 찾고 까닭과 처리 방법을 말한다.', '세 이상값을 찾아 고친다.', '일부만 찾는다.'], ['그래프 고르기', '페이지 점검(4단계), 발문', '종류를 고르고 질문과 연결해 까닭을 말한다.', '종류를 맞게 고른다.', '도움을 받아 고른다.'], ['해석', '5·6단계, 한 문장', '말할 수 있는 것과 없는 것을 가르고, 우리 반 데이터를 한 문장으로 쓴다.', '그래프를 읽고 한 문장을 쓴다.', '한 문장을 쓰지 못한다.']],
+    notes: ['수치 출처: 부산광역시 관광정책과 「부산광역시_해수욕장 방문 현황_20260131」(공공데이터포털 data.go.kr/data/15043252, 2026. 2. 10. 갱신, 이용허락 제한 없음, CSV 78행). 원자료 단위는 천 명이며 만 명으로 바꿔 적었다. 2025년 다대포는 원자료에 서측·동측 두 줄로 나뉘어 있어 더했다. 원자료 CSV는 교재 폴더에 함께 둔다.', '원자료의 2021년 이후 임랑해수욕장 규모(48,000㎡)는 그 전(10,650㎡)과 달라 자료 자체의 오류로 보인다. 이 차시는 규모 열을 쓰지 않지만, 공공데이터에도 이상값이 있다는 예로 교사가 보여 줄 수 있다.', '2020년부터 휴대전화 위치 기반 집계로 바뀐 사실은 부산시 설명(세계일보 2024. 9. 4. 보도)에 따른다. 그 전 집계 방법의 이름은 교재에 쓰지 않았다.', '3단계의 고장 난 표는 교육용으로 만든 것이다. 페이지에 그렇게 밝혀 두었다.', '설문에는 이름을 적지 않는다. 입력한 수는 이 기기에만 저장된다.', '이 차시는 아직 학급에 적용하지 않았다.'] }
+];
+LESSONS.push(B1, B2);
+TEACH.push(...TEACH_EXTRA);
+
+/* app.js — 틀: 왼쪽 목차, 위쪽 경로와 진행선, 차시 페이지(단계를 위에서 아래로), 교사용 지도안, 처음 화면, 주소 연결 */
+const view = document.getElementById('view');
+const side = document.getElementById('side');
+const lessonState = L => Object.assign(L.defaults(), store.get(L.key, {}));
+const doneCount = (L, S) => L.steps.filter(s => L.done[s.id] && L.done[s.id](S)).length;
+const TOTAL = LESSONS.reduce((a, L) => a + L.steps.length, 0);
+const sHref = L => '#' + L.key, tHref = L => '#t' + (L.group === 'extra' ? L.key : L.key.slice(1)), lab = L => L.label || `${L.no}차시`;
+const byKey = k => LESSONS.find(L => L.key === k);
+let curRoute = null;
+
+/* ---------- 왼쪽 목차 ---------- */
+function drawSide(mode, curKey, stepItems, foot) {
+  const curL = byKey(curKey) || LESSONS[0];
+  const nav = `<nav class="side__nav" aria-label="보기 바꾸기"><a href="#home" ${mode === 'home' ? 'aria-current="page"' : ''}>처음</a><a href="${sHref(curL)}" ${mode === 'l' ? 'aria-current="page"' : ''}>학생용</a><a href="${tHref(curL)}" ${mode === 't' ? 'aria-current="page"' : ''}>교사용</a></nav>`;
+  const row = L => {
+    const S = lessonState(L), n = doneCount(L, S), cur = L.key === curKey;
+    const href = mode === 't' ? tHref(L) : sHref(L);
+    const name = mode === 't' ? `${L.short} 지도안` : L.short;
+    return `<li class="toc__item${cur ? ' is-cur' : ''}"><a class="toc__row" href="${href}"><span class="toc__chip">${lab(L)}</span><span>${name}</span><span class="toc__n">${mode === 't' ? '' : `${n}/${L.steps.length}`}</span></a>${cur && stepItems ? `<ol class="steps" data-r="steps">${stepItems}</ol>` : ''}</li>`;
+  };
+  const base = LESSONS.filter(L => L.group !== 'extra'), extra = LESSONS.filter(L => L.group === 'extra');
+  side.innerHTML = `<div class="side__brand"><a href="#home">읽고, 바꾸고,<em>내가 만드는 프로그래밍.</em></a></div>${nav}
+    <div class="side__toc"><p class="side__h">교과서 재구성 <span>${base.length}차시</span></p><ol class="toc">${base.map(row).join('')}</ol>
+    <p class="side__h side__h--gap">교과서에 없는 것 더하기 <span>${extra.length}차시</span></p><ol class="toc">${extra.map(row).join('')}</ol></div><div class="side__foot" data-r="sfoot">${foot || ''}</div>`;
+}
+function topbar(crumbs, n, total) {
+  return `<header class="topbar"><p class="crumb">${crumbs.map((c, i) => i === crumbs.length - 1 ? `<b>${c}</b>` : `${c}<i>›</i>`).join('')}</p><div class="bar" aria-hidden="true"><i style="width:${total ? Math.round(n / total * 100) : 0}%"></i></div><p class="topbar__n">${total ? `${n} / ${total}단계` : ''}</p></header>`;
+}
+
+/* ---------- 처음 ---------- */
+function renderHome() {
+  const all = LESSONS.reduce((a, L) => a + doneCount(L, lessonState(L)), 0);
+  drawSide('home', null, null, `<div class="side__row"><span>이 기기에서 끝낸 단계</span><b>${all} / ${TOTAL}</b></div><div class="bar"><i style="width:${Math.round(all / TOTAL * 100)}%"></i></div>`);
+  const cardOf = L => { const S = lessonState(L), n = doneCount(L, S); return `
+    <article class="card"><p class="kick">${lab(L)} · ${L.stage}</p><h3>${L.short}</h3><p>${L.goal}</p><p class="aside-t">${L.pg} · 이 기기에서 ${n}/${L.steps.length}단계</p>
+      <div class="go"><a class="mn-btn mn-btn--primary" href="${sHref(L)}">학생용 열기</a><a class="mn-btn" href="${tHref(L)}">교사용 지도안</a></div></article>`; };
+  view.innerHTML = topbar(['실과 7-2', '처음 화면']) + `<div class="page">
+  <header class="hero"><p class="kicker">인터랙티브 웹 교재 · 5학년 실과 7단원 2절 컴퓨터 프로그래밍 · 2026년 10월</p>
+    <h1>읽고, 바꾸고,<em>내가 만드는 프로그래밍.</em></h1>
+    <p class="lead">교과서의 세 가지 소재(10걸음 걷기, 줄넘기 타이머, 분실물 보관함)는 그대로 두고, 배우는 순서를 <b>읽고 예측하기 → 살펴보고 고치기 → 내가 설계하기 → 만들고 시험하기</b>로 바꾸어 4차시로 다시 구성했습니다. 그리고 교과서가 담지 못한 두 가지, <b>컴퓨팅 시스템(입력·처리·출력)</b>과 <b>데이터(모으고 정리하고 그리고 읽기)</b>를 같은 틀로 2차시 더했습니다. 태블릿에서 페이지를 열고, 페이지 안에서 직접 실행하고 바꾸며 배웁니다.</p></header>
+  <section class="panel"><div class="panel__h"><span><span class="dia">◆</span> 교과서 재구성 4차시 — 교과서가 가진 것을 다시 짜기</span><span>교과서 110~117쪽</span></div><div class="panel__b"><div class="arc">${LESSONS.filter(L => L.group !== 'extra').map(cardOf).join('')}</div></div></section>
+  <section class="panel"><div class="panel__h"><span><span class="dia">◆</span> 보강 2차시 — 교과서가 못 담은 것을 채우기</span><span>5~6학년 정보 영역에 없는 내용</span></div><div class="panel__b"><p class="aside-t" style="margin-bottom:12px">5~6학년 실과 정보 영역(5학년 7단원, 6학년 5단원)은 알고리즘·프로그래밍과 데이터·인공지능을 각각 한 번 다룹니다. 국외 교육과정(미국 CSTA 2026, 영국, 중국 2022)이 같은 나이에 공통으로 두는 <b>컴퓨팅 시스템</b>과 <b>데이터 다루기</b>는 비어 있습니다. 그 자리를 같은 방식으로 채운 두 차시입니다. 교구 없이, 비용 없이 됩니다.</p><div class="arc">${LESSONS.filter(L => L.group === 'extra').map(cardOf).join('')}</div></div></section>
+  <footer class="page-foot"><p>구성 근거: 영국 PRIMM(예측, 실행, 살펴보기, 바꿔 보기, 만들기. Sentance 외), 미국 Use-Modify-Create(Lee 외, 2011), 영국 Teach Computing 5학년 단원 구성. 보강 2차시의 내용 근거: 미국 CSTA 2026 5학년 표준(컴퓨팅 시스템·데이터), 영국 National Curriculum KS2, 중국 2022 信息科技 과정표준 5~6학년.</p><p>이 페이지의 기록은 사용하는 기기의 브라우저에만 저장되며, 이름 등 개인정보를 받지 않습니다.</p><p>제작: 부산 개포초등학교 5학년 담임교사.</p></footer></div>`;
+}
+
+/* ---------- 차시 (학생용) ---------- */
+function renderLesson(L) {
+  const S = lessonState(L);
+  const ids = L.steps.map(s => s.id);
+  const sec = id => document.getElementById(L.key + '-' + id);
+  const isOpen = () => true; // 모든 단계를 언제든 눌러 볼 수 있다
+  const isDone = id => !!(L.done[id] && L.done[id](S));
+  let active = ids[0];
+  view.innerHTML = `<div data-r="top"></div><div class="page">
+    <header class="lesson-head"><p class="kicker">${lab(L)} · ${L.stage} · ${L.pg}</p><h1>${L.title[0]} <em>${L.title[1]}</em></h1><p class="goal"><b>오늘의 목표</b>${L.goal}</p></header>
+    ${L.steps.map((s, i) => `<section class="step" id="${L.key}-${s.id}"><header class="step__h"><h2><span class="no">${String(i + 1).padStart(2, '0')}</span>${s.name}</h2>${s.lead ? `<p>${s.lead}</p>` : ''}</header>${s.html()}</section>`).join('')}
+    <footer class="page-foot"><p>기록은 이 기기의 브라우저에만 저장됩니다. 이름 등 개인정보를 받지 않습니다.</p></footer></div>`;
+  const R = n => view.querySelector(`[data-r="${n}"]`);
+  const goTo = id => setTimeout(() => sec(id).scrollIntoView({ behavior: smooth(), block: 'start' }), 60);
+  const ctx = { S, R, view, goTo, save: () => { store.set(L.key, S); refresh(); } };
+  const stepItems = () => L.steps.map((s, i) => { const o = isOpen(s.id), d = isDone(s.id), c = s.id === active; return `<li class="${!o ? 'is-lock' : c ? 'is-cur' : d ? 'is-done' : ''}"><a href="#" data-step="${s.id}" ${c ? 'aria-current="step"' : ''}><span class="n">${String(i + 1).padStart(2, '0')}</span><span>${s.name}</span><span class="s">${d ? '✓' : ''}</span></a></li>`; }).join('');
+  const foot = () => { const n = ids.filter(isDone).length; return `<div class="side__row"><span>끝낸 단계</span><b>${n} / ${ids.length}</b></div><div class="bar"><i style="width:${Math.round(n / ids.length * 100)}%"></i></div>
+    <div class="side__links"><button type="button" class="side__btn" data-r="reset">진행 초기화</button><button type="button" class="side__btn" data-r="totop">맨 위로 ↑</button></div>`; };
+  drawSide('l', L.key, stepItems(), foot());
+  function bindSide() {
+    const sr = n => side.querySelector(`[data-r="${n}"]`);
+    sr('steps').addEventListener('click', e => { const a = e.target.closest('[data-step]'); if (!a) return; e.preventDefault(); if (isOpen(a.dataset.step)) goTo(a.dataset.step); });
+    twice(sr('reset'), '진행 초기화', () => { store.clear(L.key); curRoute = null; route(); });
+    sr('totop').addEventListener('click', () => window.scrollTo({ top: 0, behavior: smooth() }));
+  }
+  function refresh() {
+    let last = ids[0];
+    ids.forEach(id => { const o = isOpen(id); if (o) last = id; sec(id).hidden = !o; sec(id).classList.toggle('is-done', isDone(id)); });
+    const steps = side.querySelector('[data-r="steps"]'); if (steps) steps.innerHTML = stepItems();
+    const sf = side.querySelector('[data-r="sfoot"]'); if (sf && !sf.dataset.bound) { bindSide(); sf.dataset.bound = 1; }
+    else if (sf) { const n = ids.filter(isDone).length; sf.querySelector('.side__row b').textContent = `${n} / ${ids.length}`; sf.querySelector('.bar i').style.width = Math.round(n / ids.length * 100) + '%'; }
+    const toc = side.querySelector('.toc__item.is-cur .toc__n'); if (toc) toc.textContent = `${ids.filter(isDone).length}/${ids.length}`;
+    const stepName = L.steps.find(s => s.id === active).name;
+    R('top').innerHTML = topbar(['실과 7-2', lab(L), stepName], ids.filter(isDone).length, ids.length);
+  }
+  function onScroll() {
+    const line = innerHeight * 0.38; let pick = ids[0];
+    ids.forEach(id => { const el = sec(id); if (!el.hidden && el.getBoundingClientRect().top < line) pick = id; });
+    if (pick !== active) { active = pick; refresh(); }
+  }
+  L.init(ctx);
+  window.onscroll = () => { if (curRoute === L.key) onScroll(); };
+  refresh(); onScroll();
+}
+
+/* ---------- 교사용 지도안 ---------- */
+function renderTeacher(T) {
+  const L = byKey(T.key || ('l' + T.no));
+  const NAV = [['info', '차시 개요'], ['diff', '교과서와 달라진 점'], ['flow', '수업 흐름'], ['eval', '평가 기준'], ['note', '유의점'], ['obs', '관찰 기록']];
+  const okey = `t${T.no}-obs`, O = store.get(okey, {});
+  drawSide('t', L.key, NAV.map(([id, t], i) => `<li><a href="#" data-go="${id}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span>${t}</span><span class="s"></span></a></li>`).join(''),
+    `<a class="side__btn" href="${sHref(L)}">${lab(L)} 학생용 페이지 보기 →</a>`);
+  side.querySelector('[data-r="steps"]').addEventListener('click', e => { const a = e.target.closest('[data-go]'); if (!a) return; e.preventDefault(); document.getElementById('t-' + a.dataset.go).scrollIntoView({ behavior: smooth(), block: 'start' }); });
+  const table = (head, rows, cls) => `<div class="tbl"><table class="mn-table ${cls || ''}">${head ? `<thead><tr>${head.map(h => `<th scope="col">${h}</th>`).join('')}</tr></thead>` : ''}<tbody>${rows}</tbody></table></div>`;
+  view.innerHTML = topbar(['실과 7-2', '교사용', `${lab(L)} 지도안`]) + `<div class="page">
+  <header class="lesson-head"><p class="kicker">교사용 지도안 · ${lab(L)} ${L.stage} · ${L.group === 'extra' ? T.pg : '교과서 ' + T.pg}</p><h1>${L.title[0]} <em>${L.title[1]}</em></h1></header>
+  <div class="doc">
+  <section class="card" id="t-info"><h2><span class="no">01</span>차시 개요</h2>${table(null, [['단원', T.unit || `7. 컴퓨터와 문제 해결, 2 컴퓨터 프로그래밍 (재구성 4차시 중 ${T.no}차시)`], ['성취기준', `${T.std} <span class="chk">[확인 필요: 교육과정 원문 대조]</span>`], ['학습 목표', T.goal], ['시간과 환경', '40분, 1인 1태블릿, 학생용 웹 페이지와 엔트리'], ['준비', `학생용 ${lab(L)} 페이지 링크(QR), 수업 전 교사 태블릿으로 ${L.group === 'extra' ? '페이지의 시뮬레이터 동작' : '엔트리 화면'} 확인`]].map(([a, b]) => `<tr><th scope="row">${a}</th><td>${b}</td></tr>`).join(''), 'mn-table--kv')}</section>
+  <section class="card" id="t-diff"><h2><span class="no">02</span>교과서와 달라진 점</h2>${table([L.group === 'extra' ? '교과서는' : `교과서 ${T.pg}`, '이 차시', L.group === 'extra' ? '근거' : '바꾼 까닭'], T.diff.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join(''))}</section>
+  <section class="card" id="t-flow"><h2><span class="no">03</span>수업 흐름 (40분)</h2>${table(['단계', '분', '학생 활동 (페이지 단계)', '핵심 발문', '유의점'], T.flow.map(r => `<tr><td class="nw">${r[0]}</td><td class="nw tnum">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join(''))}</section>
+  <section class="card" id="t-eval"><h2><span class="no">04</span>평가 기준</h2>${table(['평가 요소', '방법', '잘함', '보통', '노력 요함'], T.evals.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join(''))}<p class="aside-t">학생 페이지의 기록은 각 태블릿에만 남는다. 순회하며 왼쪽 목차의 ✓ 표시와 ‘끝낸 단계’ 수로 확인한다.</p></section>
+  <section class="card" id="t-note"><h2><span class="no">05</span>유의점</h2><ul class="notes">${T.notes.map(n => `<li>${n}</li>`).join('')}</ul></section>
+  <section class="card" id="t-obs"><h2><span class="no">06</span>관찰 기록</h2><p class="aside-t">본 것과 센 것만 적는다. 추측은 ‘추측’이라고 표시한다. 이 기록은 이 기기에만 저장된다.</p>
+    <form class="obs" data-r="obs">${OBS_FIELDS.map(([k, l, ty]) => `<label for="obs-${k}">${l}${ty === 'input' ? `<input class="mn-input" id="obs-${k}" data-k="${k}" type="text" value="${esc(O[k] || '')}">` : `<textarea class="mn-input" id="obs-${k}" data-k="${k}">${esc(O[k] || '')}</textarea>`}</label>`).join('')}
+      <div class="obs-act"><button type="button" class="mn-btn mn-btn--primary" data-r="copy">기록 복사</button><span class="aside-t" data-r="saved" aria-live="polite"></span></div>
+      <textarea class="mn-input" data-r="copybox" aria-label="복사할 기록" hidden readonly></textarea></form></section>
+  </div></div>`;
+  const form = view.querySelector('[data-r="obs"]'), saved = view.querySelector('[data-r="saved"]');
+  form.addEventListener('submit', e => e.preventDefault());
+  form.addEventListener('input', e => { const k = e.target.dataset.k; if (!k) return; O[k] = e.target.value; store.set(okey, O); saved.textContent = '이 기기에 저장됨'; });
+  view.querySelector('[data-r="copy"]').addEventListener('click', () => {
+    const text = `[${lab(L)} 관찰 기록]\n` + OBS_FIELDS.map(([k, l]) => `■ ${l}\n${(O[k] || '').trim() || '(비어 있음)'}`).join('\n\n');
+    const box = view.querySelector('[data-r="copybox"]');
+    const fallback = () => { box.hidden = false; box.value = text; box.focus(); box.select(); saved.textContent = '아래 칸의 글을 길게 눌러 복사하세요.'; };
+    try { navigator.clipboard.writeText(text).then(() => { saved.textContent = '복사했어요.'; }, fallback); } catch (e) { fallback(); }
+  });
+}
+
+/* ---------- 주소 ---------- */
+function route() {
+  const h = (location.hash || '#home').slice(1);
+  let key = 'home';
+  if (/^(l[1-4]|b[12])$/.test(h)) key = h; else if (/^t([1-4]|b[12])$/.test(h)) key = h;
+  if (key !== curRoute) {
+    curRoute = key; window.onscroll = null;
+    if (key === 'home') renderHome();
+    else if (key[0] !== 't') renderLesson(byKey(key));
+    else renderTeacher(TEACH.find(T => (T.key || ('l' + T.no)) === 'l' + key.slice(1) || T.key === key.slice(1)));
+  }
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+route();
+
+})();</script>
+
+</body></html>
