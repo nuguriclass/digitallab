@@ -1,0 +1,1710 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>컴퓨터와 문제 해결 · 교과서 웹 활동</title>
+<meta name="description" content="5학년 실과 7단원 「컴퓨터와 문제 해결」 재구성 교과서의 QR로 여는 웹 활동: 블록 놀이터, 고장 찾기, 순서도 따라가기.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>:root{
+  --bg:#FFFFFF; --bg-2:#F4F8F6; --panel:#FFFFFF; --panel-2:#F6F7F9; --panel-3:#EEF2F5;
+  --line:#DCE4EC; --line-2:#C9D4DE; --ink:#23304A; --ink-2:#3C4860; --muted:#6B7588;
+  --gold:#2C9B78; --gold-2:#1F7F61; --gold-soft:#E7F5F0; --on-gold:#FFFFFF;
+  --coral:#E6574F; --coral-soft:#FDECEA; --tape:#F4D45C;
+  --ok:#2C9B78; --ok-soft:#E7F5F0; --bad:#E0463C; --bad-soft:#FDECEA; --teal:#17A9D6;
+  --b-start:#2EB24F; --b-flow:#17A9D6; --b-move:#9B55E0; --b-look:#E8508C; --b-data:#E8508C; --b-judge:#3EA37A;
+  --f-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-it:"Jua","Noto Sans KR",sans-serif;
+  --f-mono:"Noto Sans KR",ui-monospace,Menlo,Consolas,monospace;
+  --touch:48px; --r:14px; --r-s:8px;
+  color-scheme:light;
+}
+/* 교재 테마: 깊은 남색 바탕 + 금색 한 색 강조. 왼쪽 목차(차시 칩) · 위쪽 경로와 진행선 · 본문은 위에서 아래로.
+   어두운 단일 테마로 설계했다(밝은 바탕을 따로 두지 않음). */
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.8 var(--f-body);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--gold-2);outline-offset:2px}
+a{color:var(--gold-2)}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit}
+em.it{font-family:var(--f-it);font-style:italic;font-weight:700;color:var(--gold-2)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- 배치 ---------- */
+.app{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:100vh}
+.content{min-width:0;outline:none}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--bg-2);border-right:1px solid var(--line);display:flex;flex-direction:column}
+.side a{color:inherit;text-decoration:none}
+.side__brand{padding:26px 26px 22px;border-bottom:1px solid var(--line)}
+.side__brand a{display:block;font:700 18px/1.4 var(--f-body);color:var(--ink)}
+.side__brand em{display:block;font:700 italic 21px/1.35 var(--f-it);color:var(--gold-2)}
+.side__nav{display:flex;gap:6px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.side__nav a{flex:1;display:grid;place-items:center;min-height:40px;border-radius:var(--r-s);font:500 14px/1 var(--f-body);color:var(--muted);border:1px solid transparent}
+.side__nav a:hover{color:var(--ink)}
+.side__nav a[aria-current="page"]{color:var(--gold-2);border-color:var(--gold);background:var(--gold-soft)}
+.side__toc{padding:18px 18px 12px;flex:1}
+.side__h{display:flex;justify-content:space-between;align-items:baseline;padding:0 8px 10px;font:700 14px/1 var(--f-body);color:var(--ink-2)}
+.side__h span{font:400 13px/1 var(--f-body);color:var(--muted)}
+.toc{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.toc__row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;min-height:var(--touch);padding:6px 8px;border-radius:var(--r-s);color:var(--ink-2);font:500 15px/1.4 var(--f-body)}
+.toc__row:hover{background:var(--panel)}
+.toc__chip{font:700 12.5px/1 var(--f-body);color:var(--gold-2);border:1px solid var(--gold);border-radius:5px;padding:4px 6px;white-space:nowrap}
+.toc__n{font:400 13px/1 var(--f-body);color:var(--muted);font-variant-numeric:tabular-nums}
+.toc__item.is-cur>.toc__row{background:var(--panel);color:var(--ink)}
+.toc__item.is-lock>.toc__row{color:var(--muted)}
+.toc__item.is-lock .toc__chip{color:var(--muted);border-color:var(--line-2)}
+.steps{list-style:none;margin:2px 0 8px;padding:0 0 0 18px;display:grid;gap:1px;border-left:1px solid var(--line-2);margin-left:22px}
+.steps a{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:42px;padding:4px 8px;border-radius:var(--r-s);color:var(--ink-2);font:400 14.5px/1.4 var(--f-body)}
+.steps a:hover{background:var(--panel)}
+.steps .n{font:500 12.5px/1 var(--f-mono);color:var(--muted)}
+.steps .s{font:500 12px/1 var(--f-body);color:var(--muted)}
+.steps li.is-done .s{color:var(--ok)}
+.steps li.is-cur a{background:var(--gold-soft);color:var(--gold-2);font-weight:700}
+.steps li.is-cur .n{color:var(--gold-2)}
+.steps li.is-lock a{color:var(--muted);cursor:default}
+.steps li.is-lock a:hover{background:transparent}
+.side__foot{padding:16px 26px 20px;border-top:1px solid var(--line);display:grid;gap:10px;font-size:14px}
+.side__row{display:flex;justify-content:space-between;align-items:center;color:var(--ink-2)}
+.side__row b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+.bar{height:4px;border-radius:4px;background:var(--line-2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--gold)}
+.side__links{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.side__btn{background:none;border:0;padding:8px 0;min-height:40px;color:var(--muted);font:400 13.5px/1.2 var(--f-body);cursor:pointer;text-align:left}
+.side__btn:hover{color:var(--ink)}
+
+.topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:minmax(0,1fr) minmax(80px,240px) auto;gap:24px;align-items:center;padding:14px 40px;background:var(--bg);border-bottom:1px solid var(--line)}
+.crumb{font:400 14px/1.4 var(--f-body);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--gold-2);font-weight:700}
+.crumb i{font-style:normal;margin:0 6px;color:var(--line-2)}
+.topbar .bar{height:3px}
+.topbar__n{font:400 14px/1 var(--f-body);color:var(--ink-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.page{max-width:900px;margin:0 auto;padding:40px 40px 110px}
+
+@media (max-width:1100px){.app{grid-template-columns:260px minmax(0,1fr)}.page{padding:28px 28px 100px}.topbar{padding:12px 28px}}
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .side__brand{padding:16px 16px 12px}.side__toc{padding:10px 10px 4px}.side__foot{padding:10px 16px 14px}
+  .steps{display:flex;overflow-x:auto;border-left:0;margin-left:0;padding-left:0;scrollbar-width:none}
+  .steps a{white-space:nowrap}
+  .page{padding:20px 16px 90px}.topbar{padding:10px 16px;grid-template-columns:minmax(0,1fr) auto}.topbar .bar{display:none}
+}
+
+/* ---------- 머리 ---------- */
+.kicker{font:700 14px/1.5 var(--f-body);color:var(--gold)}
+.hero{display:grid;gap:18px;padding-bottom:28px}
+.hero h1{font:700 clamp(36px,5vw,56px)/1.16 var(--f-body);letter-spacing:-.025em;text-wrap:balance}
+.hero h1 em{display:block;font:700 italic clamp(38px,5.2vw,58px)/1.2 var(--f-it);color:var(--gold-2);letter-spacing:-.01em}
+.hero p.lead{color:var(--ink-2);max-width:62ch}
+.lesson-head{display:grid;gap:14px;padding-bottom:12px}
+.lesson-head h1{font:700 clamp(32px,4.4vw,44px)/1.2 var(--f-body);letter-spacing:-.02em}
+.lesson-head h1 em{font:700 italic 1.04em/1 var(--f-it);color:var(--gold-2)}
+.goal{color:var(--ink-2);font-size:16px;line-height:1.75;max-width:66ch}
+.goal b{color:var(--gold-2);margin-right:10px;font-weight:700}
+
+/* ---------- 단계 ---------- */
+.step{display:grid;gap:18px;padding-top:56px;scroll-margin-top:72px}
+.step__h{display:grid;gap:6px}
+.step__h h2{display:flex;gap:14px;align-items:baseline;font:700 26px/1.4 var(--f-body);letter-spacing:-.01em;text-wrap:balance}
+.step__h h2 .no{font:500 15px/1 var(--f-mono);color:var(--gold)}
+.step__h p{color:var(--muted);font-size:16px;line-height:1.7}
+.step.is-done .step__h h2 .no::after{content:" ✓";color:var(--ok)}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;display:grid;gap:14px;min-width:0}
+.card h3{font:700 19px/1.45 var(--f-body)}
+.card p,.card li{color:var(--ink-2)}
+.card b,.card strong{color:var(--ink)}
+.oneline{position:relative;border:1px solid var(--gold);background:var(--gold-soft);border-radius:var(--r);padding:26px 24px 20px;margin-top:10px}
+.oneline__l{position:absolute;top:-10px;left:18px;padding:0 8px;background:var(--bg);font:500 12.5px/20px var(--f-mono);letter-spacing:.08em;color:var(--gold-2)}
+.oneline p{color:var(--ink);font-size:17px}
+.aside-t{font-size:15px;line-height:1.7;color:var(--muted)}
+.q{display:grid;gap:10px}
+.q+.q{padding-top:18px;border-top:1px solid var(--line)}
+.q__t{font-weight:700;color:var(--ink);font-size:17px;line-height:1.6}
+.rules,.howto{margin:0;padding-left:24px;display:grid;gap:6px;color:var(--ink-2)}
+.rules li::marker,.howto li::marker{font-family:var(--f-mono);color:var(--gold)}
+.howto--plain{list-style:disc}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+@media (max-width:1180px){.two{grid-template-columns:minmax(0,1fr)}}
+.chk{color:var(--bad);font-weight:700}
+
+/* 선택지 */
+.mn-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.mn-choice{display:grid;grid-template-columns:24px minmax(0,1fr);gap:4px 8px;align-items:start;min-height:var(--touch);padding:10px 14px;text-align:left;background:var(--panel-2);border:1px solid var(--line-2);border-radius:10px;color:var(--ink-2);font:400 15.5px/1.55 var(--f-body);cursor:pointer}
+.mn-choice__no{color:var(--muted);font-size:16px}
+.mn-choice__mark{grid-column:2;font:700 13.5px/1.4 var(--f-body)}
+.mn-choice__mark:empty{display:none}
+.mn-choice[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);color:var(--ink)}
+.mn-choice[aria-pressed="true"] .mn-choice__no{color:var(--gold-2)}
+.mn-choice.is-right{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok);background:var(--ok-soft)}
+.mn-choice.is-right .mn-choice__mark{color:var(--ok)}
+.mn-choice.is-wrong{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad);background:var(--bad-soft)}
+.mn-choice.is-wrong .mn-choice__mark{color:var(--bad)}
+.mn-choice:disabled{cursor:default}
+
+/* 버튼 */
+.mn-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--touch);padding:0 20px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);font:700 15px/1 var(--f-body);text-decoration:none;cursor:pointer}
+.mn-btn:hover{border-color:var(--muted)}
+.mn-btn--primary,.mn-btn--run{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
+.mn-btn--primary:hover,.mn-btn--run:hover{background:var(--gold-2);border-color:var(--gold-2)}
+.mn-btn--quiet{background:none;border-color:transparent;color:var(--muted);padding:0 8px}
+.mn-btn--s{min-height:44px;padding:0 12px;font-size:14px}
+.mn-btn:disabled{opacity:.4;cursor:default}
+.mn-btn[aria-pressed="true"]{border-color:var(--gold);color:var(--gold-2)}
+.mn-msg{padding:10px 14px;border-radius:10px;font-size:15px;line-height:1.6;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink)}
+.mn-msg--ok{border-color:var(--ok);background:var(--ok-soft)}
+.mn-msg--no{border-color:var(--bad);background:var(--bad-soft)}
+.mn-input{min-height:44px;padding:8px 12px;border:1px solid var(--line-2);border-radius:var(--r-s);background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--f-body);width:100%}
+.mn-input--num{width:84px;text-align:center;font-variant-numeric:tabular-nums}
+.mn-input--txt{width:min(240px,100%)}
+textarea.mn-input{min-height:88px;resize:vertical}
+.mn-stepper{display:inline-flex;gap:4px;align-items:center}
+.mn-seg{display:inline-flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+.mn-seg button{min-height:44px;padding:0 14px;border:0;background:var(--panel-2);color:var(--ink-2);font:500 14.5px/1 var(--f-body);cursor:pointer}
+.mn-seg button+button{border-left:1px solid var(--line-2)}
+.mn-seg button[aria-pressed="true"]{background:var(--gold-soft);color:var(--gold-2);box-shadow:inset 0 0 0 1px var(--gold)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}
+
+/* 관문 */
+.gate{display:grid;justify-items:center;gap:10px;margin-top:40px;padding:28px 16px;border:1px dashed var(--line-2);border-radius:var(--r);color:var(--muted);text-align:center;font-size:15px}
+.gate__no{font:500 14px/1 var(--f-mono);color:var(--muted);border:1px solid var(--line-2);border-radius:6px;padding:6px 8px}
+
+/* 표 */
+.tbl{overflow-x:auto}
+.mn-table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.6}
+.mn-table th,.mn-table td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;color:var(--ink-2)}
+.mn-table thead th{background:var(--panel-2);color:var(--ink);font-weight:700;white-space:nowrap}
+.mn-table tbody th{color:var(--ink);font-weight:700}
+.mn-table tr:last-child>*{border-bottom:0}
+.mn-table .is-ok{color:var(--ok);font-weight:700;white-space:nowrap}
+.mn-table .is-no{color:var(--bad);font-weight:700;white-space:nowrap}
+.mn-table .nw{white-space:nowrap}
+.mn-table--kv tbody th{width:120px;white-space:nowrap;color:var(--muted);font-weight:500}
+
+/* 체크 목록, 평가 */
+.ticks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tick{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;align-items:center;width:100%;min-height:var(--touch);padding:8px 14px;text-align:left;background:var(--panel-2);border:1px solid var(--line-2);border-radius:10px;color:var(--ink-2);font:400 15.5px/1.5 var(--f-body);cursor:pointer}
+.tick__box{width:22px;height:22px;display:grid;place-items:center;border:1px solid var(--muted);border-radius:5px;font-weight:700;font-size:13px}
+.tick[aria-pressed="true"]{border-color:var(--ok);background:var(--ok-soft);color:var(--ink)}
+.tick[aria-pressed="true"] .tick__box{background:var(--ok);border-color:var(--ok);color:var(--bg)}
+.evals{display:grid}
+.eval{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);font-size:15.5px;color:var(--ink-2)}
+.eval:first-child{border-top:0}
+@media (max-width:620px){.eval{grid-template-columns:minmax(0,1fr)}}
+.debug{list-style:none;margin:0;padding:0;display:grid;gap:6px;counter-reset:dbg}
+.debug li{counter-increment:dbg;display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;color:var(--muted);font-size:15.5px}
+.debug li::before{content:counter(dbg);width:26px;height:26px;display:grid;place-items:center;border:1px solid var(--line-2);border-radius:6px;font:500 13px/1 var(--f-mono)}
+.debug li.is-done{color:var(--ink-2)}
+.debug li.is-done::before{content:"✓";background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.debug li.is-now{color:var(--gold-2);font-weight:700}
+.debug li.is-now::before{border-color:var(--gold);color:var(--gold-2)}
+
+/* ---------- 작업대 ---------- */
+.bench{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-areas:"head head" "prog stage";gap:16px 18px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:0 18px 18px;align-items:start;overflow:hidden}
+.bench__head{grid-area:head;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline;margin:0 -18px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.bench__title{display:flex;gap:10px;align-items:center;font:700 16px/1.4 var(--f-body);color:var(--ink)}
+.dia{color:var(--gold);font-size:13px}
+.bench__hint{font-size:14px;line-height:1.5;color:var(--muted)}
+.bench .stage{grid-area:stage;display:grid;gap:10px;min-width:0}
+.bench .bench__prog{grid-area:prog;display:grid;gap:8px;min-width:0}
+@media (max-width:1180px){.bench{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "stage" "prog"}}
+.stage__frame{border:1px solid var(--line-2);border-radius:10px;overflow:hidden;background:var(--panel-2)}
+.stage__frame svg{display:block;width:100%;height:auto}
+.stage__bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mn-checks{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.mn-checks li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding:6px 10px;border-radius:8px;background:var(--panel-2);font-size:14.5px;line-height:1.5;color:var(--ink-2)}
+.mn-checks li::before{content:"○";color:var(--muted);text-align:center;font-weight:700}
+.mn-checks li.is-ok::before{content:"✓";color:var(--ok)}
+.mn-checks li.is-no::before{content:"✗";color:var(--bad)}
+.mn-checks li.is-ok{color:var(--ink)}
+.mn-tools{display:grid;gap:8px;padding:10px;background:var(--bg);border:1px solid var(--line-2);border-radius:10px}
+.mn-tools__row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mn-tools__hint{font-size:14px;line-height:1.6;color:var(--muted)}
+.mn-tools__lbl{font:500 13.5px/1 var(--f-body);color:var(--muted)}
+.obj-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.mn-program{display:grid;gap:3px;justify-items:start;padding:14px;background:var(--bg);border:1px solid var(--line-2);border-radius:10px;min-width:0;overflow-x:auto}
+.mn-program.is-flow{display:block;padding:8px}
+.empty-inner{font-size:13.5px;color:var(--muted);padding:6px 4px}
+.ask{display:grid;gap:8px;padding:12px;margin-top:8px;border:1px solid var(--gold);border-radius:10px;background:var(--gold-soft)}
+.ask__q{font-weight:700;color:var(--ink)}
+.ask__row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ask__in{width:140px}
+
+/* 블록 */
+.mn-block{position:relative;display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px;min-height:42px;max-width:100%;padding:6px 12px;border:0;border-radius:9px;color:#FFFFFF;font:700 14.5px/1.3 var(--f-body);text-align:left}
+button.mn-block{cursor:pointer}
+.mn-block--start{background:var(--b-start);border-radius:20px 20px 9px 9px}
+.mn-block--flow{background:var(--b-flow)} .mn-block--move{background:var(--b-move)} .mn-block--look{background:var(--b-look)} .mn-block--data{background:var(--b-data)}
+.mn-block--else{min-height:34px;padding:4px 12px;border-radius:0 9px 9px 0}
+.mn-block__v{display:inline-grid;place-items:center;min-width:32px;height:28px;padding:0 9px;border-radius:999px;background:#FFFFFF;color:#16233F}
+.mn-block__v--text{border-radius:6px}
+.mn-block__v--data{background:var(--b-data);color:#FFFFFF;box-shadow:inset 0 0 0 1.5px #FFFFFF99}
+.mn-cond{display:inline-flex;gap:6px;align-items:center;padding:2px 8px;border-radius:999px;background:var(--b-judge)}
+.mn-block__count{position:absolute;right:-8px;top:-9px;min-width:26px;padding:0 7px;border-radius:999px;background:var(--gold);color:var(--on-gold);font:700 12.5px/20px var(--f-body);text-align:center}
+.mn-block.is-running{outline:3px solid var(--gold-2);outline-offset:2px}
+.mn-block.is-picked{outline:3px solid #FFFFFF;outline-offset:2px}
+.mn-block.is-right{outline:3px solid var(--ok);outline-offset:2px}
+.mn-block.is-wrong{outline:3px solid var(--bad);outline-offset:2px}
+.mn-cblock{display:grid;justify-items:start}
+.mn-cblock__inner{display:grid;gap:3px;justify-items:start;margin-left:14px;padding:3px 0 3px 18px;box-shadow:inset 14px 0 0 var(--b-flow)}
+.mn-cblock__end{width:96px;height:14px;background:var(--b-flow);border-radius:0 0 6px 6px;margin-left:14px;margin-top:-3px}
+.mn-cblock>.mn-block--else{margin-left:14px}
+
+/* 실행 화면 그림 */
+.sky{fill:#14213A} .gnd{fill:#1C3A2D} .gnd-l{stroke:#2F5C46;stroke-width:1.5}
+.rtick{stroke:#5D7A68;stroke-width:1.5} .tick-t{fill:var(--muted);font:500 11px var(--f-body)}
+.wall{fill:var(--bad)}
+.bot{transition:transform var(--mv,70ms) linear}
+.bot-b{fill:var(--gold)} .bot-d{fill:#A97E2E} .bot-p{fill:#0B1220} .bot-a{stroke:var(--gold);stroke-width:3}
+.eye{fill:#FFFFFF} .pupil{fill:#0B1220}
+.fr-b{fill:var(--teal)}
+.lbl{fill:var(--ink-2);font:700 12px var(--f-body)}
+.bub{fill:#F4F1EA;stroke:#0B1220;stroke-width:1} .bub-t{fill:#16233F;font:700 15px var(--f-body)}
+.hud{fill:var(--ink-2);font:500 13px var(--f-body);font-variant-numeric:tabular-nums}
+.rope{fill:none;stroke:var(--teal);stroke-width:3}
+.clock{fill:var(--panel-3);stroke:var(--line-2)} .clock-t{fill:var(--gold-2);font:500 46px var(--f-mono);font-variant-numeric:tabular-nums} .clock-l{fill:var(--muted);font:500 12px var(--f-body)}
+.frame{fill:#7A5A2E} .frame-in{fill:#1A2740} .frame-t{fill:var(--ink);font:700 24px var(--f-body)}
+.obj{cursor:pointer} .obj-hit{fill:transparent} .obj:hover .obj-hit,.obj:focus .obj-hit{fill:#FFFFFF14} .obj:focus{outline:none}
+.obj-t{fill:var(--ink-2);font:500 12px var(--f-body)}
+.ic-a{fill:var(--teal)} .ic-d{fill:#2B7E89} .ic-s{fill:#0B1220} .ic-line{fill:none;stroke:#E8ECF3;stroke-width:2.5} .ic-line2{stroke:#0B1220;stroke-width:2}
+.obj[data-obj="phone"] .ic-d{fill:#C7CFDD} .obj[data-obj="umbrella"] .ic-a{fill:#E57399} .obj[data-obj="pencil"] .ic-a{fill:var(--gold)} .obj[data-obj="cap"] .ic-a{fill:#6FA8E8} .obj[data-obj="cap"] .ic-d{fill:#3E79BD} .obj[data-obj="shoe"] .ic-a{fill:#9C7BD6}
+.ic-x{fill:#3B4F78;stroke:#E8ECF3;stroke-width:1.5} .ic-xl{stroke:#FFFFFF;stroke-width:3.5;stroke-linecap:round}
+
+/* 순서도 */
+.flow{display:block;width:100%;height:auto}
+.fl-term{fill:#E5739926;stroke:#E57399;stroke-width:1.5} .fl-proc{fill:#5CC48C22;stroke:var(--ok);stroke-width:1.5} .fl-io{fill:#E3A35A22;stroke:#E3A35A;stroke-width:1.5} .fl-dec{fill:#6FA8E822;stroke:#6FA8E8;stroke-width:1.5}
+.fl-slot{fill:transparent;stroke:var(--gold);stroke-dasharray:6 4;stroke-width:2}
+.fl-t{fill:var(--ink);font:500 13px var(--f-body)} .fl-t--ph{fill:var(--gold-2)}
+.fl-e{fill:none;stroke:var(--muted);stroke-width:1.5} .fl-ah{fill:var(--muted)} .fl-l{fill:var(--ink-2);font:700 12px var(--f-body)}
+.fl-tap{cursor:pointer}
+.fl-node.is-running>path,.fl-node.is-running>rect{stroke:var(--gold-2);stroke-width:3.5}
+.fl-node.is-path>path,.fl-node.is-path>rect{stroke:var(--gold-2);stroke-width:3;fill:var(--gold-soft)}
+.fl-node.is-wrong>path,.fl-node.is-wrong>rect{stroke:var(--bad);stroke-width:3}
+.fl-node.is-picked>path,.fl-node.is-picked>rect{stroke:#FFFFFF;stroke-width:3}
+.flow-card{background:var(--bg);border:1px solid var(--line-2);border-radius:10px;padding:10px}
+.cards{display:flex;flex-wrap:wrap;gap:8px}
+.cards .mn-btn{font-weight:500}
+
+/* 처음 화면 */
+.arc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:820px){.arc{grid-template-columns:minmax(0,1fr)}}
+.arc .card{align-content:start}
+.arc .card .kick{font:500 13px/1 var(--f-mono);color:var(--gold)}
+.arc .go{display:flex;gap:8px;flex-wrap:wrap}
+.panel{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.panel__h{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line);font-weight:700}
+.panel__h span:last-child{font-weight:400;font-size:14px;color:var(--muted)}
+.panel__b{padding:18px}
+.page-foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display:grid;gap:4px;font-size:14px;line-height:1.7;color:var(--muted)}
+
+/* 교사용 */
+.doc{display:grid;gap:18px}
+.doc .card{scroll-margin-top:72px;font-size:15.5px}
+.doc h2{font:700 21px/1.4 var(--f-body);display:flex;gap:12px;align-items:baseline}
+.doc h2 .no{font:500 14px/1 var(--f-mono);color:var(--gold)}
+.notes{margin:0;padding-left:20px;display:grid;gap:8px;color:var(--ink-2)}
+.obs{display:grid;gap:12px}
+.obs label{display:grid;gap:6px;font:700 14.5px/1.4 var(--f-body);color:var(--ink)}
+.obs-act{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+@media (prefers-reduced-motion:reduce){.bot{transition:none}.bar i{transition:none}}
+.field{display:grid;gap:6px;font:700 14.5px/1.4 var(--f-body);color:var(--ink)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;min-height:48px}
+.pool .mn-block{margin-right:0}
+
+/* ---------- 보강 1: 센서 실행 화면 ---------- */
+.mn-live{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:#0000003d;font:500 12.5px/1.6 var(--f-body)}
+.mn-input--sel{min-height:44px;padding:0 10px;border-radius:8px}
+.dr-f{fill:#2B3A5C} .dr-in{fill:#0B1220} .dr-p{fill:#2E6F8E;stroke:#7FC4D8;stroke-width:1.5} .dr-h{stroke:#E8ECF3;stroke-width:3;stroke-linecap:round} .dr-s{fill:var(--gold)}
+[data-r="dl"],[data-r="dr"]{transition:transform .5s ease}
+.lp-pole{stroke:#8C97AD;stroke-width:6;stroke-linecap:round} .lp-arm{fill:none;stroke:#8C97AD;stroke-width:6;stroke-linecap:round}
+.lp-bulb{fill:#3A4661;stroke:#8C97AD;stroke-width:2;transition:fill .3s} .lp-bulb.is-on{fill:#F0C46B;stroke:#FFF1C9} .lp-glow{fill:#F0C46B;transition:opacity .3s}
+.sens{display:grid;gap:8px;padding:12px 14px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel-2)}
+.sens__row{display:grid;grid-template-columns:86px minmax(0,1fr) 52px;grid-template-areas:"n r v" "lo lo hi";align-items:center;gap:2px 10px}
+.sens__n{grid-area:n;font:700 14px/1.3 var(--f-body);color:var(--ink)}
+.sens__row input[type="range"]{grid-area:r;width:100%;accent-color:var(--gold);min-height:36px}
+.sens__v{grid-area:v;font:500 16px/1 var(--f-mono);color:var(--gold-2);text-align:right}
+.sens__lo,.sens__hi{font:400 12px/1.4 var(--f-body);color:var(--muted)} .sens__lo{grid-area:lo;padding-left:96px} .sens__hi{grid-area:hi;text-align:right}
+.bins{display:grid;gap:10px}
+.bin{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel-2)}
+.bin.is-ok{border-color:var(--ok)} .bin.is-no{border-color:var(--bad)}
+.bin__t{font:500 15px/1.5 var(--f-body);color:var(--ink)}
+.ipo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:8px 0}
+.ipo div{padding:10px;border-radius:10px;background:var(--panel-3);text-align:center;font:700 15px/1.4 var(--f-body)}
+.ipo div span{display:block;font:400 13px/1.4 var(--f-body);color:var(--muted)}
+@media (max-width:620px){.ipo{grid-template-columns:minmax(0,1fr)}.sens__row{grid-template-columns:70px minmax(0,1fr) 44px}.sens__lo{padding-left:80px}}
+.rec{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* ---------- 보강 2: 데이터 표와 그래프 ---------- */
+.dl-table td.dl-cell{padding:0}
+.dl-cell button{width:100%;min-height:44px;padding:8px 12px;border:0;background:transparent;text-align:right;font:500 15px/1.4 var(--f-mono);color:var(--ink-2);cursor:pointer;border-radius:6px}
+.dl-cell button:hover{background:var(--panel-3)}
+.dl-cell.is-flag button{background:var(--bad-soft);color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.dl-cell.is-fixed button{background:var(--ok-soft);color:var(--ok)}
+.dl-table tr.is-hi th,.dl-table tr.is-hi td{background:var(--gold-soft);color:var(--gold-2)}
+.dl-table .num{text-align:right;font-family:var(--f-mono)}
+.dl-src{font:400 12.5px/1.6 var(--f-body);color:var(--muted);margin-top:6px}
+.chart{border:1px solid var(--line-2);border-radius:10px;background:var(--panel-2);padding:8px}
+.chart svg{display:block;width:100%;height:auto}
+.ch-ax{stroke:#3B4A6B;stroke-width:1} .ch-grid{stroke:#1E2A40;stroke-width:1} .ch-t{fill:#BAC3D3;font:400 12px var(--f-body)} .ch-tt{fill:#E8ECF3;font:700 13px var(--f-body)}
+.ch-bar{fill:#D9A441;opacity:.85} .ch-bar.is-hi{fill:#F0C46B;opacity:1;stroke:#FFF1C9;stroke-width:1.5} .ch-bar.is-dim{opacity:.35}
+.ch-line{fill:none;stroke:#F0C46B;stroke-width:3;stroke-linejoin:round} .ch-dot{fill:#0B1220;stroke:#F0C46B;stroke-width:2.5} .ch-dot.is-hi{fill:#F0C46B;r:7}
+.ch-v{fill:#E8ECF3;font:500 11.5px var(--f-mono)}
+.fix-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.cls-grid{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:8px 12px;align-items:center}
+.cls-grid input{width:100%}
+.side__h--gap{margin-top:16px}
+.mn-cond--s{flex-wrap:nowrap;white-space:nowrap}
+.mn-cond__t{color:#fff;font-weight:700}
+.sc-t{fill:#E8ECF3;font:700 15px var(--f-body)}
+.ch-div{stroke:var(--gold,#c9a227);stroke-width:1.5;stroke-dasharray:5 4}
+.ch-dt{font-size:11px;fill:var(--gold,#c9a227)}
+
+/* ===== 교과서 연결 웹 활동: 교과서와 같은 밝은 화면 (민트·코랄, 주아 제목) ===== */
+body{background:#F4F8F6;color:var(--ink);font:400 17px/1.75 var(--f-body)}
+a{color:var(--gold-2)}
+.tb-top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:10px 20px;background:#fff;border-bottom:1px solid var(--line)}
+.tb-top a{text-decoration:none;color:inherit}
+.tb-top .home{display:flex;align-items:center;gap:10px;font:400 18px/1.2 "Jua",var(--f-body);color:var(--ink)}
+.tb-top .home i{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;font:400 18px/1 "Jua";font-style:normal}
+.tb-top nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.tb-top nav a{min-height:40px;display:inline-flex;align-items:center;padding:0 12px;border-radius:20px;font:700 14px/1 var(--f-body);color:var(--muted);border:1px solid transparent}
+.tb-top nav a[aria-current="page"]{background:var(--gold-soft);color:var(--gold-2);border-color:#BFE3D6}
+.page{max-width:920px;margin:0 auto;padding:26px 20px 90px}
+.lesson-head{display:grid;gap:10px;padding:22px 24px;background:#fff;border:1px solid var(--line);border-radius:18px;position:relative;margin-top:8px}
+.lesson-head::before{content:"";position:absolute;top:-8px;left:26px;width:64px;height:16px;background:var(--tape);opacity:.9;transform:rotate(-4deg);border-radius:2px}
+.lesson-head .kicker{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font:700 13px/1.4 var(--f-body);color:var(--gold-2)}
+.lesson-head .kicker .pg{background:var(--coral);color:#fff;border-radius:999px;padding:3px 10px}
+.lesson-head h1{font:400 clamp(26px,4.4vw,36px)/1.25 "Jua",var(--f-body);letter-spacing:0;color:var(--ink)}
+.lesson-head h1 em{font:inherit;color:var(--coral)}
+.goal{color:var(--ink-2);font-size:16px}
+.goal b{color:var(--gold-2)}
+.step{padding-top:34px;gap:14px}
+.step__h h2{font:400 23px/1.35 "Jua",var(--f-body);letter-spacing:0;align-items:center}
+.step__h h2 .no{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;font:400 18px/1 "Jua"}
+.step.is-done .step__h h2 .no::after{content:""}
+.step__h p{color:var(--ink-2)}
+.card{background:#fff;border:1px solid var(--line);box-shadow:0 1px 0 rgba(35,48,74,.04)}
+.card p,.card li{color:var(--ink-2)}
+.oneline{border-color:#BFE3D6;background:var(--gold-soft)}
+.oneline__l{background:#F4F8F6;color:var(--gold-2);font:700 12.5px/20px var(--f-body);letter-spacing:0}
+.help{border:1.5px dashed #9AA6B5;border-radius:12px;padding:10px 14px;background:#fff;font-size:15px;color:var(--ink-2)}
+.help::before{content:"도움말";font-weight:700;color:var(--coral);margin-right:8px}
+.help.after::before{content:"실행한 뒤 읽어요";color:var(--gold-2)}
+.mn-btn{background:#fff;border-color:var(--line-2);color:var(--ink)}
+.mn-btn--primary,.mn-btn--run{background:var(--gold);border-color:var(--gold);color:#fff}
+.mn-btn--primary:hover,.mn-btn--run:hover{background:var(--gold-2);border-color:var(--gold-2)}
+.mn-btn[aria-pressed="true"]{border-color:var(--gold);color:var(--gold-2);background:var(--gold-soft)}
+.mn-msg{background:#fff}
+.mn-choice{background:#fff;color:var(--ink)}
+.mn-choice[aria-pressed="true"]{background:var(--gold-soft)}
+.tick{background:#fff;color:var(--ink-2)}
+.tick[aria-pressed="true"] .tick__box{color:#fff}
+.debug li.is-now{color:var(--coral)}
+.debug li.is-now::before{border-color:var(--coral);color:var(--coral)}
+.mn-seg button[aria-pressed="true"]{background:var(--gold);color:#fff;border-color:var(--gold)}
+.bench{background:#fff;border-color:var(--line)}
+.stage__frame{background:#fff;border-color:var(--line)}
+.mn-program{background:#F6F7F9}
+.mn-block__v{color:#23304A}
+/* 실행 화면 그림 (밝게) */
+.sky{fill:#EAF6FB} .gnd{fill:#F3E3BE} .gnd-l{stroke:#D9BF86}
+.rtick{stroke:#B89A5C} .tick-t{fill:#7A6A48}
+.bot-b{fill:#2C9B78} .bot-d{fill:#1F7F61} .bot-p{fill:#23304A} .bot-a{stroke:#2C9B78} .pupil{fill:#23304A} .eye{fill:#fff}
+.fr-b{fill:#17A9D6}
+.bub{fill:#fff;stroke:#23304A;stroke-width:1.5} .bub-t{fill:#23304A}
+.clock{fill:#fff;stroke:#C9D4DE} .clock-t{fill:#1F7F61}
+.frame{fill:#C99A5B} .frame-in{fill:#FFFBF2} .frame-t{fill:#23304A;font:400 26px "Jua",var(--f-body)}
+.obj:hover .obj-hit,.obj:focus .obj-hit{fill:#2C9B7814}
+.obj-t{fill:#23304A;font:700 12px var(--f-body)}
+.ic-s{fill:#23304A} .ic-line{stroke:#23304A} .ic-line2{stroke:#23304A}
+.ic-x{fill:#E6574F;stroke:#B83F38} .ic-xl{stroke:#fff}
+.fl-term{fill:#FDECEA;stroke:#E6574F} .fl-proc{fill:#E7F5F0;stroke:#2C9B78} .fl-io{fill:#FFF6E0;stroke:#E3A35A} .fl-dec{fill:#E3F4FB;stroke:#17A9D6}
+.fl-node.is-path>path,.fl-node.is-path>rect{stroke:var(--coral);stroke-width:3.5;fill:#FFF1E0}
+.fl-node.is-running>path,.fl-node.is-running>rect{stroke:var(--coral)}
+.ask{background:#fff;border:2px solid var(--gold);color:var(--ink)}
+/* 교과서 쪽 띠, 예측 표 */
+.tbref{display:inline-flex;gap:6px;align-items:center;font:700 13px/1 var(--f-body);color:var(--gold-2);background:var(--gold-soft);border-radius:999px;padding:6px 12px}
+.pred{width:100%;border-collapse:collapse;font-size:15.5px}
+.pred th{background:var(--gold-soft);color:var(--gold-2);font-weight:700;padding:8px 10px;text-align:left;border-bottom:1px solid #BFE3D6}
+.pred td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.pred input{width:84px;min-height:44px;font:inherit;text-align:center;border:1.5px solid var(--line-2);border-radius:10px}
+.pred .res{font-weight:700;color:var(--gold-2)}
+.pred .res.no{color:var(--coral)}
+.only-val .mn-tools__row:first-child{display:none}
+.home-cards{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.home-cards .card h3{font:400 21px/1.35 "Jua",var(--f-body)}
+.home-cards .card .pgno{font:700 13px/1 var(--f-body);color:#fff;background:var(--coral);border-radius:999px;padding:5px 10px;justify-self:start}
+.fields{display:grid;gap:10px}
+.fields label{display:grid;gap:4px;font:700 14px/1.4 var(--f-body);color:var(--gold-2)}
+.fields input{min-height:46px;font:inherit;padding:0 12px;border:1.5px solid var(--line-2);border-radius:10px;color:var(--ink)}
+.pathbtns{display:flex;gap:8px;flex-wrap:wrap}
+.foot{margin-top:40px;font-size:13.5px;color:var(--muted)}
+@media (max-width:640px){
+  .tb-top{flex-wrap:wrap;padding:8px 14px}
+  .tb-top nav{margin-left:0}
+  .page{padding:18px 14px 70px}
+  .two{grid-template-columns:1fr}
+}
+.home-h{ font:400 22px/1.3 "Jua",var(--f-body); margin:28px 0 12px; color:var(--ink) }
+/* 더하기 1·2 (기존 화면 조각 밝게) */
+.ch-ax{stroke:#9AA6B5} .ch-grid{stroke:#E3E9EF} .ch-t{fill:#5B6578} .ch-tt{fill:#23304A}
+.ch-bar{fill:#17A9D6;opacity:.9} .ch-bar.is-hi{fill:#E6574F;stroke:#B83F38} .ch-line{stroke:#E6574F} .ch-dot{fill:#fff;stroke:#E6574F} .ch-dot.is-hi{fill:#E6574F} .ch-v{fill:#23304A}
+.ch-div{stroke:#2C9B78} .ch-dt{fill:#2C9B78}
+.sc-t{fill:#23304A} .dr-f{fill:#9AA6B5} .dr-in{fill:#EAF6FB} .dr-p{fill:#BFE6F3;stroke:#17A9D6} .dr-h{stroke:#23304A}
+.lp-bulb{fill:#DCE4EC;stroke:#9AA6B5} .lp-bulb.is-on{fill:#F4D45C;stroke:#E3A35A} .lp-glow{fill:#F4D45C}
+.ipo div,.bin,.cls-grid input,.dl-cell{background:#fff;color:var(--ink)}
+/* QR로 연 활동 화면: 그 활동 하나만 보이게 (위 메뉴 숨김) */
+body.solo .tb-top{display:none}
+
+[hidden]{display:none!important}
+</style></head><body>
+
+<header class="tb-top"><a class="home" href="#home"><i>7</i>컴퓨터와 문제 해결 · 웹 활동</a><nav id="topnav" aria-label="활동 바로 가기"></nav></header>
+<main id="view" tabindex="-1"></main>
+<script>(()=>{
+/* engine.js — 블록 정의, 블록 실행기, 실행 화면 3종(걷기·줄넘기 타이머·분실물 보관함), 순서도 그리기, 작업대 */
+'use strict';
+const KEY = 'tb7v1-';
+const store = {
+  get(k, d) { try { const s = localStorage.getItem(KEY + k); return s == null ? d : JSON.parse(s); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) {} },
+  clear(prefix) { try { Object.keys(localStorage).filter(k => k.startsWith(KEY + prefix)).forEach(k => localStorage.removeItem(k)); } catch (e) {} }
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let UID = 0; const uid = () => 'b' + (++UID);
+const fresh = items => items.map(it => ({ u: it.u && /^n/.test(it.u) ? it.u : uid(), t: it.t, d: it.d || 0, v: Object.assign({}, it.v || {}) }));
+const plain = items => items.map(({ t, d, v }) => ({ t, d, v: Object.assign({}, v) }));
+const P = (t, d, v, u) => ({ t, d: d || 0, v: v || {}, u });
+
+/* ---------- 블록 ---------- */
+const fv = (k, val, isText) => `<span class="mn-block__v${isText ? ' mn-block__v--text' : ''}" data-k="${k}">${esc(val)}</span>`;
+const BT = {
+  start:  { c: 'start', hat: 1, f: [], r: () => '▶ 시작하기 버튼을 클릭했을 때' },
+  click:  { c: 'start', hat: 1, f: [], r: () => '오브젝트를 클릭했을 때' },
+  live:   { c: 'start', hat: 1, f: [], r: () => '▶ 시작하기 버튼을 클릭했을 때 <span class="mn-live">센서를 계속 읽으며 반복</span>' },
+  repeat: { c: 'flow', box: 1, f: [{ k: 'n', min: 0, max: 30, step: 1 }], r: v => `${fv('n', v.n)} 번 반복하기` },
+  if:     { c: 'flow', box: 1, f: [{ k: 't', text: true, max: 6 }], r: v => `만일 <span class="mn-cond"><span class="mn-block__v mn-block__v--data">대답</span> = ${fv('t', v.t, true)}</span> (이)라면` },
+  else:   { c: 'flow', box: 1, f: [], r: () => '아니면' },
+  move:   { c: 'move', f: [{ k: 'n', min: -30, max: 30, step: 1 }], r: v => `이동 방향으로 ${fv('n', v.n)} 만큼 움직이기` },
+  next:   { c: 'look', f: [], r: () => '다음 모양으로 바꾸기' },
+  wait:   { c: 'flow', f: [{ k: 'n', min: 0, max: 200, step: 1 }], r: v => `${fv('n', v.n)} 초 기다리기` },
+  say:    { c: 'look', f: [{ k: 't', text: true, max: 24 }, { k: 'n', min: 1, max: 5, step: 1 }], r: v => `${fv('t', v.t, true)} 을(를) ${fv('n', v.n)} 초 동안 말하기` },
+  ask:    { c: 'data', f: [{ k: 't', text: true, max: 24 }], r: v => `${fv('t', v.t, true)} 을(를) 묻고 대답 기다리기` },
+  hide:   { c: 'look', f: [], r: () => '모양 숨기기' },
+  stop:   { c: 'flow', f: [], r: () => '모든 코드 멈추기' },
+  /* 보강 1(컴퓨팅 시스템)용 블록 */
+  forever:{ c: 'flow', box: 1, f: [], r: () => '계속 반복하기' },
+  ifs:    { c: 'flow', box: 1, f: [{ k: 's', sel: ['거리', '밝기', '소리'] }, { k: 'o', sel: ['<', '>'] }, { k: 'n', min: 0, max: 200, step: 5 }], r: v => `만일 <span class="mn-cond mn-cond--s">${fv('s', v.s, true)}<span class="mn-cond__t">센서 값</span>${fv('o', v.o, true)}${fv('n', v.n)}</span> (이)라면` },
+  dopen:  { c: 'look', f: [], r: () => '문 열기' },
+  dclose: { c: 'look', f: [], r: () => '문 닫기' },
+  lon:    { c: 'look', f: [], r: () => '불 켜기' },
+  loff:   { c: 'look', f: [], r: () => '불 끄기' }
+};
+const isBox = t => t === 'repeat' || t === 'if' || t === 'else' || t === 'forever' || t === 'ifs';
+const isIf = t => t === 'if' || t === 'ifs';
+const isHat = t => t === 'start' || t === 'click' || t === 'live';
+
+function normalize(items) {
+  let inBox = false;
+  for (const it of items) {
+    if (isBox(it.t)) { it.d = 0; inBox = true; }
+    else if (isHat(it.t)) { it.d = 0; inBox = false; }
+    else if (it.d === 1) { if (!inBox) it.d = 0; }
+    else inBox = false;
+  }
+  return items;
+}
+function toTree(items) {
+  const out = []; let cur = null, lastIf = null;
+  for (const it of items) {
+    if (it.t === 'repeat' || it.t === 'forever') { cur = Object.assign({}, it, { body: [] }); out.push(cur); lastIf = null; }
+    else if (isIf(it.t)) { cur = Object.assign({}, it, { body: [], els: null }); out.push(cur); lastIf = cur; }
+    else if (it.t === 'else') { if (lastIf && !lastIf.els) { lastIf.els = []; lastIf.elseU = it.u; cur = { body: lastIf.els }; } else cur = { body: [] }; lastIf = null; }
+    else if (it.d === 1 && cur) cur.body.push(it);
+    else { cur = null; lastIf = null; out.push(it); }
+  }
+  return out;
+}
+function blockHTML(it, o) {
+  const d = BT[it.t];
+  const tag = o.tap ? 'button' : 'div', ty = o.tap ? ' type="button"' : '';
+  const cls = `mn-block mn-block--${d.c}${it.t === 'else' ? ' mn-block--else' : ''}${o.sel === it.u ? ' is-picked' : ''}${o.mark && o.mark[it.u] ? ' ' + o.mark[it.u] : ''}`;
+  return `<${tag}${ty} class="${cls}" data-u="${it.u}">${d.r(it.v)}${o.counts ? `<span class="mn-block__count" data-cnt="${it.u}" hidden>0</span>` : ''}</${tag}>`;
+}
+function progHTML(items, o = {}) {
+  let h = '', i = 0;
+  const inner = j => { let s = ''; while (j < items.length && items[j].d === 1) { s += blockHTML(items[j], o); j++; } return [s, j]; };
+  while (i < items.length) {
+    const it = items[i];
+    if (it.t === 'repeat' || it.t === 'forever' || isIf(it.t)) {
+      let [a, j] = inner(i + 1);
+      h += `<div class="mn-cblock">${blockHTML(it, o)}<div class="mn-cblock__inner">${a || '<p class="empty-inner">안이 비어 있어요</p>'}</div>`;
+      if (isIf(it.t) && items[j] && items[j].t === 'else') { const [b, k] = inner(j + 1); h += `${blockHTML(items[j], o)}<div class="mn-cblock__inner">${b || '<p class="empty-inner">안이 비어 있어요</p>'}</div>`; j = k; }
+      h += `<div class="mn-cblock__end" aria-hidden="true"></div></div>`;
+      i = j;
+    } else { h += blockHTML(it, o); i++; }
+  }
+  return h || '<p class="empty-inner">블록이 없어요.</p>';
+}
+
+/* 편집: 묶음(반복, 만일~아니면)은 안에 든 블록과 함께 움직인다 */
+function headerOf(items, i) { let j = i; while (j > 0 && !isBox(items[j].t)) j--; return j; }
+function ifOf(items, j) { while (j > 0 && !isIf(items[j].t)) j--; return j; }
+function runEnd(items, i) { let j = i; while (j + 1 < items.length && items[j + 1].d === 1) j++; return j; }
+function unitEnd(items, i) {
+  const t = items[i].t; if (!isBox(t)) return i;
+  let e = runEnd(items, i);
+  if (isIf(t) && items[e + 1] && items[e + 1].t === 'else') e = runEnd(items, e + 1);
+  return e;
+}
+function topStart(items, j) { if (items[j].d === 1) j = headerOf(items, j); if (items[j].t === 'else') j = ifOf(items, j); return j; }
+function canDo(items, i, op) {
+  const it = items[i]; if (!it || isHat(it.t) || it.t === 'else') return false;
+  const prev = items[i - 1], end = unitEnd(items, i), next = items[end + 1];
+  if (op === 'up') { if (it.d === 1) return !!prev && prev.d === 1; return !!prev && !isHat(prev.t); }
+  if (op === 'down') { if (it.d === 1) return !!next && next.d === 1; return !!next && next.t !== 'else'; }
+  if (op === 'in') return it.d === 0 && !isBox(it.t) && !!prev && (isBox(prev.t) || prev.d === 1);
+  if (op === 'out') return it.d === 1;
+  return false;
+}
+function doOp(items, i, op) {
+  if (!canDo(items, i, op)) return items;
+  const it = items[i];
+  if (it.d === 1 && (op === 'up' || op === 'down')) { const j = op === 'up' ? i - 1 : i + 1; [items[i], items[j]] = [items[j], items[i]]; return normalize(items); }
+  if (op === 'in') { it.d = 1; return normalize(items); }
+  if (op === 'out') { const top = topStart(items, i), e = unitEnd(items, top); items.splice(i, 1); it.d = 0; items.splice(e, 0, it); return normalize(items); }
+  const end = unitEnd(items, i), unit = items.slice(i, end + 1);
+  if (op === 'up') { const to = topStart(items, i - 1); items.splice(i, unit.length); items.splice(to, 0, ...unit); }
+  else { const nx = end + 1, span = unitEnd(items, nx) - nx + 1; items.splice(i, unit.length); items.splice(i + span, 0, ...unit); }
+  return normalize(items);
+}
+
+/* ---------- 실행기 ---------- */
+async function runProgram(items, st, o) {
+  const tr = { log: [], moves: 0, nexts: 0, waits: [], says: [], asks: 0, answers: [], hides: 0, branch: { yes: 0, no: 0 }, wall: false, error: null, stopped: false, u: 0, counts: {} };
+  if (!items.length || !isHat(items[0].t)) { tr.error = 'nostart'; return tr; }
+  if (!o.keep) st.reset();
+  const ctx = { answer: null }, counts = tr.counts, tick = () => sleep(16 / o.speed);
+  const hit = u => { if (!u) return; o.onBlock && o.onBlock(u); counts[u] = (counts[u] || 0) + 1; o.onCount && o.onCount(u, counts[u]); };
+  async function ex(list) {
+    for (const b of list) {
+      if (o.token.stop) throw new Error('stop');
+      hit(b.u); const v = b.v || {};
+      if (b.t === 'repeat') {
+        const n = Math.max(0, Math.floor(+v.n || 0));
+        for (let i = 0; i < n; i++) { st.hud && st.hud(`반복 ${i + 1} / ${n}`); await ex(b.body); await tick(); }
+        st.hud && st.hud('');
+      } else if (b.t === 'forever') {
+        const max = o.maxLoops || 100000; tr.loops = 0;
+        for (let i = 0; i < max; i++) { if (o.token.stop) throw new Error('stop'); tr.loops++; st.hud && st.hud(`계속 반복 ${i + 1}`); await ex(b.body); o.onLoop && o.onLoop(i, st); await sleep(Math.max(30, 120 / o.speed)); }
+        st.hud && st.hud('');
+      } else if (b.t === 'if') {
+        const yes = String(ctx.answer == null ? '' : ctx.answer).trim() === String(v.t || '').trim();
+        tr.branch[yes ? 'yes' : 'no']++;
+        if (yes) await ex(b.body); else if (b.els) { hit(b.elseU); await ex(b.els); }
+      } else if (b.t === 'ifs') {
+        const val = st.sensor ? st.sensor(v.s) : 0, n = +v.n || 0;
+        const yes = v.o === '>' ? val > n : val < n;
+        tr.branch[yes ? 'yes' : 'no']++; tr.lastSensor = { s: v.s, val, yes };
+        if (yes) await ex(b.body); else if (b.els) { hit(b.elseU); await ex(b.els); }
+      } else if (b.t === 'dopen' || b.t === 'dclose') { tr.door = b.t === 'dopen'; st.door && st.door(tr.door); }
+      else if (b.t === 'lon' || b.t === 'loff') { tr.led = b.t === 'lon'; st.led && st.led(tr.led); } else if (b.t === 'move') { if (st.move && st.move(+v.n || 0)) tr.wall = true; tr.moves++; }
+      else if (b.t === 'next') { st.next && st.next(); tr.nexts++; }
+      else if (b.t === 'wait') { const s = Math.max(0, +v.n || 0); tr.waits.push({ s, mb: tr.moves }); tr.log.push('w' + s); if (st.wait) await st.wait(s, o); else await sleep(s * 1000 / o.speed); }
+      else if (b.t === 'say') { const s = Math.max(0, +v.n || 0); tr.says.push({ t: String(v.t || ''), mb: tr.moves }); tr.log.push('s:' + String(v.t || '')); st.say(String(v.t || '')); await sleep(s * 1000 / Math.min(o.speed, 3)); st.clearSay(); }
+      else if (b.t === 'ask') { tr.asks++; const a = await st.ask(String(v.t || ''), o.token); if (a == null) throw new Error('stop'); ctx.answer = a; tr.answers.push(a); tr.log.push('a:' + a); }
+      else if (b.t === 'hide') { tr.hides++; tr.log.push('h'); st.hide && st.hide(); }
+      else if (b.t === 'stop') { tr.stopAll = true; throw new Error('stopall'); }
+      await tick();
+    }
+  }
+  try { await ex(toTree(items)); } catch (e) { if (e.message === 'stop') tr.stopped = true; }
+  o.onBlock && o.onBlock(null); tr.u = st.u ? st.u() : 0; return tr;
+}
+
+/* ---------- 실행 화면 공통: 질문 칸 ---------- */
+function askPanel(host) {
+  const box = document.createElement('div'); box.className = 'ask'; box.hidden = true;
+  box.innerHTML = `<p class="ask__q"></p><div class="ask__row"><button type="button" class="mn-btn mn-btn--s" data-a="예">예</button><button type="button" class="mn-btn mn-btn--s" data-a="아니요">아니요</button><input class="mn-input ask__in" type="text" maxlength="10" aria-label="직접 입력" placeholder="직접 입력"><button type="button" class="mn-btn mn-btn--s" data-a="__in">입력</button></div>`;
+  host.appendChild(box);
+  return (q, token) => new Promise(res => {
+    box.hidden = false; box.querySelector('.ask__q').textContent = q; const inp = box.querySelector('.ask__in'); inp.value = '';
+    const done = a => { box.hidden = true; box.removeEventListener('click', on); clearInterval(iv); res(a); };
+    const on = e => { const b = e.target.closest('[data-a]'); if (!b) return; done(b.dataset.a === '__in' ? inp.value.trim() : b.dataset.a); };
+    box.addEventListener('click', on);
+    const iv = setInterval(() => { if (token.stop) done(null); }, 100);
+  });
+}
+
+/* ---------- 실행 화면 1: 걷기 (1차시) ---------- */
+const GY = 168, X = u => 60 + u * 4.2, UMIN = -12, UMAX = 130;
+const ROBOT = (legs) => `${legs}<rect class="bot-b" x="-20" y="-60" width="40" height="36" rx="8"/><rect class="bot-p" x="-9" y="-50" width="18" height="10" rx="3"/><line class="bot-a" x1="0" y1="-88" x2="0" y2="-97"/><circle class="bot-p" cx="0" cy="-99" r="4"/><rect class="bot-b" x="-17" y="-88" width="34" height="27" rx="7"/><circle class="eye" cx="-7" cy="-75" r="5"/><circle class="eye" cx="7" cy="-75" r="5"/><circle class="pupil" cx="-5.5" cy="-75" r="2.4"/><circle class="pupil" cx="8.5" cy="-75" r="2.4"/>`;
+const LEGS = (cls, a) => `<g class="${cls}"><rect class="bot-d" x="-11" y="-26" width="8" height="26" rx="3" transform="rotate(${a} -7 -26)"/><rect class="bot-d" x="3" y="-26" width="8" height="26" rx="3" transform="rotate(${-a} 7 -26)"/></g>`;
+const BUBBLE = `<g data-r="bub" visibility="hidden"><rect class="bub" data-r="bubr" x="-10" y="-146" width="120" height="34" rx="8"/><text class="bub-t" data-r="bubt" x="4" y="-123">…</text></g>`;
+function bubbleApi(R, getX, right) {
+  const bub = R('bub'), bubr = R('bubr'), bubt = R('bubt');
+  return {
+    say(t) { const w = 26 + [...t].length * 15; bubr.setAttribute('width', w); const off = getX() + w > right ? -w + 20 : -10; bubr.setAttribute('x', off); bubt.setAttribute('x', off + 13); bubt.textContent = t; bub.setAttribute('visibility', 'visible'); },
+    clearSay() { bub.setAttribute('visibility', 'hidden'); }
+  };
+}
+function walkStage(host, friendU) {
+  let ticks = '';
+  for (let u = 0; u <= 120; u += 10) ticks += `<line class="rtick" x1="${X(u)}" y1="${GY + 4}" x2="${X(u)}" y2="${GY + 12}"/><text class="tick-t" x="${X(u)}" y="${GY + 27}" text-anchor="middle">${u}</text>`;
+  host.innerHTML = `<div class="stage__frame"><svg viewBox="0 0 640 210" role="img" aria-label="실행 화면: 로봇이 땅 위를 걷고 오른쪽에 친구가 서 있다. 아래 눈금은 이동한 거리이다.">
+  <rect class="sky" x="0" y="0" width="640" height="${GY}"/><rect class="gnd" x="0" y="${GY}" width="640" height="${210 - GY}"/><line class="gnd-l" x1="0" y1="${GY}" x2="640" y2="${GY}"/>${ticks}
+  <rect class="wall" data-r="wall" x="628" y="0" width="12" height="${GY}" opacity="0"/>
+  <g data-r="friend"><rect class="fr-b" x="-9" y="-24" width="7" height="24" rx="3"/><rect class="fr-b" x="2" y="-24" width="7" height="24" rx="3"/><rect class="fr-b" x="-17" y="-56" width="34" height="34" rx="14"/><circle class="fr-b" cx="0" cy="-74" r="15"/><circle class="eye" cx="-6" cy="-76" r="4.5"/><circle class="eye" cx="6" cy="-76" r="4.5"/><circle class="pupil" cx="-7.5" cy="-76" r="2.2"/><circle class="pupil" cx="4.5" cy="-76" r="2.2"/><text class="lbl" x="0" y="-98" text-anchor="middle">친구</text></g>
+  <g class="bot" data-r="bot"><g>${ROBOT(LEGS('l0', 0) + LEGS('l1', 20))}</g>${BUBBLE}</g>
+  <text class="hud" data-r="hud" x="14" y="26"></text><text class="hud" data-r="hud2" x="626" y="26" text-anchor="end"></text></svg></div>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  const bot = R('bot'), hud = R('hud'), hud2 = R('hud2'), wall = R('wall'), friend = R('friend'), l0 = host.querySelector('.l0'), l1 = host.querySelector('.l1');
+  const s = { u: 0, shape: 0 };
+  const place = ms => { bot.style.setProperty('--mv', ms + 'ms'); bot.style.transform = `translate(${X(s.u)}px, ${GY}px)`; hud2.textContent = `위치 ${s.u}`; };
+  const api = Object.assign(bubbleApi(R, () => X(s.u), 630), {
+    setFriend(fu) { friend.setAttribute('transform', `translate(${X(fu) + 52} ${GY})`); },
+    reset() { s.u = 0; s.shape = 0; l0.style.display = ''; l1.style.display = 'none'; api.clearSay(); wall.setAttribute('opacity', 0); hud.textContent = ''; place(0); },
+    move(n) { let hitW = false; s.u += n; if (s.u > UMAX) { s.u = UMAX; hitW = true; } if (s.u < UMIN) { s.u = UMIN; hitW = true; } if (hitW) wall.setAttribute('opacity', 1); place(70); return hitW; },
+    next() { s.shape ^= 1; l0.style.display = s.shape ? 'none' : ''; l1.style.display = s.shape ? '' : 'none'; },
+    hud(t) { hud.textContent = t || ''; }, u: () => s.u, ask: askPanel(host)
+  });
+  api.setFriend(friendU == null ? 100 : friendU); api.reset();
+  return api;
+}
+
+/* ---------- 실행 화면 2: 줄넘기 타이머 (2차시). 기다리는 시간을 빠르게 돌려 본다 ---------- */
+function timerStage(host) {
+  host.innerHTML = `<div class="stage__frame"><svg viewBox="0 0 640 210" role="img" aria-label="실행 화면: 로봇이 줄넘기를 하고, 오른쪽 시계가 흐른 시간을 보여 준다.">
+  <rect class="sky" x="0" y="0" width="640" height="${GY}"/><rect class="gnd" x="0" y="${GY}" width="640" height="${210 - GY}"/><line class="gnd-l" x1="0" y1="${GY}" x2="640" y2="${GY}"/>
+  <g transform="translate(170 ${GY})" data-r="kid"><g data-r="jump">${ROBOT(LEGS('l0', 0))}<path class="rope" data-r="rope" d="M-26 -58 Q0 -150 26 -58" /></g>${BUBBLE}</g>
+  <g transform="translate(470 92)"><rect class="clock" x="-118" y="-48" width="236" height="96" rx="12"/><text class="clock-t" data-r="clock" x="0" y="20" text-anchor="middle">00:00</text><text class="clock-l" x="0" y="-26" text-anchor="middle">흐른 시간 (프로그램 속 시간)</text></g>
+  <text class="hud" data-r="real" x="352" y="186">실제로 기다린 시간 0초</text></svg></div>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  const clock = R('clock'), real = R('real'), rope = R('rope'), jump = R('jump');
+  let sim = 0, realMs = 0;
+  const fmt = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  const draw = () => { clock.textContent = fmt(sim); real.textContent = `실제로 기다린 시간 ${Math.round(realMs / 1000)}초`; const up = Math.floor(sim * 2) % 2 === 1; rope.setAttribute('d', up ? 'M-26 -58 Q0 -150 26 -58' : 'M-26 -58 Q0 30 26 -58'); jump.setAttribute('transform', up ? 'translate(0 -10)' : ''); };
+  const api = Object.assign(bubbleApi(R, () => 170, 630), {
+    reset() { sim = 0; realMs = 0; api.clearSay(); draw(); },
+    async wait(s, o) {
+      const t0 = performance.now(), start = sim, target = start + s; let last = t0;
+      while (sim < target) {
+        if (o.token.stop) throw new Error('stop');
+        await sleep(40); const now = performance.now(); realMs += now - last; last = now;
+        sim = Math.min(target, start + (now - t0) / 1000 * o.speed); draw();
+      }
+    },
+    elapsed: () => sim, ask: askPanel(host)
+  });
+  api.reset(); return api;
+}
+
+/* ---------- 실행 화면 3: 분실물 보관함 (3·4차시) ---------- */
+const ICON = {
+  bottle: `<rect x="-11" y="-30" width="22" height="8" rx="2" class="ic-d"/><rect x="-15" y="-22" width="30" height="52" rx="10" class="ic-a"/><rect x="-15" y="-4" width="30" height="14" class="ic-d"/>`,
+  phone: `<rect x="-17" y="-30" width="34" height="60" rx="6" class="ic-d"/><rect x="-13" y="-24" width="26" height="44" rx="2" class="ic-s"/><circle cx="0" cy="25" r="2.5" class="ic-s"/>`,
+  umbrella: `<path d="M-30 0 Q0 -46 30 0 Z" class="ic-a"/><path d="M-30 0 q7.5 -8 15 0 q7.5 -8 15 0 q7.5 -8 15 0 q7.5 -8 15 0" class="ic-line"/><line x1="0" y1="0" x2="0" y2="26" class="ic-line"/><path d="M0 26 q0 6 -6 6" class="ic-line"/>`,
+  pencil: `<rect x="-30" y="-14" width="60" height="28" rx="9" class="ic-a"/><line x1="-26" y1="-4" x2="26" y2="-4" class="ic-line2"/><rect x="-5" y="-17" width="10" height="7" rx="2" class="ic-d"/>`,
+  cap: `<path d="M-26 6 Q-24 -28 4 -26 Q26 -24 24 6 Z" class="ic-a"/><path d="M-26 6 L36 6 Q34 14 -26 12 Z" class="ic-d"/>`,
+  shoe: `<path d="M-24 -26 L24 -26 L28 28 L-28 28 Z" class="ic-a"/><path d="M-12 -26 Q0 -40 12 -26" class="ic-line"/><line x1="-28" y1="14" x2="28" y2="14" class="ic-line2"/>`,
+  x: `<rect x="-20" y="-20" width="40" height="40" rx="8" class="ic-x"/><path d="M-9 -9 L9 9 M9 -9 L-9 9" class="ic-xl"/>`
+};
+const ITEM_NAMES = { bottle: '물병', phone: '스마트폰', umbrella: '우산', pencil: '필통', cap: '모자', shoe: '실내화 주머니', x: '엑스 버튼' };
+function lockerStage(host, objs, onClick) {
+  const pos = { x: [86, 152] };
+  const slots = [250, 360, 470, 560];
+  const items = objs.filter(o => o !== 'x');
+  items.forEach((o, i) => { pos[o] = [slots[i] || 560, 104]; });
+  host.innerHTML = `<div class="stage__frame"><svg viewBox="0 0 640 210" role="img" aria-label="실행 화면: 분실물 보관함 액자 안에 물건들이 있고 왼쪽 아래에 엑스 버튼이 있다. 물건을 누르면 그 물건의 프로그램이 실행된다.">
+  <rect class="sky" x="0" y="0" width="640" height="210"/><rect class="frame" x="22" y="12" width="596" height="186" rx="6"/><rect class="frame-in" x="34" y="24" width="572" height="162" rx="3"/>
+  <text class="frame-t" x="320" y="58" text-anchor="middle">분실물 보관함</text>
+  ${objs.map(o => `<g class="obj" data-obj="${o}" transform="translate(${pos[o][0]} ${pos[o][1] + (o === 'x' ? 0 : 20)})" role="button" tabindex="0" aria-label="${ITEM_NAMES[o]}"><rect class="obj-hit" x="-38" y="-42" width="76" height="84" rx="8"/>${ICON[o]}${o === 'x' ? '' : `<text class="obj-t" x="0" y="52" text-anchor="middle">${ITEM_NAMES[o]}</text>`}</g>`).join('')}
+  <g transform="translate(150 86)">${BUBBLE.replace('y="-146"', 'y="-40"').replace('y="-123"', 'y="-17"')}</g></svg></div>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  host.querySelectorAll('.obj').forEach(g => { const go = () => onClick(g.dataset.obj); g.addEventListener('click', go); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
+  let cur = null;
+  const api = Object.assign(bubbleApi(R, () => 150, 600), {
+    reset() { host.querySelectorAll('.obj').forEach(g => g.style.display = ''); api.clearSay(); },
+    bind(o) { cur = o; }, hide() { const g = host.querySelector(`[data-obj="${cur}"]`); if (g) g.style.display = 'none'; },
+    shown: o => { const g = host.querySelector(`[data-obj="${o}"]`); return g && g.style.display !== 'none'; },
+    ask: askPanel(host)
+  });
+  return api;
+}
+
+/* ---------- 순서도 (3·4차시: 물건을 클릭했을 때) ---------- */
+/* spec: {item, ask, yes, no} → 노드 7개. slots: {n2:'?', n3:'?', n4:'?'} 빈칸, picked: 슬롯에 채운 글 */
+function josa(w, a, b) { const c = String(w).charCodeAt(String(w).length - 1); if (c < 0xAC00 || c > 0xD7A3) return b; return (c - 0xAC00) % 28 ? a : b; }
+function objFlow(spec) {
+  const nm = ITEM_NAMES[spec.item] || spec.item, eul = nm + josa(nm, '을', '를');
+  const q = s => s ? `"${spec[s]}"` : '';
+  return [
+    { id: 'n1', shape: 'term', x: 170, y: 30, w: 220, t: '오브젝트를 클릭했을 때' },
+    { id: 'n2', shape: 'io', x: 170, y: 100, w: 260, t: `${spec.ask ? q('ask') : '(빈칸)'}를 묻고 대답 기다리기` },
+    { id: 'n3', shape: 'dec', x: 170, y: 190, w: 170, t: `대답이 '예'인가?` },
+    { id: 'n4', shape: 'io', x: 420, y: 190, w: 220, t: `${spec.yes ? q('yes') : '(빈칸)'}라고 말하기` },
+    { id: 'n5', shape: 'proc', x: 420, y: 262, w: 200, t: `${eul} 화면에서 숨기기` },
+    { id: 'n6', shape: 'io', x: 170, y: 290, w: 240, t: `${spec.no ? q('no') : '(빈칸)'}라고 말하기` },
+    { id: 'n7', shape: 'term', x: 170, y: 360, w: 100, t: '끝' }
+  ];
+}
+const FLOW_EDGES_OBJ = [['n1', 'n2'], ['n2', 'n3'], ['n3', 'n4', '예', 'right'], ['n4', 'n5'], ['n3', 'n6', '아니요'], ['n6', 'n7'], ['n5', 'n7', '', 'back']];
+function flowSVG(nodes, edges, o = {}) {
+  const N = Object.fromEntries(nodes.map(n => [n.id, n])), H = 46, W = o.width || 560, Ht = o.height || 400;
+  const shape = n => {
+    const x = n.x - n.w / 2, y = n.y - H / 2, slot = o.slots && o.slots[n.id] != null;
+    const cls = `fl-${n.shape}${slot ? ' fl-slot' : ''}${o.mark && o.mark[n.id] ? ' ' + o.mark[n.id] : ''}`;
+    let s;
+    if (n.shape === 'term') s = `<rect class="${cls}" x="${x}" y="${y}" width="${n.w}" height="${H}" rx="${H / 2}"/>`;
+    else if (n.shape === 'io') s = `<path class="${cls}" d="M${x + 14} ${y} H${x + n.w} L${x + n.w - 14} ${y + H} H${x} Z"/>`;
+    else if (n.shape === 'dec') s = `<path class="${cls}" d="M${n.x} ${y - 10} L${n.x + n.w / 2} ${n.y} L${n.x} ${y + H + 10} L${n.x - n.w / 2} ${n.y} Z"/>`;
+    else s = `<rect class="${cls}" x="${x}" y="${y}" width="${n.w}" height="${H}" rx="3"/>`;
+    const text = slot ? (o.slots[n.id] || '빈칸을 눌러 채우기') : n.t;
+    const lines = wrap(text, Math.floor((n.w - (n.shape === 'dec' ? 50 : 24)) / 13));
+    const ty = n.y - (lines.length - 1) * 8 + 5;
+    return `<g class="fl-node${o.tap ? ' fl-tap' : ''}" data-node="${n.id}" ${o.tap ? 'role="button" tabindex="0"' : ''}>${s}${lines.map((l, i) => `<text class="fl-t${slot && !o.slots[n.id] ? ' fl-t--ph' : ''}" x="${n.x}" y="${ty + i * 16}" text-anchor="middle">${esc(l)}</text>`).join('')}</g>`;
+  };
+  const edge = ([a, b, label, mode]) => {
+    const A = N[a], B = N[b]; let d, lx, ly;
+    const bottom = n => n.y + H / 2 + (n.shape === 'dec' ? 10 : 0), top = n => n.y - H / 2 - (n.shape === 'dec' ? 10 : 0);
+    if (mode === 'right') { d = `M${A.x + A.w / 2} ${A.y} H${B.x - B.w / 2 - 2}`; lx = A.x + A.w / 2 + 16; ly = A.y - 8; }
+    else if (mode === 'back') { const yy = B.y; d = `M${A.x} ${bottom(A)} V${yy} H${B.x + B.w / 2 + 2}`; }
+    else if (mode === 'side') { d = `M${A.x + A.w / 2} ${A.y} H${A.x + A.w / 2 + 40} V${B.y} H${B.x + B.w / 2 + 2}`; lx = A.x + A.w / 2 + 6; ly = A.y - 8; }
+    else { d = `M${A.x} ${bottom(A)} V${top(B) - 2}`; lx = A.x + 8; ly = bottom(A) + 16; }
+    return `<path class="fl-e" d="${d}" marker-end="url(#ah)"/>${label ? `<text class="fl-l" x="${lx}" y="${ly}">${label}</text>` : ''}`;
+  };
+  return `<svg class="flow" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${esc(o.label || '순서도')}"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="fl-ah"/></marker></defs>${edges.map(edge).join('')}${nodes.map(shape).join('')}</svg>`;
+}
+function wrap(t, n) { const out = []; let cur = ''; for (const w of String(t).split(' ')) { if ((cur + ' ' + w).trim().length > n && cur) { out.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); } if (cur) out.push(cur); return out.slice(0, 3); }
+/* 순서도 → 블록 (노드 id를 블록 u로 써서 실행 중 순서도 칸에 불이 들어오게 한다) */
+function flowToBlocks(spec) {
+  return [P('click', 0, {}, 'n1'), P('ask', 0, { t: spec.ask }, 'n2'), P('if', 0, { t: '예' }, 'n3'), P('say', 1, { t: spec.yes, n: 2 }, 'n4'), P('hide', 1, {}, 'n5'), P('else', 0, {}, 'n3e'), P('say', 1, { t: spec.no, n: 2 }, 'n6')];
+}
+
+
+/* ---------- 실행 화면 4: 센서와 기기 (보강 1). 슬라이더가 입력, 블록이 처리, 문·전등이 출력 ---------- */
+const SENSORS = [['거리', 0, 100, 50, '가까움', '멂'], ['밝기', 0, 100, 70, '어두움', '밝음'], ['소리', 0, 200, 20, '조용함', '시끄러움']];
+function sensorStage(host) {
+  host.innerHTML = `<div class="stage__frame"><svg viewBox="0 0 640 210" role="img" aria-label="실행 화면: 왼쪽에 자동문, 오른쪽에 전등이 있다. 아래 슬라이더가 센서 값이다.">
+  <rect class="sky" x="0" y="0" width="640" height="${GY}"/><rect class="gnd" x="0" y="${GY}" width="640" height="${210 - GY}"/><line class="gnd-l" x1="0" y1="${GY}" x2="640" y2="${GY}"/>
+  <g transform="translate(150 ${GY})"><rect class="dr-f" x="-78" y="-150" width="156" height="150" rx="6"/><rect class="dr-in" x="-70" y="-142" width="140" height="142"/>
+    <g data-r="dl"><rect class="dr-p" x="-70" y="-142" width="70" height="142"/><line class="dr-h" x1="-10" y1="-80" x2="-10" y2="-60"/></g><g data-r="dr"><rect class="dr-p" x="0" y="-142" width="70" height="142"/><line class="dr-h" x1="10" y1="-80" x2="10" y2="-60"/></g>
+    <rect class="dr-s" x="-30" y="-168" width="60" height="14" rx="4"/><text class="lbl" x="0" y="-176" text-anchor="middle">자동문</text><text class="sc-t" data-r="dtxt" x="0" y="26" text-anchor="middle">닫힘</text></g>
+  <g transform="translate(470 ${GY})"><line class="lp-pole" x1="0" y1="0" x2="0" y2="-120"/><path class="lp-arm" d="M0 -120 Q0 -140 24 -140"/><circle class="lp-glow" data-r="glow" cx="24" cy="-128" r="34" opacity="0"/><circle class="lp-bulb" data-r="bulb" cx="24" cy="-128" r="12"/><text class="lbl" x="24" y="-176" text-anchor="middle">전등</text><text class="sc-t" data-r="ltxt" x="24" y="26" text-anchor="middle">꺼짐</text>
+    <g data-r="bub" visibility="hidden"><rect class="bub" data-r="bubr" x="-110" y="-70" width="120" height="34" rx="8"/><text class="bub-t" data-r="bubt" x="-96" y="-47">…</text></g></g>
+  <text class="hud" data-r="hud" x="14" y="26"></text></svg></div>
+  <div class="sens" data-r="sens">${SENSORS.map(([n, mn, mx, d, lo, hi]) => `<label class="sens__row"><span class="sens__n">${n} 센서</span><input type="range" min="${mn}" max="${mx}" value="${d}" data-s="${n}" aria-label="${n} 센서 값"><span class="sens__v" data-v="${n}">${d}</span><span class="sens__lo">${lo}</span><span class="sens__hi">${hi}</span></label>`).join('')}</div>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  const dl = R('dl'), dr = R('dr'), dtxt = R('dtxt'), glow = R('glow'), bulb = R('bulb'), ltxt = R('ltxt'), hud = R('hud');
+  const val = {}; SENSORS.forEach(([n, , , d]) => { val[n] = d; });
+  const sens = R('sens');
+  sens.addEventListener('input', e => { const i = e.target.closest('[data-s]'); if (!i) return; val[i.dataset.s] = +i.value; sens.querySelector(`[data-v="${i.dataset.s}"]`).textContent = i.value; api.onInput && api.onInput(i.dataset.s, +i.value); });
+  const s = { door: false, led: false };
+  const api = Object.assign(bubbleApi(R, () => 360, 630), {
+    reset() { s.door = false; s.led = false; api.door(false); api.led(false); api.clearSay(); hud.textContent = ''; },
+    sensor(n) { return val[n] == null ? 0 : val[n]; },
+    set(n, v) { val[n] = +v; const i = sens.querySelector(`[data-s="${n}"]`); if (i) { i.value = v; sens.querySelector(`[data-v="${n}"]`).textContent = v; } },
+    door(open) { s.door = !!open; dl.setAttribute('transform', open ? 'translate(-62 0)' : ''); dr.setAttribute('transform', open ? 'translate(62 0)' : ''); dtxt.textContent = open ? '열림' : '닫힘'; },
+    led(on) { s.led = !!on; glow.setAttribute('opacity', on ? 0.55 : 0); bulb.setAttribute('class', on ? 'lp-bulb is-on' : 'lp-bulb'); ltxt.textContent = on ? '켜짐' : '꺼짐'; },
+    state: () => ({ door: s.door, led: s.led, v: Object.assign({}, val) }),
+    hud(t) { hud.textContent = t || ''; }, u: () => 0, ask: askPanel(host)
+  });
+  api.reset(); return api;
+}
+
+/* ---------- 작업대 ---------- */
+/* makeBench(host, kind): kind 'walk' | 'timer' | 'locker'
+   mode: title, hint, items, friendU, editable, counts, onTap(u)→true면 선택 안 함, onChange(items), onRun(tr), checks(tr)→[{ok,txt}], canRun()→문자열이면 막음, speeds
+   locker 모드: objs[], scripts{obj:items}, flows{obj:spec}(블록 대신 순서도), intro(말), onObjRun(obj,tr) */
+function makeBench(host, kind) {
+  kind = kind || 'walk';
+  host.innerHTML = `<section class="bench">
+    <header class="bench__head"><p class="bench__title"><span class="dia" aria-hidden="true">◆</span><span data-r="title"></span></p><p class="bench__hint" data-r="hint"></p></header>
+    <div class="bench__prog"><div class="mn-tools" data-r="tools" hidden></div><div class="obj-tabs" data-r="otabs" hidden></div><div class="mn-program" data-r="prog"></div></div>
+    <div class="stage"><div data-r="stage"></div>
+      <div class="stage__bar"><button type="button" class="mn-btn mn-btn--run" data-r="run">▶ 시작하기</button><button type="button" class="mn-btn" data-r="stop" disabled>■ 멈추기</button>
+        <div class="mn-seg" role="group" aria-label="실행 빠르기" data-r="seg"></div></div>
+      <div data-r="msg" aria-live="polite"></div><ul class="mn-checks" data-r="checks"></ul></div></section>`;
+  const R = n => host.querySelector(`[data-r="${n}"]`);
+  const progEl = R('prog'), toolsEl = R('tools'), runB = R('run'), stopB = R('stop'), msg = R('msg'), checksEl = R('checks'), seg = R('seg'), otabs = R('otabs');
+  let m = {}, items = [], sel = null, running = false, speed = 1, token = { stop: false }, mark = {}, live = false, curObj = null;
+  const api = {};
+  let st;
+  const onObj = async o => {
+    if (!live) { api.say('먼저 ▶ 시작하기를 눌러 주세요.', 'info'); return; }
+    if (running) return;
+    if (o === 'x' && m.xSay) { st.say(m.xSay); setTimeout(() => st.clearSay(), 1600); live = false; stopB.disabled = true; api.say('엑스 버튼: 프로그램을 끝냈어요. 다시 하려면 ▶ 시작하기를 누르세요.', 'info'); m.onObjRun && m.onObjRun('x', { log: [] }); return; }
+    const scr = m.flows ? (m.flows[o] && flowToBlocks(m.flows[o])) : (m.scripts && m.scripts[o]);
+    if (!scr) { api.say(`${ITEM_NAMES[o]}에는 아직 프로그램이 없어요.`, 'info'); return; }
+    showObj(o); st.bind(o);
+    const tr = await exec(m.flows ? fresh(scr) : items, { keep: true });
+    if (tr && m.onObjRun) m.onObjRun(o, tr);
+  };
+  if (kind === 'timer') st = timerStage(R('stage')); else if (kind === 'locker') st = { reset() {} }; else if (kind === 'sensor') st = sensorStage(R('stage')); else st = walkStage(R('stage'), 100);
+  const opts = () => ({ tap: !!(m.editable || m.onTap), sel: m.editable ? sel : null, counts: m.counts !== false, mark });
+  function draw() {
+    if (m.flows) { const spec = m.flows[curObj]; progEl.innerHTML = spec ? flowSVG(objFlow(spec), FLOW_EDGES_OBJ, { mark, label: `${ITEM_NAMES[curObj]} 순서도` }) : ''; progEl.classList.add('is-flow'); }
+    else { progEl.classList.remove('is-flow'); progEl.innerHTML = progHTML(items, opts()); }
+    drawTools();
+  }
+  function drawTools() {
+    if (!m.editable) { toolsEl.hidden = true; return; }
+    toolsEl.hidden = false;
+    const i = items.findIndex(x => x.u === sel);
+    if (i < 0) { toolsEl.innerHTML = `<p class="mn-tools__hint">${m.toolHint || '바꿀 블록을 누르세요. 옮기기 단추와 값 칸이 여기에 나와요.'}</p>`; return; }
+    const it = items[i], d = BT[it.t], dis = running ? 'disabled' : '';
+    const b = (op, t) => `<button type="button" class="mn-btn mn-btn--s" data-op="${op}" ${canDo(items, i, op) && !running ? '' : 'disabled'}>${t}</button>`;
+    let h = `<div class="mn-tools__row">${b('up', '▲ 위로')}${b('down', '▼ 아래로')}${b('in', '안으로 넣기')}${b('out', '밖으로 빼기')}</div>`;
+    if (d.f.length) {
+      h += `<div class="mn-tools__row">`;
+      for (const f of d.f) {
+        if (f.sel) h += `<select class="mn-input mn-input--sel" id="${it.u}-${f.k}" data-f="${f.k}" aria-label="고르기" ${dis}>${f.sel.map(x => `<option value="${esc(x)}" ${String(it.v[f.k]) === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>`;
+        else if (f.text) h += `<label class="mn-tools__lbl" for="${it.u}-${f.k}">글자</label><input class="mn-input mn-input--txt" type="text" id="${it.u}-${f.k}" data-f="${f.k}" maxlength="${f.max}" value="${esc(it.v[f.k])}" ${dis}>`;
+        else h += `<span class="mn-stepper"><button type="button" class="mn-btn mn-btn--s" data-step="${f.k}" data-dir="-1" aria-label="값 줄이기" ${dis}>−</button><input class="mn-input mn-input--num" type="number" inputmode="decimal" id="${it.u}-${f.k}" data-f="${f.k}" min="${f.min}" max="${f.max}" step="${f.step}" value="${it.v[f.k]}" aria-label="값" ${dis}><button type="button" class="mn-btn mn-btn--s" data-step="${f.k}" data-dir="1" aria-label="값 늘리기" ${dis}>+</button></span>`;
+      }
+      h += `</div>`;
+    }
+    toolsEl.innerHTML = h;
+  }
+  function showObj(o) {
+    curObj = o;
+    if (m.scripts && !m.flows) { items = normalize(m.scripts[o] || []); }
+    otabs.querySelectorAll('[data-o]').forEach(b => b.setAttribute('aria-pressed', b.dataset.o === o));
+    draw();
+  }
+  const changed = () => { if (m.scripts && !m.flows) m.scripts[curObj] = items; m.onChange && m.onChange(items, curObj); };
+  const spec = (it, k) => BT[it.t].f.find(f => f.k === k);
+  const clampV = (f, v) => { v = Math.round((+v || 0) / f.step) * f.step; return Math.min(f.max, Math.max(f.min, +v.toFixed(1))); };
+  progEl.addEventListener('click', e => {
+    const el = e.target.closest('.mn-block'); if (!el || running || el.tagName !== 'BUTTON') return;
+    const u = el.dataset.u;
+    if (m.onTap && m.onTap(u, curObj) === true) return;
+    if (m.editable) { sel = sel === u ? null : u; draw(); }
+  });
+  otabs.addEventListener('click', e => { const b = e.target.closest('[data-o]'); if (!b || running) return; showObj(b.dataset.o); });
+  toolsEl.addEventListener('click', e => {
+    const i = items.findIndex(x => x.u === sel); if (i < 0) return;
+    const ob = e.target.closest('[data-op]'); if (ob) { items = doOp(items, i, ob.dataset.op); draw(); changed(); return; }
+    const sb = e.target.closest('[data-step]'); if (sb) {
+      const it = items[i], f = spec(it, sb.dataset.step); it.v[f.k] = clampV(f, (+it.v[f.k]) + f.step * (+sb.dataset.dir));
+      progEl.innerHTML = progHTML(items, opts()); const inp = toolsEl.querySelector(`[data-f="${f.k}"]`); if (inp) inp.value = it.v[f.k]; changed();
+    }
+  });
+  toolsEl.addEventListener('change', e => {
+    const inp = e.target.closest('[data-f]'); const i = items.findIndex(x => x.u === sel); if (!inp || i < 0) return;
+    const it = items[i], f = spec(it, inp.dataset.f);
+    it.v[f.k] = f.sel ? inp.value : f.text ? inp.value.trim().slice(0, f.max) : clampV(f, inp.value); inp.value = it.v[f.k];
+    progEl.innerHTML = progHTML(items, opts()); changed();
+  });
+  seg.addEventListener('click', e => {
+    const b = e.target.closest('[data-s]'); if (!b) return; speed = +b.dataset.s;
+    seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  });
+  const showChecks = list => { checksEl.innerHTML = (list || []).map(c => `<li class="${c.ok == null ? '' : c.ok ? 'is-ok' : 'is-no'}">${esc(c.txt)}</li>`).join(''); };
+  api.say = (html, kind2) => { msg.innerHTML = html ? `<p class="mn-msg mn-msg--${kind2 || 'info'}">${html}</p>` : ''; };
+  async function exec(list, extra) {
+    running = true; token = { stop: false }; runB.disabled = true; stopB.disabled = false; if (kind !== 'sensor') api.say(''); drawTools();
+    progEl.querySelectorAll('.mn-block__count').forEach(c => { c.hidden = true; c.textContent = '0'; });
+    let last = null; const mine = m;
+    const light = (u, on) => { if (!u) return; const e = progEl.querySelector(`[data-u="${u}"], [data-node="${u}"]`); if (e) e.classList.toggle('is-running', on); };
+    const tr = await runProgram(list, st, Object.assign({
+      get speed() { return speed; }, token, onLoop: m.onLoop, maxLoops: m.maxLoops,
+      onBlock: u => { light(last, false); last = u; light(u, true); },
+      onCount: (u, n) => { const c = progEl.querySelector(`[data-cnt="${u}"]`); if (c) { c.hidden = false; c.textContent = '×' + n; } }
+    }, extra || {}));
+    running = false; runB.disabled = kind === 'sensor' && live; stopB.disabled = !live; if (kind !== 'sensor' || !live) drawTools();
+    if (mine !== m) return null;
+    if (tr.error === 'nostart') { api.say('맨 위에 <b>시작하기</b> 블록이 있어야 실행돼요.', 'no'); return null; }
+    if (tr.stopped) { api.say('실행을 멈췄어요.', 'info'); return null; }
+    if (m.checks) showChecks(m.checks(tr, items));
+    return tr;
+  }
+  async function run() {
+    if (running) return;
+    const block = m.canRun && m.canRun(); if (typeof block === 'string') { api.say(block, 'info'); return; }
+    if (kind === 'sensor') {
+      if (!items.length || !isHat(items[0].t)) { api.say('맨 위에 <b>시작하기</b> 블록이 있어야 실행돼요.', 'no'); return; }
+      st.reset(); live = true; stopB.disabled = false; let n = 0, last = null; const mine = m;
+      api.say('실행 중이에요. 아래 슬라이더(센서)를 움직여 보세요. 끝내려면 ■ 멈추기.', 'info');
+      while (live && mine === m) {
+        const tr = await exec(items, { keep: true }); if (!tr) break; tr.state = st.state(); last = tr;
+        m.onTick && m.onTick(tr.state, n++, tr);
+        await sleep(Math.max(80, 240 / speed));
+      }
+      live = false; stopB.disabled = true; runB.disabled = false; drawTools();
+      if (mine === m) { api.say('멈췄어요. 값을 바꾸려면 블록을 누르고, 다시 ▶ 시작하기.', 'info'); m.onRun && m.onRun(last, items); }
+      return;
+    }
+    if (kind === 'locker') {
+      st.reset(); live = true; stopB.disabled = false;
+      if (m.intro) { st.say(m.intro); await sleep(1600); st.clearSay(); }
+      api.say('보관함의 물건을 눌러 보세요.', 'info'); m.onStart && m.onStart(); return;
+    }
+    const tr = await exec(items);
+    if (tr) m.onRun && m.onRun(tr, items);
+  }
+  runB.addEventListener('click', run);
+  stopB.addEventListener('click', () => { token.stop = true; if (kind === 'sensor') live = false; if (kind === 'locker' && !running) { live = false; stopB.disabled = true; api.say('멈췄어요. 다시 하려면 ▶ 시작하기를 누르세요.', 'info'); } });
+  api.configure = mode => {
+    token.stop = true; live = false; m = mode; sel = null; mark = {}; runB.disabled = false;
+    R('title').textContent = mode.title || ''; R('hint').innerHTML = mode.hint || '';
+    const sp = mode.speeds || [['0.5', '천천히'], ['1', '보통'], ['3', '빠르게']];
+    speed = +((sp.find(x => x[2]) || sp[1] || sp[0])[0]);
+    seg.innerHTML = sp.map(([v, l]) => `<button type="button" data-s="${v}" aria-pressed="${+v === speed}">${l}</button>`).join('');
+    if (kind === 'locker') {
+      st = lockerStage(R('stage'), mode.objs, onObj);
+      otabs.hidden = !!mode.flows || !mode.scripts; otabs.innerHTML = (mode.objs || []).filter(o => mode.scripts && mode.scripts[o]).map(o => `<button type="button" class="mn-btn mn-btn--s" data-o="${o}" aria-pressed="false">${ITEM_NAMES[o]}</button>`).join('');
+      const first = mode.first || (mode.objs || [])[0]; curObj = first; items = mode.scripts && mode.scripts[first] ? normalize(mode.scripts[first]) : [];
+      stopB.disabled = true; showObj(first);
+    } else {
+      items = normalize(mode.items || []); if (st.setFriend) st.setFriend(mode.friendU == null ? 100 : mode.friendU); st.reset(); draw();
+    }
+    api.say(''); showChecks(mode.checks ? mode.checks(null, items) : []);
+  };
+  api.setItems = list => { items = normalize(list); sel = null; mark = {}; st.reset(); api.say(''); showChecks(m.checks ? m.checks(null, items) : []); draw(); };
+  api.items = () => items;
+  api.cur = () => curObj;
+  api.mark = mk => { mark = mk || {}; draw(); };
+  api.isRunning = () => running || live;
+  api.isLive = () => live;
+  api.stopLive = () => { live = false; token.stop = true; };
+  api.stage = () => st;
+  api.showChecks = showChecks;
+  return api;
+}
+
+/* kit.js — 차시 페이지에서 함께 쓰는 조각: 선택지, 체크 목록, 스스로 평가, 고장 찾기 4단계, 두 번 눌러 확인 */
+const CIRC = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨'];
+const DEBUG_STEPS = ['‘예’·‘아니요’로 한 번씩 실행하기', '정답과 다른 장면 찾기', '그 장면을 만든 블록 찾기', '고치고 다시 실행하기'];
+const LV = [['3', '잘함'], ['2', '보통'], ['1', '노력 요함']];
+const smooth = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
+function choiceGroup(host, cfg) {
+  const draw = val => {
+    const judged = cfg.answer != null && val != null;
+    host.innerHTML = `<div class="mn-choices" role="group">${cfg.options.map((o, i) => {
+      let cls = 'mn-choice', mark = '';
+      if (judged && o.v === val) { if (o.v === cfg.answer) { cls += ' is-right'; mark = '✓ 맞아요'; } else { cls += ' is-wrong'; mark = '✗ 다시 생각해 봐요'; } }
+      return `<button type="button" class="${cls}" data-v="${o.v}" aria-pressed="${o.v === val}" ${cfg.locked && cfg.locked() ? 'disabled' : ''}><span class="mn-choice__no">${CIRC[i]}</span><span>${o.t}</span><span class="mn-choice__mark">${mark}</span></button>`;
+    }).join('')}</div>`;
+  };
+  host.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b || b.disabled) return; cfg.onPick(b.dataset.v); draw(b.dataset.v); });
+  draw(cfg.value);
+  return { redraw: draw };
+}
+const msgHTML = (ok, okT, noT) => ok == null ? '' : `<p class="mn-msg mn-msg--${ok ? 'ok' : 'no'}">${ok ? '✓ ' + okT : '✗ ' + noT}</p>`;
+/* 채점하는 문항: S[bag][key]에 답을 저장 */
+function quiz(ctx, bag, key, opts, answer, okT, noT) {
+  const S = ctx.S; S[bag] = S[bag] || {};
+  const fb = ctx.R(key + 'fb'); const show = () => { fb.innerHTML = S[bag][key] == null ? '' : msgHTML(S[bag][key] === answer, okT, noT); };
+  choiceGroup(ctx.R(key), { options: opts, answer, value: S[bag][key], onPick: v => { S[bag][key] = v; ctx.save(); show(); } }); show();
+}
+const qHTML = (key, t) => `<div class="q"><p class="q__t">${t}</p><div data-r="${key}"></div><div data-r="${key}fb"></div></div>`;
+function ticks(ctx, key, list) {
+  const S = ctx.S; S[key] = S[key] || []; const host = ctx.R(key);
+  const draw = () => { host.innerHTML = list.map((t, i) => `<li><button type="button" class="tick" data-i="${i}" aria-pressed="${!!S[key][i]}"><span class="tick__box" aria-hidden="true">${S[key][i] ? '✓' : ''}</span>${t}</button></li>`).join(''); };
+  host.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; S[key][+b.dataset.i] = !S[key][+b.dataset.i]; ctx.save(); draw(); });
+  draw();
+}
+function evals(ctx, key, list) {
+  const S = ctx.S; S[key] = S[key] || {}; const host = ctx.R(key);
+  const draw = () => { host.innerHTML = list.map((t, i) => `<div class="eval"><p>${t}</p><div class="mn-seg" role="group" aria-label="${t}">${LV.map(([v, l]) => `<button type="button" data-i="${i}" data-v="${v}" aria-pressed="${S[key][i] === v}">${l}</button>`).join('')}</div></div>`).join(''); };
+  host.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; S[key][b.dataset.i] = b.dataset.v; ctx.save(); draw(); });
+  draw();
+}
+const debugList = ph => `<ol class="debug">${DEBUG_STEPS.map((s, i) => `<li class="${i < ph ? 'is-done' : i === ph ? 'is-now' : ''}">${s}</li>`).join('')}</ol>`;
+const oneline = (label, text) => `<div class="oneline"><span class="oneline__l">${label}</span><p>${text}</p></div>`;
+function twice(btn, label, fn) { let armed = false; btn.addEventListener('click', () => { if (!armed) { armed = true; btn.textContent = '한 번 더 누르면 실행돼요'; setTimeout(() => { armed = false; btn.textContent = label; }, 4000); return; } fn(); }); }
+
+/* 고장 찾기 4단계 과제: 실행 → 다른 장면 고르기 → 블록 찾기 → 고치기
+   cfg: key, bench, base(블록), what{options,answer}, isBug(item)→bool, fixed(tr,S)→bool, sheet(host), title, intro, findHint, kind */
+function debugTask(ctx, cfg) {
+  const S = ctx.S, st = S[cfg.key] = Object.assign({ phase: 'run', done: false, items: null }, S[cfg.key] || {});
+  const host = ctx.R(cfg.key);
+  function drawSheet() {
+    const ph = st.done ? 4 : { run: 0, what: 1, find: 2, fix: 3 }[st.phase];
+    let h = `<h3>${cfg.title}</h3><p>${cfg.intro}</p>${debugList(ph)}`;
+    if (!st.done && st.phase === 'run') h += `<p class="mn-msg">아래 실행해 보는 곳에서 ▶ 시작하기를 눌러 실행해 보세요.${cfg.runHint ? ' ' + cfg.runHint : ''}</p>`;
+    if (!st.done && st.phase === 'what') h += `<p class="q__t">생각과 다른 장면은 무엇이었나요?</p><div data-r="${cfg.key}-what"></div>`;
+    if (!st.done && st.phase === 'find') h += `<p class="mn-msg">그 장면을 만든 블록을 아래 프로그램에서 눌러 보세요.</p>`;
+    if (!st.done && st.phase === 'fix') h += `<p class="mn-msg">${cfg.fixHint}</p>`;
+    if (st.done) h += `<p class="mn-msg mn-msg--ok">✓ 고쳤어요. 무엇이 문제였고 어떻게 고쳤는지 짝에게 설명해 보세요.</p>`;
+    h += `<div><button type="button" class="mn-btn mn-btn--quiet" data-r="${cfg.key}-reset">이 과제 처음 상태로</button></div>`;
+    host.innerHTML = h;
+    const w = host.querySelector(`[data-r="${cfg.key}-what"]`);
+    if (w) choiceGroup(w, { options: cfg.what.options, answer: cfg.what.answer, onPick: v => { if (v === cfg.what.answer) { st.phase = 'find'; ctx.save(); setTimeout(drawSheet, 600); } } });
+    host.querySelector(`[data-r="${cfg.key}-reset"]`).addEventListener('click', () => { Object.assign(st, { phase: 'run', done: false, items: null }); ctx.save(); drawSheet(); cfg.bench.configure(mode()); });
+  }
+  function mode() {
+    return Object.assign({
+      title: cfg.benchTitle || '실행해 보는 곳', hint: cfg.benchHint || '', items: fresh(st.items || cfg.base), editable: true,
+      onChange: items => { st.items = plain(items); ctx.save(); },
+      onTap: u => {
+        if (st.done || st.phase === 'fix') return false;
+        if (st.phase !== 'find') { cfg.bench.say(st.phase === 'run' ? '먼저 ▶ 시작하기로 실행해 보세요.' : '먼저 위에서 생각과 다른 장면을 골라 주세요.', 'info'); return true; }
+        const it = cfg.bench.items().find(x => x.u === u); const ok = cfg.isBug(it); const mk = {}; mk[u] = ok ? 'is-right' : 'is-wrong'; cfg.bench.mark(mk);
+        if (ok) { st.phase = 'fix'; ctx.save(); drawSheet(); cfg.bench.say('찾았어요. ' + cfg.fixHint, 'ok'); } else cfg.bench.say(cfg.findHint, 'no');
+        return true;
+      },
+      onRun: tr => {
+        if (st.phase === 'run') { st.phase = 'what'; ctx.save(); drawSheet(); }
+        else if (st.phase === 'fix' && cfg.fixed(tr, st)) { st.done = true; ctx.save(); drawSheet(); cfg.bench.say('✓ 생각한 대로 움직여요.', 'ok'); }
+        else if (st.phase === 'fix') cfg.bench.say(cfg.notYet || '아직 생각과 다르게 움직여요. 다시 살펴보세요.', 'info');
+      }
+    }, cfg.extra || {});
+  }
+  drawSheet();
+  return { mode, st };
+}
+
+/* extra.js — 보강 2차시: 교과서에 없는 것 더하기 (B1 컴퓨팅 시스템, B2 데이터). 기존 4차시와 같은 틀·같은 엔진. */
+
+/* ================= 데이터 위젯 (B2) ================= */
+const fmtNum = v => (v === '' || v == null) ? '' : (typeof v === 'number' ? v.toLocaleString('ko-KR', { maximumFractionDigits: 1 }) : String(v));
+/* 표: rows [{k, name, v}], 열 이름, 칸 누르기(onCell), 강조(hi), 깃발(flags) */
+function dataTable(host, cfg) {
+  const draw = () => {
+    host.innerHTML = `<div class="tbl"><table class="mn-table dl-table"><thead><tr><th scope="col">${cfg.cols[0]}</th><th scope="col" class="num">${cfg.cols[1]}</th></tr></thead><tbody>${cfg.rows.map(r => {
+      const fl = cfg.flags && cfg.flags[r.k], fx = cfg.fixed && cfg.fixed[r.k], hi = cfg.hi && cfg.hi.includes(r.k);
+      const cell = cfg.onCell ? `<td class="dl-cell${fl ? ' is-flag' : ''}${fx ? ' is-fixed' : ''}"><button type="button" data-k="${r.k}" aria-pressed="${!!fl}">${fmtNum(r.v) || '　'}${fl ? ' ⚑' : ''}</button></td>` : `<td class="num">${fmtNum(r.v)}</td>`;
+      return `<tr class="${hi ? 'is-hi' : ''}"><th scope="row">${r.name}</th>${cell}</tr>`; }).join('')}</tbody></table></div>${cfg.src ? `<p class="dl-src">${cfg.src}</p>` : ''}`;
+  };
+  if (cfg.onCell) host.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; cfg.onCell(b.dataset.k); });
+  draw(); return { redraw: draw, set: p => { Object.assign(cfg, p); draw(); } };
+}
+/* 그래프: type 'bar' | 'line', rows [{name, v}], hi [name], unit */
+function chartSVG(cfg) {
+  const rows = cfg.rows.filter(r => typeof r.v === 'number'), W = 640, H = 300, L = 64, Rm = 18, T = 34, B = 54;
+  const max = Math.max(1, ...rows.map(r => r.v)), nice = Math.pow(10, Math.floor(Math.log10(max))), top = Math.ceil(max / nice) * nice;
+  const y = v => T + (H - T - B) * (1 - v / top), n = rows.length, iw = (W - L - Rm) / n;
+  let g = '';
+  for (let i = 0; i <= 4; i++) { const v = top / 4 * i; g += `<line class="ch-grid" x1="${L}" y1="${y(v)}" x2="${W - Rm}" y2="${y(v)}"/><text class="ch-t" x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${fmtNum(v)}</text>`; }
+  let m = '';
+  if (cfg.type === 'bar') {
+    rows.forEach((r, i) => { const x = L + iw * i + iw * 0.18, w = iw * 0.64, hi = cfg.hi && cfg.hi.includes(r.name), dim = cfg.hi && cfg.hi.length && !hi;
+      m += `<rect class="ch-bar${hi ? ' is-hi' : ''}${dim ? ' is-dim' : ''}" x="${x}" y="${y(r.v)}" width="${w}" height="${H - B - y(r.v)}" rx="3"/><text class="ch-v" x="${x + w / 2}" y="${y(r.v) - 6}" text-anchor="middle">${fmtNum(r.v)}</text><text class="ch-t" x="${x + w / 2}" y="${H - B + 20}" text-anchor="middle">${r.name}</text>`; });
+  } else {
+    const pts = rows.map((r, i) => [L + iw * i + iw / 2, y(r.v)]);
+    m += `<path class="ch-line" d="${pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ')}"/>`;
+    if (cfg.divider) { const di = rows.findIndex(r => r.name === cfg.divider.after); if (di >= 0 && di < n - 1) { const dx = L + iw * (di + 1); m += `<line class="ch-div" x1="${dx}" y1="${T}" x2="${dx}" y2="${H - B}"/><text class="ch-dt" x="${dx + 6}" y="${T + 12}">${cfg.divider.label}</text>`; } }
+    rows.forEach((r, i) => { const hi = cfg.hi && cfg.hi.includes(r.name); m += `<circle class="ch-dot${hi ? ' is-hi' : ''}" cx="${pts[i][0]}" cy="${pts[i][1]}" r="${hi ? 7 : 4.5}"/>${hi || cfg.labels ? `<text class="ch-v" x="${pts[i][0]}" y="${pts[i][1] - 12}" text-anchor="middle">${fmtNum(r.v)}</text>` : ''}<text class="ch-t" x="${pts[i][0]}" y="${H - B + 20}" text-anchor="middle">${r.name}</text>`; });
+  }
+  return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${cfg.title || ''}"><text class="ch-tt" x="${L}" y="18">${cfg.title || ''}</text><text class="ch-t" x="${W - Rm}" y="18" text-anchor="end">${cfg.unit || ''}</text>${g}<line class="ch-ax" x1="${L}" y1="${T}" x2="${L}" y2="${H - B}"/><line class="ch-ax" x1="${L}" y1="${H - B}" x2="${W - Rm}" y2="${H - B}"/>${m}</svg></div>`;
+}
+
+/* ================= B1 ================= */
+const AUTO = [P('live'), P('ifs', 0, { s: '거리', o: '<', n: 20 }), P('dopen', 1), P('else'), P('dclose', 1)];
+const AUTO_BUG = [P('live'), P('ifs', 0, { s: '거리', o: '>', n: 20 }), P('dopen', 1), P('else'), P('dclose', 1)];
+const LAMP = [P('live'), P('ifs', 0, { s: '밝기', o: '<', n: 30 }), P('lon', 1), P('else'), P('loff', 1)];
+const CLAP = [P('live'), P('ifs', 0, { s: '소리', o: '>', n: 150 }), P('lon', 1), P('else'), P('loff', 1)];
+const IPO_CARDS = [['거리 센서가 사람을 알아챈다', 'i'], ['손가락으로 화면을 누른다', 'i'], ['밝기 센서가 어두워진 것을 잰다', 'i'], ['프로그램이 ‘만일 ~(이)라면’으로 판단한다', 'p'], ['컴퓨터가 명령을 정한다', 'p'], ['앱의 규칙대로 계산한다', 'p'], ['문이 열린다', 'o'], ['불이 켜진다', 'o'], ['화면이 밝아진다', 'o']];
+const IPO_NAME = { i: '입력', p: '처리', o: '출력' };
+const B1 = {
+  key: 'b1', no: 'b1', label: '보강 1', group: 'extra', stage: '교과서에 없는 것 더하기 · 컴퓨팅 시스템', title: ['컴퓨터는', '어떻게 일할까.'], short: '입력·처리·출력', pg: '교과서에 없는 내용 · 7단원 2절 다음',
+  goal: '생활 속 기기에서 입력·처리·출력을 찾아 말할 수 있다. 센서 값에 따라 다르게 동작하는 프로그램을 읽고 예측하고, 값을 바꾸고, 고장을 고치고, 스스로 설계해 테스트할 수 있다.',
+  defaults: () => ({ ipo: {}, pred: {}, locked: false, rec: {}, inv: {}, m: { tab: 'm1' }, m1: null, m1done: false, bug: { phase: 'run', done: false, items: null, saw: {} }, dz: { kind: null, items: null, tests: {} }, obs: ['', '', ''], quiz: {}, ev: {} }),
+  steps: [
+    { id: 's1', name: '생각 열기', lead: '자동문은 어떻게 사람이 오는 줄 알까요? 기기가 일하는 세 단계를 찾아봐요.', html: () => `
+      <div class="card"><p>컴퓨터가 들어 있는 기기는 모두 같은 순서로 일해요. 바깥의 신호를 <b>받아들이고(입력)</b>, 프로그램이 <b>판단하고(처리)</b>, 무엇인가를 <b>바꿔요(출력)</b>.</p>
+        <div class="ipo"><div>입력<span>센서·버튼·손가락이 신호를 넣어요</span></div><div>처리<span>프로그램이 ‘만일 ~(이)라면’으로 판단해요</span></div><div>출력<span>문·불·화면·소리가 바뀌어요</span></div></div>
+        <p class="q__t">아래 아홉 장면이 입력·처리·출력 중 무엇인지 고르세요.</p><div class="bins" data-r="bins"></div><div data-r="binsfb"></div></div>
+      ${oneline('6학년에서는', '로봇 단원에서 이것을 감지 장치·제어 장치·구동 장치라고 불러요. 로봇이 없어도 원리는 같아요.')}` },
+    { id: 's2', name: '읽고 예측하기', lead: '자동문 프로그램을 실행하지 말고 읽기만 하고, 세 가지를 예측해요.', html: () => `
+      <div data-r="b2"></div>
+      <div class="card"><p>이 프로그램은 시작하면 <b>센서를 계속 읽으면서</b> 반복 실행돼요. 거리 센서 값은 사람이 가까울수록 작아져요.</p>
+        <div class="q"><p class="q__t">① 거리 센서 값이 50일 때 문은?</p><div data-r="q1"></div></div>
+        <div class="q"><p class="q__t">② 거리 센서 값이 10일 때 문은?</p><div data-r="q2"></div></div>
+        <div class="q"><p class="q__t">③ 거리 센서 값이 딱 20일 때 문은?</p><div data-r="q3"></div></div>
+        <p class="aside-t">어느 블록의 어느 숫자를 보고 판단했는지 짝에게 말해 보세요.</p>
+        <div><button type="button" class="mn-btn mn-btn--primary" data-r="lock">예측 확정하기</button></div><div data-r="lockmsg"></div></div>` },
+    { id: 's3', name: '실행하기', lead: '▶ 시작하기를 누르고, 슬라이더를 50·10·20에 맞춘 뒤 ‘지금 값 기록’을 눌러 내 예측과 비교해요.', html: () => `
+      <div data-r="b3"></div>
+      <div class="card"><div class="rec"><button type="button" class="mn-btn mn-btn--primary" data-r="rec">지금 값 기록</button><span class="aside-t" data-r="recmsg">실행 중에 거리 슬라이더를 50, 10, 20에 맞추고 누르세요.</span></div><div data-r="cmp"></div>
+        <div class="q"><p class="q__t">④ 거리 값을 천천히 줄여 보세요. 몇이 되는 순간 문이 열리나요?</p><div data-r="q4"></div><div data-r="q4fb"></div></div></div>` },
+    { id: 's4', name: '살펴보기', lead: '같은 프로그램에서 입력·처리·출력을 찾아요.', html: () => `
+      <div class="card"><p class="q__t">① <b>센서 값을 읽어서 판단하는</b> 블록을 아래 프로그램에서 눌러 보세요.</p><div data-r="i1fb"></div><p class="q__t">② <b>바깥 세상을 바꾸는(출력)</b> 블록을 눌러 보세요.</p><div data-r="i2fb"></div></div>
+      <div data-r="b4"></div>
+      <div class="card">${qHTML('i3', '③ 슬라이더를 움직이지 않으면 문이 가만히 있는 까닭은?')}${qHTML('i4', '④ 이 프로그램에서 ‘입력’은 무엇인가요?')}</div>` },
+    { id: 's5', name: '바꿔 보기', lead: '프로그램을 직접 바꿔요. 블록을 누르면 센서 종류·부등호·숫자를 바꿀 수 있어요.', html: () => `
+      <div class="tabs" role="tablist" data-r="tabs"><button type="button" class="mn-btn" data-tab="m1">과제 1</button><button type="button" class="mn-btn" data-tab="m2">과제 2</button><button type="button" class="mn-btn" data-tab="m3">더 해 보기</button></div>
+      <div class="card" data-r="mtask"></div><div data-r="b5"></div>` },
+    { id: 's6', name: '내가 설계하기', lead: '가로등이나 박수 스위치 중 하나를 골라 조건을 설계하고, 테스트 계획표대로 테스트해요.', html: () => `
+      <div class="card"><p class="q__t">무엇을 만들까요?</p><div data-r="dzk"></div></div>
+      <div class="card" data-r="dzsheet" hidden></div><div data-r="b6" hidden></div>` },
+    { id: 's7', name: '실제와 잇기, 정리와 스스로 평가', lead: '', html: () => `
+      <div class="card"><h3>오늘 학교에서 센서 찾기</h3><p>입력(센서)이 있는 기기를 세 개 찾아 적어요. 예: 자동문, 복도 전등, 화장실 수도꼭지, 태블릿의 화면 밝기.</p>
+        <div class="obs">${[0, 1, 2].map(i => `<label for="obs${i}">기기 ${i + 1}<input class="mn-input" id="obs${i}" data-r="obs${i}" data-obs="${i}" type="text" maxlength="30" placeholder="기기 이름 — 무엇을 재는지"></label>`).join('')}</div></div>
+      <div class="card">${qHTML('q7a', '기기가 일하는 세 단계의 순서는?')}${qHTML('q7b', '‘만일 ~(이)라면’ 블록은 세 단계 중 어디에 해당하나요?')}</div>
+      <div class="card"><h3>스스로 평가</h3><div class="evals" data-r="ev"></div></div>${oneline('다음에는', '데이터로 보는 우리 부산 — 해수욕장 방문객 표를 읽고 그래프로 그려요.')}` }
+  ],
+  done: {
+    s1: S => IPO_CARDS.every((c, i) => S.ipo[i] === c[1]), s2: S => S.locked, s3: S => Object.keys(S.rec).length >= 3 && S.inv.q4 === '19',
+    s4: S => !!(S.inv.i1 && S.inv.i2 && S.inv.i3 === 'b' && S.inv.i4 === 'a'), s5: S => !!(S.m1done && S.bug.done),
+    s6: S => !!(S.dz.kind && Object.keys(S.dz.tests).length >= 3), s7: S => (S.obs || []).filter(x => x && x.trim()).length >= 3 && S.quiz.q7a === 'b' && S.quiz.q7b === 'b' && Object.keys(S.ev).length >= 4
+  },
+  init(ctx) {
+    const { S, R, save, goTo } = ctx;
+    /* 1 짝짓기 */
+    const drawBins = () => {
+      R('bins').innerHTML = IPO_CARDS.map((c, i) => { const v = S.ipo[i]; const ok = v == null ? '' : v === c[1] ? ' is-ok' : ' is-no';
+        return `<div class="bin${ok}"><span class="bin__t">${c[0]}</span><div class="mn-seg" role="group" aria-label="${c[0]}">${['i', 'p', 'o'].map(k => `<button type="button" data-i="${i}" data-v="${k}" aria-pressed="${v === k}">${IPO_NAME[k]}</button>`).join('')}</div></div>`; }).join('');
+      const n = IPO_CARDS.filter((c, i) => S.ipo[i] === c[1]).length, tried = Object.keys(S.ipo).length;
+      R('binsfb').innerHTML = tried === 9 ? (n === 9 ? '<p class="mn-msg mn-msg--ok">✓ 아홉 장면을 모두 맞게 나눴어요. 센서는 입력, 판단은 처리, 문·불·화면은 출력이에요.</p>' : `<p class="mn-msg mn-msg--no">✗ ${9 - n}개가 달라요. 빨간 줄을 다시 생각해 보세요. 신호를 받으면 입력, 판단하면 처리, 바깥이 바뀌면 출력이에요.</p>`) : '';
+    };
+    R('bins').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; S.ipo[b.dataset.i] = b.dataset.v; save(); drawBins(); });
+    drawBins();
+    /* 2 예측 */
+    const b2 = makeBench(R('b2'), 'sensor');
+    b2.configure({ title: '읽을 프로그램 — 자동문', hint: '여기서는 실행하지 않아요', items: fresh(AUTO), counts: false, canRun: () => '여기서는 실행하지 않아요. 예측을 확정하면 3. 실행하기에서 실행해요.' });
+    const DOOR = [{ v: 'open', t: '열림' }, { v: 'close', t: '닫힘' }];
+    const lockBtn = R('lock'), qg = {};
+    const lockState = () => { lockBtn.disabled = S.locked || !(S.pred.q1 && S.pred.q2 && S.pred.q3); lockBtn.textContent = S.locked ? '예측을 확정했어요' : '예측 확정하기'; R('lockmsg').innerHTML = S.locked ? '<p class="mn-msg">예측을 확정했어요. 아래 3. 실행하기에서 확인해요.</p>' : ''; };
+    ['q1', 'q2', 'q3'].forEach(q => { qg[q] = choiceGroup(R(q), { options: DOOR, value: S.pred[q], locked: () => S.locked, onPick: v => { S.pred[q] = v; save(); lockState(); } }); });
+    lockBtn.addEventListener('click', () => { S.locked = true; save(); lockState(); ['q1', 'q2', 'q3'].forEach(q => qg[q].redraw(S.pred[q])); goTo('s3'); });
+    lockState();
+    /* 3 실행·기록 */
+    const b3 = makeBench(R('b3'), 'sensor');
+    b3.configure({ title: '실행해 보기 — 자동문', hint: '▶ 시작하기 → 거리 슬라이더 움직이기', items: fresh(AUTO), canRun: () => S.locked || S.all ? true : '먼저 예측을 확정해 주세요.' });
+    const TARGETS = [50, 10, 20], name = v => v === 'open' ? '열림' : '닫힘';
+    const compare = () => {
+      const rows = TARGETS.map((t, i) => { const r = S.rec[t]; const act = r == null ? null : (r ? 'open' : 'close'); const p = S.pred['q' + (i + 1)];
+        return `<tr><th scope="row">거리 ${t}</th><td>${p ? name(p) : '-'}</td><td>${act ? name(act) : '<span class="aside-t">아직</span>'}</td><td class="${act == null ? '' : act === p ? 'is-ok' : 'is-no'}">${act == null ? '' : act === p ? '✓ 같아요' : '✗ 달라요'}</td></tr>`; }).join('');
+      R('cmp').innerHTML = `<h3>내 예측과 실제</h3><div class="tbl"><table class="mn-table"><thead><tr><th scope="col">센서 값</th><th scope="col">내 예측</th><th scope="col">실제</th><th scope="col">비교</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    };
+    R('rec').addEventListener('click', () => {
+      if (!b3.isLive()) { R('recmsg').textContent = '먼저 ▶ 시작하기를 눌러 실행한 뒤에 기록해요.'; return; }
+      const st = b3.stage().state(), d = st.v['거리'];
+      const t = TARGETS.find(x => Math.abs(x - d) <= 2);
+      if (t == null) { R('recmsg').textContent = `지금 거리 값은 ${d}이에요. 50, 10, 20에 맞춘 뒤 눌러 주세요.`; return; }
+      S.rec[t] = st.door; save(); compare(); R('recmsg').textContent = `거리 ${t}: 문 ${st.door ? '열림' : '닫힘'}으로 기록했어요.`;
+    });
+    compare();
+    quiz(ctx, 'inv', 'q4', [{ v: '20', t: '20' }, { v: '19', t: '19' }, { v: '0', t: '0' }], '19', '20보다 작아야(<) 열려요. 20은 열리지 않고 19부터 열려요.', '‘거리 센서 값 < 20’은 20보다 작을 때예요. 20일 때도 열리나요?');
+    /* 4 살펴보기 */
+    const b4 = makeBench(R('b4'), 'sensor');
+    const fb = (k, ok, okT, noT) => { R(k + 'fb').innerHTML = `<p class="mn-msg mn-msg--${ok ? 'ok' : 'no'}">${ok ? '✓ ' + okT : '✗ ' + noT}</p>`; };
+    const showInv = () => { if (S.inv.i1) fb('i1', true, '맞아요. ‘만일 거리 센서 값 < 20’ 블록이 입력(센서 값)을 읽어 판단하는 처리예요.'); if (S.inv.i2) fb('i2', true, '맞아요. 문 열기·문 닫기가 바깥을 바꾸는 출력이에요.'); };
+    b4.configure({ title: '살펴보기 — 자동문', hint: '블록을 눌러 보세요', items: fresh(AUTO), canRun: () => '여기서는 블록을 눌러 찾기만 해요.',
+      onTap: u => { const it = b4.items().find(x => x.u === u); const mk = {};
+        if (!S.inv.i1) { const ok = it.t === 'ifs'; mk[u] = ok ? 'is-right' : 'is-wrong'; b4.mark(mk); if (ok) { S.inv.i1 = true; save(); showInv(); } else fb('i1', false, it.t === 'live' ? '이 블록은 프로그램을 시작하고 반복하게 해요.' : '이 블록은 결과를 바꾸는 쪽이에요. 센서 값을 읽어 판단하는 블록을 찾아보세요.'); return true; }
+        if (!S.inv.i2) { const ok = it.t === 'dopen' || it.t === 'dclose'; mk[u] = ok ? 'is-right' : 'is-wrong'; b4.mark(mk); if (ok) { S.inv.i2 = true; save(); showInv(); } else fb('i2', false, '이 블록은 바깥을 바꾸지 않아요. 문을 움직이는 블록을 찾아보세요.'); return true; }
+        return true; } });
+    showInv();
+    quiz(ctx, 'inv', 'i3', [{ v: 'a', t: '프로그램이 멈춰 있어서' }, { v: 'b', t: '입력(센서 값)이 그대로라서 판단 결과도 그대로여서' }, { v: 'c', t: '문이 고장 나서' }], 'b', '입력이 바뀌지 않으면 처리 결과도, 출력도 바뀌지 않아요.', '프로그램은 계속 실행 중이에요. 무엇이 바뀌어야 문이 움직일까요?');
+    quiz(ctx, 'inv', 'i4', [{ v: 'a', t: '거리 센서 값' }, { v: 'b', t: '문 열기 블록' }, { v: 'c', t: '시작하기 버튼' }], 'a', '센서가 재는 값이 입력이에요.', '바깥에서 들어오는 신호가 무엇인지 생각해 보세요.');
+    /* 5 바꿔 보기 */
+    const b5 = makeBench(R('b5'), 'sensor');
+    const BUG = S.bug;
+    const bugSheet = () => {
+      const ph = BUG.done ? 4 : { run: 0, what: 1, find: 2, fix: 3 }[BUG.phase];
+      let h = `<h3>과제 2. 고장 난 자동문</h3><p>옆 반 자동문 프로그램인데, 사람이 <b>가까이 가면 닫히고 멀어지면 열린대요</b>. 고장 찾기 4단계로 고쳐 보세요.</p>${debugList(ph)}`;
+      if (!BUG.done && BUG.phase === 'run') h += '<p class="mn-msg">▶ 시작하기를 누르고 거리 슬라이더를 10과 80으로 움직여 본 뒤 ■ 멈추기를 누르세요.</p>';
+      if (!BUG.done && BUG.phase === 'what') h += '<p class="q__t">생각과 다른 장면은 무엇이었나요?</p><div data-r="bwhat"></div>';
+      if (!BUG.done && BUG.phase === 'find') h += '<p class="mn-msg">그 장면을 만든 블록을 아래 프로그램에서 눌러 보세요.</p>';
+      if (!BUG.done && BUG.phase === 'fix') h += '<p class="mn-msg">그 블록을 눌러 부등호를 고친 다음, 다시 실행해서 거리 10과 80을 모두 확인하세요.</p>';
+      if (BUG.done) h += '<p class="mn-msg mn-msg--ok">✓ 고쳤어요. 부등호 하나가 입력을 반대로 판단하게 했어요. 무엇이 문제였는지 짝에게 설명해 보세요.</p>';
+      h += `<div><button type="button" class="mn-btn mn-btn--quiet" data-r="breset">이 과제 처음 상태로</button></div>`;
+      R('mtask').innerHTML = h;
+      const w = R('mtask').querySelector('[data-r="bwhat"]');
+      if (w) choiceGroup(w, { options: [{ v: 'a', t: '가까이(10) 갔는데 문이 닫혀 있었다' }, { v: 'b', t: '문이 아예 움직이지 않았다' }, { v: 'c', t: '전등이 켜졌다' }], answer: 'a', onPick: v => { if (v === 'a') { BUG.phase = 'find'; save(); setTimeout(() => { bugSheet(); b5.configure(modes.m2()); }, 600); } } });
+      R('mtask').querySelector('[data-r="breset"]').addEventListener('click', () => { Object.assign(BUG, { phase: 'run', done: false, items: null, saw: {} }); save(); bugSheet(); b5.configure(modes.m2()); });
+    };
+    const C1 = st => [ck(st && st.v && st.v['거리'] >= 38 && st.v['거리'] <= 42 && st.door, '거리 40에서 문이 열리나요?'), ck(st && st.v && st.v['거리'] >= 78 && st.door === false, '거리 80에서는 닫혀 있나요?')];
+    const modes = {
+      m1: () => ({ title: '과제 1. 유모차도 열리게', hint: '바꾸기 전에 먼저 예측', items: fresh(S.m1 || AUTO), editable: true, speeds: [['1', '보통', 1]],
+        onChange: it => { S.m1 = plain(it); save(); },
+        onTick: st => { S.m1see = S.m1see || {}; if (st.v['거리'] >= 36 && st.v['거리'] <= 44 && st.door) S.m1see.a = true; if (st.v['거리'] >= 78 && st.door === false) S.m1see.b = true; if (S.m1see.a && S.m1see.b && !S.m1done) { S.m1done = true; save(); drawTask(); b5.say('✓ 거리 40에서 열리고 80에서 닫혀요. 성공!', 'ok'); } else { b5.showChecks([ck(S.m1see.a, '거리 40에서 문이 열리나요?'), ck(S.m1see.b, '거리 80에서는 닫혀 있나요?')]); } } }),
+      m2: () => ({ title: '과제 2. 고장 난 자동문', hint: '고장 찾기 4단계', items: fresh(BUG.items || AUTO_BUG), editable: true, speeds: [['1', '보통', 1]],
+        onChange: it => { BUG.items = plain(it); save(); },
+        onTap: u => { if (BUG.done || BUG.phase === 'fix') return false; if (BUG.phase !== 'find') { b5.say(BUG.phase === 'run' ? '먼저 ▶ 시작하기로 실행해 보세요.' : '먼저 위에서 생각과 다른 장면을 골라 주세요.', 'info'); return true; }
+          const it = b5.items().find(x => x.u === u); const ok = it.t === 'ifs'; const mk = {}; mk[u] = ok ? 'is-right' : 'is-wrong'; b5.mark(mk);
+          if (ok) { BUG.phase = 'fix'; save(); bugSheet(); b5.say('찾았어요. 이 블록의 부등호를 보세요.', 'ok'); } else b5.say('이 블록은 제 역할을 하고 있어요. 판단하는 블록을 찾아보세요.', 'no'); return true; },
+        onTick: st => { if (BUG.phase === 'fix' && !BUG.done) { if (st.v['거리'] <= 12 && st.door) BUG.saw.near = true; if (st.v['거리'] >= 78 && st.door === false) BUG.saw.far = true; if (BUG.saw.near && BUG.saw.far) { BUG.done = true; save(); bugSheet(); drawTask(); b5.say('✓ 가까우면 열리고 멀면 닫혀요.', 'ok'); } } },
+        onRun: () => { if (BUG.phase === 'run') { BUG.phase = 'what'; save(); bugSheet(); } } }),
+      m3: () => ({ title: '더 해 보기', hint: '센서 종류를 바꿔 보기', items: fresh(S.m3 || AUTO), editable: true, speeds: [['1', '보통', 1]], onChange: it => { S.m3 = plain(it); save(); } })
+    };
+    function drawTask() {
+      const cur = S.m.tab;
+      R('tabs').querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === cur, fin = (b.dataset.tab === 'm1' && S.m1done) || (b.dataset.tab === 'm2' && BUG.done); b.setAttribute('aria-pressed', on); b.textContent = { m1: '과제 1', m2: '과제 2', m3: '더 해 보기' }[b.dataset.tab] + (fin ? ' ✓' : ''); });
+      if (cur === 'm1') R('mtask').innerHTML = `<h3>과제 1. 유모차도 열리게</h3><p>유모차는 거리 <b>40</b>쯤에서 문이 열려야 부딪히지 않아요. 아래 프로그램의 숫자를 바꿔서 거리 40에서는 열리고 80에서는 닫히게 해 보세요. (40에서 열리려면 숫자가 40보다 커야 해요. 왜 그럴까요?) 바꾸기 전에 결과를 먼저 예측해요.</p>` + (S.m1done ? '<p class="mn-msg mn-msg--ok">✓ 성공했어요. 숫자를 몇으로 바꿨나요? 45로 바꿔도 될까요?</p>' : '');
+      else if (cur === 'm2') bugSheet();
+      else R('mtask').innerHTML = `<h3>더 해 보기</h3><p>센서 종류를 ‘밝기’나 ‘소리’로 바꾸고, 출력은 그대로 문으로 두면 어떤 기기가 될까요? <b>바꾸기 전에 결과를 먼저 예측</b>하고 실행해요.</p><ul class="howto howto--plain"><li>밝기 < 30이면 문 열기 → 어두워지면 열리는 문?</li><li>소리 > 150이면 문 열기 → 박수로 여는 문?</li></ul>`;
+    }
+    R('tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b || b5.isRunning()) return; S.m.tab = b.dataset.tab; save(); drawTask(); b5.configure(modes[S.m.tab]()); });
+    drawTask(); b5.configure(modes[S.m.tab]());
+    /* 6 설계 */
+    const DZ = S.dz, b6 = makeBench(R('b6'), 'sensor');
+    const curN = () => { const it = (DZ.items || []).find(x => x.t === 'ifs'); return it ? +it.v.n : 50; };
+    const KINDS = { lamp: { name: '가로등', items: [P('live'), P('ifs', 0, { s: '밝기', o: '>', n: 50 }), P('lon', 1), P('else'), P('loff', 1)], sensor: '밝기', get tests() { return [['켜지면 안 될 때(밝음)', 80], ['켜져야 할 때(어두움)', 10], ['경계 값', curN()]]; } }, clap: { name: '박수 스위치', items: [P('live'), P('ifs', 0, { s: '소리', o: '<', n: 50 }), P('lon', 1), P('else'), P('loff', 1)], sensor: '소리', get tests() { return [['켜지면 안 될 때(조용함)', 20], ['켜져야 할 때(박수)', 180], ['경계 값', curN()]]; } } };
+    choiceGroup(R('dzk'), { options: [{ v: 'lamp', t: '가로등 — 어두워지면 불이 켜진다' }, { v: 'clap', t: '박수 스위치 — 손뼉 소리가 크면 불이 켜진다' }], value: DZ.kind, onPick: v => { if (DZ.kind !== v) { DZ.kind = v; DZ.items = null; DZ.tests = {}; save(); } showDz(); } });
+    function dzSheet() {
+      const K = KINDS[DZ.kind]; const rows = K.tests.map(([n, v], i) => { const r = DZ.tests[i]; return `<tr><th scope="row">${n}</th><td class="tnum">${K.sensor} ${v}</td><td>${r == null ? '<span class="aside-t">슬라이더를 맞추고 기록</span>' : r ? '켜짐' : '꺼짐'}</td></tr>`; }).join('');
+      R('dzsheet').innerHTML = `<h3>${K.name} 설계</h3><p>아래 프로그램의 <b>센서 종류·부등호·숫자</b>를 정해요. 블록을 누르면 바꿀 수 있어요. 그다음 ▶ 시작하기를 누르고 테스트 계획표의 값마다 슬라이더를 맞춘 뒤 ‘지금 값 기록’을 눌러요.</p>
+        <div class="tbl"><table class="mn-table"><thead><tr><th scope="col">테스트</th><th scope="col">센서 값</th><th scope="col">결과</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div class="rec"><button type="button" class="mn-btn mn-btn--primary" data-r="dzrec">지금 값 기록</button><span class="aside-t" data-r="dzmsg"></span></div>
+        ${Object.keys(DZ.tests).length >= 3 ? '<p class="mn-msg mn-msg--ok">✓ 세 가지 값을 모두 테스트했어요. 결과가 생각과 같았나요? 경계 값에서는 어땠나요? 짝에게 설명해 보세요.</p>' : ''}`;
+      R('dzsheet').querySelector('[data-r="dzrec"]').addEventListener('click', () => {
+        if (!b6.isLive()) { R('dzsheet').querySelector('[data-r="dzmsg"]').textContent = '먼저 ▶ 시작하기를 눌러 실행해요.'; return; }
+        const st = b6.stage().state(), v = st.v[K.sensor]; const i = K.tests.findIndex(t => Math.abs(t[1] - v) <= 3);
+        if (i < 0) { R('dzsheet').querySelector('[data-r="dzmsg"]').textContent = `${K.sensor} 값이 ${v}이에요. 계획표의 값에 맞춰 주세요.`; return; }
+        DZ.tests[i] = st.led; save(); dzSheet();
+      });
+    }
+    function showDz() { if (!DZ.kind) return; R('dzsheet').hidden = false; R('b6').hidden = false; dzSheet();
+      b6.configure({ title: `내가 설계한 ${KINDS[DZ.kind].name}`, hint: '블록을 눌러 조건 바꾸기 → ▶ 시작하기', items: fresh(DZ.items || KINDS[DZ.kind].items), editable: true, speeds: [['1', '보통', 1]], onChange: it => { DZ.items = plain(it); DZ.tests = {}; save(); dzSheet(); } }); }
+    showDz();
+    /* 7 */
+    R('obs0').closest('.obs').addEventListener('input', e => { const i = e.target.dataset.obs; if (i == null) return; S.obs[+i] = e.target.value; save(); });
+    [0, 1, 2].forEach(i => { R('obs' + i).value = S.obs[i] || ''; });
+    quiz(ctx, 'quiz', 'q7a', [{ v: 'a', t: '출력 → 처리 → 입력' }, { v: 'b', t: '입력 → 처리 → 출력' }, { v: 'c', t: '처리 → 입력 → 출력' }], 'b', '맞아요. 신호가 들어오고, 판단하고, 바깥이 바뀌어요.', '자동문에서 가장 먼저 일어나는 일은 무엇이었나요?');
+    quiz(ctx, 'quiz', 'q7b', [{ v: 'a', t: '입력' }, { v: 'b', t: '처리' }, { v: 'c', t: '출력' }], 'b', '판단하는 블록이 처리예요.', '센서 값을 보고 무엇을 할지 정하는 단계는?');
+    evals(ctx, 'ev', ['생활 속 기기에서 입력·처리·출력을 찾을 수 있나요?', '센서 값에 따라 프로그램이 어떻게 동작할지 예측할 수 있나요?', '조건의 숫자나 부등호를 바꿔 원하는 대로 동작하게 할 수 있나요?', '내가 설계한 조건을 계획표대로 테스트했나요?']);
+  }
+};
+
+/* ================= B2 ================= */
+/* 데이터: 부산광역시 관광정책과 「부산광역시_해수욕장 방문 현황_20260131」(공공데이터포털 data.go.kr/data/15043252, 2026. 2. 10. 갱신, 이용허락 제한 없음). 원자료 단위 천 명 → 만 명으로 바꿔 적음. 2025년 다대포는 서측 2,059 + 동측 526(천 명). 연도별은 일곱 해수욕장 합. */
+const DATA_YEAR = '2025';
+const BEACH = [['다대포', 258.5], ['송도', 302.1], ['광안리', 457.4], ['해운대', 999.5], ['송정', 172.4], ['일광', 5.3], ['임랑', 2.7]];
+const YEARS = [['2015', 4620], ['2016', 4682], ['2017', 4856], ['2018', 4116], ['2019', 3695], ['2020', 1474], ['2021', 990], ['2022', 2101], ['2023', 1795], ['2024', 1969], ['2025', 2198]];
+const SRC_B = '출처: 부산광역시 관광정책과, 「부산광역시 해수욕장 방문 현황」(공공데이터포털, 2026. 2. 10. 갱신). 2025년 개장 기간 방문자 수입니다. 원자료의 천 명 단위를 만 명으로 바꿔 적었습니다. 다대포는 서측 205.9와 동측 52.6을 더한 값입니다.';
+const SRC_Y = '출처: 같은 공공데이터의 2015~2025년 일곱 해수욕장 방문자 수를 해마다 더한 값. 단위: 만 명. 2019~2020년 무렵부터 해운대 등 일부 해수욕장은 휴대전화 위치 정보로 세는 방식으로 바뀌었습니다.';
+const BROKEN = { '송정': '', '다대포': 2585.0, '임랑': '많음' };
+const BROKEN_WHY = { '송정': 'blank', '다대포': 'unit', '임랑': 'text' };
+const SPOTS = ['해운대 바다', '광안리 바다', '감천문화마을', '태종대', '용두산 공원'];
+const rowsOf = (arr, over) => arr.map(([k, v]) => ({ k, name: k, v: over && k in over ? over[k] : v }));
+const B2 = {
+  key: 'b2', no: 'b2', label: '보강 2', group: 'extra', stage: '교과서에 없는 것 더하기 · 데이터', title: ['데이터로 보는', '우리 부산.'], short: '해수욕장 방문객', pg: '교과서에 없는 내용 · 6학년 5단원 1절과 이어짐',
+  goal: '표로 된 데이터에서 빈칸과 이상한 값을 찾아 정리할 수 있다. 질문에 맞는 그래프 종류를 고르고 그래프를 읽어 답할 수 있다. 우리 반 데이터를 같은 과정으로 모아 그래프로 나타낼 수 있다.',
+  defaults: () => ({ vote: null, q: {}, flags: {}, why: {}, fixed: {}, g: {}, read: {}, can: {}, cls: {}, sent: '', quiz: {}, ev: {} }),
+  steps: [
+    { id: 's1', name: '생각 열기', lead: '부산의 해수욕장 일곱 곳 중 2025년 여름 사람이 가장 많이 간 곳은 어디일까요?', html: () => `
+      <div class="card"><p class="q__t">① 내 예측 — 한 곳을 고르세요.</p><div data-r="vote"></div>${qHTML('q1', '② 내 예측이 맞는지 무엇을 보면 알 수 있을까요?')}</div>
+      ${oneline('데이터란', '관찰하거나 세어서 얻은 값을 모아 놓은 것. 부산시는 해마다 해수욕장에 온 사람 수를 세어 공공데이터포털에 올려요. 누구나 내려받을 수 있어요.')}` },
+    { id: 's2', name: '표 읽기', lead: '2025년 여름 부산 해수욕장 방문객 표예요. 부산시가 공개한 공공데이터를 그대로 옮겼어요. 표를 읽고 답해요.', html: () => `
+      <div class="two"><div data-r="t2"></div><div class="card">${qHTML('q2a', '① 방문객이 가장 많은 곳은?')}${qHTML('q2b', '② 두 번째로 많은 곳은?')}${qHTML('q2c', '③ 해운대는 광안리의 약 몇 배인가요?')}</div></div>` },
+    { id: 's3', name: '정리하기', lead: '같은 표인데 어딘가 이상해요. 이상한 칸을 눌러 깃발을 세우고, 까닭을 고른 뒤 고쳐요.', html: () => `
+      <div class="two"><div><div data-r="t3"></div><p class="aside-t">이 표는 연습용으로 일부러 고장 낸 표예요. 실제 자료는 2단계 표예요.</p></div><div class="card" data-r="fix"></div></div>` },
+    { id: 's4', name: '그래프 고르기', lead: '질문에 맞는 그래프 종류를 골라요. 고르면 그래프가 그려져요.', html: () => `
+      <div class="card"><p class="q__t">① "일곱 해수욕장 중 어디가 많고 어디가 적을까?" — 어떤 그래프가 좋을까요?</p><div data-r="g1"></div><div data-r="g1fb"></div><div data-r="c1"></div></div>
+      <div class="card"><p class="q__t">② "부산 해수욕장 방문객은 해마다 어떻게 변했을까?" (2015~2025년) — 어떤 그래프가 좋을까요?</p><div data-r="g2"></div><div data-r="g2fb"></div><div data-r="c2"></div></div>` },
+    { id: 's5', name: '그래프 읽기', lead: '연도별 그래프를 읽고 답해요. 그리고 이 데이터로 말할 수 있는 것과 없는 것을 가려요.', html: () => `
+      <div data-r="c5"></div>
+      <div class="card">${qHTML('r1', '① 표의 값이 가장 작았던 해는?')}${qHTML('r2', '② 한 해 사이에 표의 값이 가장 크게 줄어든 때는?')}</div>
+      <div class="card"><h3>자가 바뀌었어요</h3><p>2019~2020년 무렵부터 해운대 등 일부 해수욕장은 <b>휴대전화 위치 정보</b>로 사람 수를 세요. 그 전에는 다른 방법으로 세었어요. 세는 방법이 바뀌면, 바뀌기 전과 후의 값을 그대로 비교하면 안 돼요. 키를 잴 때 자가 달라지면 누가 더 컸는지 말할 수 없는 것과 같아요.</p></div>
+      <div class="card"><p class="q__t">③ 이 데이터로 말할 수 있으면 ‘있음’, 없으면 ‘없음’을 고르세요.</p><div class="bins" data-r="can"></div><div data-r="canfb"></div></div>` },
+    { id: 's6', name: '우리 반 데이터', lead: '우리 반이 좋아하는 부산 명소를 손 들어 세고, 수를 넣어 그래프로 그려요.', html: () => `
+      <div class="two"><div class="card"><h3>우리 반 설문 — 가장 가고 싶은 부산 명소</h3><p class="aside-t">이름은 적지 않아요. 손 든 사람 수만 세요.</p><div class="cls-grid" data-r="cls"></div><p class="aside-t" data-r="clssum"></p></div>
+        <div><div data-r="c6"></div><div class="card"><label class="field">그래프를 보고 한 문장으로<textarea class="mn-input" data-r="sent" maxlength="120" placeholder="우리 반은 ○○를 가장 가고 싶어 한다. ○명 중 ○명이 골랐다."></textarea></label></div></div></div>` },
+    { id: 's7', name: '정리와 스스로 평가', lead: '', html: () => `
+      <div class="card">${qHTML('q7a', '그래프 종류는 무엇을 보고 고르나요?')}${qHTML('q7b', '표에서 이상한 값을 봤을 때 가장 먼저 할 일은?')}${qHTML('q7c', '우리 반 설문에 이름을 적지 않은 까닭은?')}</div>
+      <div class="card"><h3>스스로 평가</h3><div class="evals" data-r="ev"></div></div>${oneline('6학년에서는', '인공지능이 이런 데이터를 학습해서 판단해요. 데이터가 이상하면 판단도 이상해져요.')}` }
+  ],
+  done: {
+    s1: S => !!S.vote && S.q.q1 === 'c', s2: S => S.q.q2a === '해운대' && S.q.q2b === '광안리' && S.q.q2c === 'a',
+    s3: S => Object.keys(BROKEN).every(k => S.fixed[k]), s4: S => S.g.g1 === 'bar' && S.g.g2 === 'line',
+    s5: S => S.read.r1 === '2021' && S.read.r2 === '2020' && ['a', 'b', 'c', 'd', 'e'].every(k => S.can[k] != null) && S.can.a === 'y' && S.can.b === 'y' && S.can.c === 'n' && S.can.d === 'n' && S.can.e === 'n',
+    s6: S => Object.values(S.cls).reduce((a, b) => a + (+b || 0), 0) > 0 && (S.sent || '').trim().length >= 10,
+    s7: S => S.quiz.q7a === 'a' && S.quiz.q7b === 'b' && S.quiz.q7c === 'a' && Object.keys(S.ev).length >= 4
+  },
+  init(ctx) {
+    const { S, R, save } = ctx;
+    const BO = BEACH.map(([k]) => ({ v: k, t: k }));
+    choiceGroup(R('vote'), { options: BO, value: S.vote, onPick: v => { S.vote = v; save(); } });
+    quiz(ctx, 'q', 'q1', [{ v: 'a', t: '내 느낌' }, { v: 'b', t: '친구들 생각' }, { v: 'c', t: '해수욕장에 온 사람 수를 세어 놓은 자료' }], 'c', '세어 놓은 값, 데이터를 보면 알 수 있어요.', '느낌과 생각은 사람마다 달라요. 모두가 같이 볼 수 있는 것은?');
+    /* 2 */
+    const t2 = dataTable(R('t2'), { cols: ['해수욕장', '방문객(만 명)'], rows: rowsOf(BEACH), src: SRC_B, hi: [] });
+    const hi2 = () => { const h = []; if (S.q.q2a === '해운대') h.push('해운대'); if (S.q.q2b === '광안리') h.push('광안리'); t2.set({ hi: h }); };
+    quiz(ctx, 'q', 'q2a', BO, '해운대', '999.5만 명, 가장 많아요. 1,000만 명에 조금 못 미쳐요.', '표에서 수가 가장 큰 줄을 찾아보세요.'); quiz(ctx, 'q', 'q2b', BO, '광안리', '457.4만 명이에요.', '해운대 다음으로 큰 수는?');
+    quiz(ctx, 'q', 'q2c', [{ v: 'a', t: '약 2배' }, { v: 'b', t: '약 5배' }, { v: 'c', t: '약 20배' }], 'a', '1,000은 460쯤의 약 2배예요.', '해운대는 약 1,000, 광안리는 약 460으로 어림해 보세요.');
+    R('q2a').addEventListener('click', hi2); R('q2b').addEventListener('click', hi2); hi2();
+    /* 3 */
+    const cur3 = () => { const o = Object.assign({}, BROKEN); Object.keys(S.fixed).forEach(k => { if (S.fixed[k]) o[k] = BEACH.find(b => b[0] === k)[1]; }); return o; };
+    let t3;
+    const WHY = { blank: '값이 비어 있다', unit: '다른 값과 자릿수가 다르다(10배)', text: '숫자가 아니라 글자다' };
+    const drawFix = () => {
+      const keys = Object.keys(S.flags).filter(k => S.flags[k]);
+      let h = `<h3>이상한 칸 찾기</h3><p>표에서 이상한 칸을 눌러 ⚑ 깃발을 세우세요. 세 곳이 있어요.</p>`;
+      const wrong = keys.filter(k => !(k in BROKEN));
+      if (wrong.length) h += `<p class="mn-msg mn-msg--no">✗ ${wrong.join(', ')} 칸은 다른 값과 비교해 보면 이상하지 않아요. 다시 눌러 깃발을 내리세요.</p>`;
+      keys.filter(k => k in BROKEN).forEach(k => {
+        h += `<div class="q"><p class="q__t">${k} 칸은 왜 이상한가요?</p><div data-r="why-${k}"></div>`;
+        if (S.why[k] === BROKEN_WHY[k]) h += `<div class="fix-row">${S.fixed[k] ? `<span class="mn-msg mn-msg--ok">✓ ${BROKEN_WHY[k] === 'blank' ? '빈칸은 지어내지 않고 원래 자료에서 찾아 넣었어요(172.4).' : BROKEN_WHY[k] === 'unit' ? '258.5로 바로잡았어요. 다른 값과 자릿수를 맞췄어요.' : '글자 대신 원래 자료의 수 2.7을 넣었어요.'}</span>` : `<button type="button" class="mn-btn mn-btn--primary" data-fix="${k}">${BROKEN_WHY[k] === 'blank' ? '원래 자료에서 찾아 넣기' : '바로잡기'}</button><span class="aside-t">${BROKEN_WHY[k] === 'blank' ? '빈칸은 지어내면 안 돼요. 출처를 다시 확인해요.' : ''}</span>`}</div>`;
+        h += `</div>`;
+      });
+      if (Object.keys(BROKEN).every(k => S.fixed[k])) h += '<p class="mn-msg mn-msg--ok">✓ 세 칸을 모두 정리했어요. 이제 2단계 표와 같아졌어요.</p>';
+      R('fix').innerHTML = h;
+      keys.filter(k => k in BROKEN).forEach(k => { choiceGroup(R('fix').querySelector(`[data-r="why-${k}"]`), { options: Object.keys(WHY).map(w => ({ v: w, t: WHY[w] })), answer: BROKEN_WHY[k], value: S.why[k], onPick: v => { S.why[k] = v; save(); if (v === BROKEN_WHY[k]) setTimeout(drawFix, 500); } }); });
+      R('fix').querySelectorAll('[data-fix]').forEach(b => b.addEventListener('click', () => { S.fixed[b.dataset.fix] = true; save(); t3.set({ rows: rowsOf(BEACH, cur3()), fixed: S.fixed }); drawFix(); }));
+    };
+    t3 = dataTable(R('t3'), { cols: ['해수욕장', '방문객(만 명)'], rows: rowsOf(BEACH, cur3()), flags: S.flags, fixed: S.fixed, onCell: k => { if (S.fixed[k]) return; S.flags[k] = !S.flags[k]; save(); t3.set({ flags: S.flags }); drawFix(); } });
+    drawFix();
+    /* 4 */
+    const GOPT = [{ v: 'bar', t: '막대그래프' }, { v: 'line', t: '꺾은선그래프' }];
+    const drawG = () => {
+      R('c1').innerHTML = S.g.g1 ? chartSVG({ type: S.g.g1, rows: rowsOf(BEACH), title: '2025년 여름 부산 해수욕장 방문객', unit: '만 명' }) : '';
+      R('g1fb').innerHTML = S.g.g1 == null ? '' : msgHTML(S.g.g1 === 'bar', '막대그래프. 해수욕장은 순서가 없는 항목이라 막대 길이로 비교해요.', '꺾은선은 점 사이를 선으로 잇는데, 해운대와 광안리 ‘사이’에는 값이 없어요. 순서 없는 항목은 막대가 맞아요.');
+      R('c2').innerHTML = S.g.g2 ? chartSVG({ type: S.g.g2, rows: rowsOf(YEARS), title: '부산 해수욕장 전체 방문객, 해마다', unit: '만 명', divider: { after: '2019', label: '세는 방법 바뀜' } }) : '';
+      R('g2fb').innerHTML = S.g.g2 == null ? '' : msgHTML(S.g.g2 === 'line', '꺾은선그래프. 해는 순서대로 이어지니 선으로 변화를 봐요.', '막대로도 볼 수 있지만, ‘해마다 어떻게 변했나’는 선의 오르내림이 더 잘 보여요.');
+    };
+    choiceGroup(R('g1'), { options: GOPT, answer: 'bar', value: S.g.g1, onPick: v => { S.g.g1 = v; save(); drawG(); } });
+    choiceGroup(R('g2'), { options: GOPT, answer: 'line', value: S.g.g2, onPick: v => { S.g.g2 = v; save(); drawG(); } });
+    drawG();
+    /* 5 */
+    const drawC5 = () => { const h = []; if (S.read.r1 === '2021') h.push('2021'); if (S.read.r2 === '2020') h.push('2019', '2020'); R('c5').innerHTML = chartSVG({ type: 'line', rows: rowsOf(YEARS), title: '부산 해수욕장 전체 방문객, 해마다', unit: '만 명', hi: h, labels: true, divider: { after: '2019', label: '세는 방법 바뀜' } }) + `<p class="dl-src">${SRC_Y}</p>`; };
+    quiz(ctx, 'read', 'r1', [{ v: '2020', t: '2020년' }, { v: '2021', t: '2021년' }, { v: '2023', t: '2023년' }], '2021', '990만 명으로 가장 낮은 점이에요.', '선에서 가장 낮은 점을 찾아보세요.');
+    quiz(ctx, 'read', 'r2', [{ v: '2018', t: '2017년 → 2018년' }, { v: '2020', t: '2019년 → 2020년' }, { v: '2023', t: '2022년 → 2023년' }], '2020', '3,695만에서 1,474만으로 줄었어요. 2020년에 무슨 일이 있었는지, 그리고 세는 방법이 언제 바뀌었는지 아래 글을 보세요.', '선이 가장 가파르게 내려가는 곳은 어디인가요?');
+    R('r1').addEventListener('click', drawC5); R('r2').addEventListener('click', drawC5); drawC5();
+    const CAN = [['a', '표의 값은 2017년이 가장 크다', 'y'], ['b', '표의 값은 2019년에서 2020년 사이에 크게 줄었다', 'y'], ['c', '2020년에 줄어든 까닭은 감염병 때문이다', 'n'], ['d', '내년에는 방문객이 더 늘어날 것이다', 'n'], ['e', '해운대가 부산에서 가장 좋은 해수욕장이다', 'n']];
+    const drawCan = () => {
+      R('can').innerHTML = CAN.map(([k, t, a]) => { const v = S.can[k]; const cls = v == null ? '' : v === a ? ' is-ok' : ' is-no'; return `<div class="bin${cls}"><span class="bin__t">${t}</span><div class="mn-seg" role="group" aria-label="${t}"><button type="button" data-k="${k}" data-v="y" aria-pressed="${v === 'y'}">있음</button><button type="button" data-k="${k}" data-v="n" aria-pressed="${v === 'n'}">없음</button></div></div>`; }).join('');
+      const all = CAN.every(([k]) => S.can[k] != null), ok = CAN.every(([k, , a]) => S.can[k] === a);
+      R('canfb').innerHTML = !all ? '' : ok ? '<p class="mn-msg mn-msg--ok">✓ 데이터는 ‘세어 본 것’만 말해요. 세는 방법이 바뀐 앞뒤, 앞날, ‘좋다·나쁘다’는 데이터가 말해 주지 않아요.</p>' : '<p class="mn-msg mn-msg--no">✗ 빨간 줄을 다시 보세요. 이 표에 있는 값으로 확인할 수 있는 말인가요?</p>';
+    };
+    R('can').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; S.can[b.dataset.k] = b.dataset.v; save(); drawCan(); });
+    drawCan();
+    /* 6 */
+    const drawCls = () => {
+      const sum = SPOTS.reduce((a, s) => a + (+S.cls[s] || 0), 0);
+      R('clssum').textContent = `지금까지 ${sum}명`;
+      R('c6').innerHTML = sum > 0 ? chartSVG({ type: 'bar', rows: SPOTS.map(s => ({ name: s, v: +S.cls[s] || 0 })), title: '우리 반이 가고 싶은 부산 명소', unit: '명' }) : '<div class="card"><p class="aside-t">수를 넣으면 여기에 막대그래프가 그려져요.</p></div>';
+    };
+    R('cls').innerHTML = SPOTS.map(s => `<label for="cls-${s}">${s}</label><input class="mn-input mn-input--num" id="cls-${s}" data-s="${s}" type="number" inputmode="numeric" min="0" max="40" value="${S.cls[s] == null ? '' : S.cls[s]}" aria-label="${s} 명">`).join('');
+    R('cls').addEventListener('input', e => { const i = e.target.closest('[data-s]'); if (!i) return; S.cls[i.dataset.s] = Math.max(0, Math.min(40, +i.value || 0)); save(); drawCls(); });
+    R('sent').value = S.sent || ''; R('sent').addEventListener('input', () => { S.sent = R('sent').value; save(); });
+    drawCls();
+    /* 7 */
+    quiz(ctx, 'quiz', 'q7a', [{ v: 'a', t: '무엇을 알고 싶은지(질문)를 보고' }, { v: 'b', t: '예쁜 쪽으로' }, { v: 'c', t: '값이 큰 쪽으로' }], 'a', '비교하려면 막대, 변화를 보려면 꺾은선이에요.', '4단계에서 그래프를 고른 기준을 떠올려 보세요.');
+    quiz(ctx, 'quiz', 'q7b', [{ v: 'a', t: '그럴듯한 값을 넣는다' }, { v: 'b', t: '깃발을 세우고 원래 자료(출처)에서 확인한다' }, { v: 'c', t: '그 줄을 지운다' }], 'b', '지어내지 않고 출처에서 확인해요.', '3단계에서 빈칸을 어떻게 했나요?');
+    quiz(ctx, 'quiz', 'q7c', [{ v: 'a', t: '누가 무엇을 골랐는지는 개인정보라서' }, { v: 'b', t: '이름이 길어서' }], 'a', '수를 모을 때 이름은 필요 없어요. 필요 없는 정보는 모으지 않는 것이 원칙이에요.', '부산시가 휴대전화 위치로 사람 수를 셀 때도 공개하는 것은 사람 수뿐이에요.');
+    evals(ctx, 'ev', ['표에서 가장 큰 값, 작은 값, 몇 배인지를 읽을 수 있나요?', '빈칸이나 이상한 값을 찾아 출처에서 확인해 고칠 수 있나요?', '질문에 맞는 그래프 종류를 고르고 까닭을 말할 수 있나요?', '데이터로 말할 수 있는 것과 없는 것을 가릴 수 있나요?']);
+  }
+};
+
+/* ================= 교사용 지도안 (보강) ================= */
+const TEACH_EXTRA = [
+  { key: 'b1', no: 'b1', pg: '교과서에 없는 내용 — 7단원 2절(110~117쪽) 다음에 둔다', unit: '보강 1 · 컴퓨팅 시스템(입력·처리·출력) — 교과서에 없는 것 더하기',
+    std: '직접 대응하는 실과 성취기준 없음. 관련: [6실05-02] 요지(컴퓨터에 명령하는 방법 체험). 6학년 7단원 로봇의 구조(제어·감지·구동, 108~109쪽)의 선행. 중학교 정보 컴퓨팅 시스템 영역으로 이어짐. 학교자율시간 성취기준 도출안 [5정보01-01](도출안)에 해당.', goal: B1.goal,
+    diff: [['5~6학년 정보 영역에 컴퓨터가 입력·처리·출력으로 동작한다는 내용이 없다. 6학년 로봇 단원이 제어·감지·구동으로 다루지만 기술 영역이고 블록 키트·AI 컨트롤러가 필요하며 "로봇 연결은 데스크톱 PC에서만 지원"(6학년 113쪽)한다.', '자동문·가로등·박수 스위치 같은 기기를 소재로, 슬라이더(입력)–블록(처리)–문·전등(출력)이 한 화면에 있는 시뮬레이터로 다룬다. 교구와 PC가 없어도 된다.', 'CSTA 2026 5학년 표준은 하드웨어·소프트웨어의 입력·출력·처리·저장 협동을, 중국 2022 과정표준 5~6학년 ‘과정과 제어’는 입력·계산·출력을 교구 없이 다룬다. 영국 Teach Computing 5학년은 조건과 센서(Crumble)를 한 단원으로 묶는다.'], ['조건 블록을 ‘대답’ 입력으로만 다룬다(5학년 113쪽).', '조건의 입력을 센서 값(숫자)으로 바꾸고 부등호와 경계 값(20일 때는?)을 다룬다.', '센서 값 조건은 중학교 피지컬 컴퓨팅의 기본 형태다.'], ['고치는 활동이 없다.', '부등호가 반대인 고장을 고장 찾기 4단계로 고친다(재구성 1·2차시와 같은 절차).', '같은 절차를 다른 내용에 다시 적용해 절차를 익힌다.']],
+    flow: [['도입', '0~5', '1 생각 열기: 아홉 장면을 입력·처리·출력으로 나누기', '"자동문은 어떻게 사람이 오는 줄 알까요?"', '틀린 것은 빨간 줄로 바로 보인다.'], ['예측', '5~11', '2 자동문 프로그램 읽고 세 값(50·10·20) 예측', '"20일 때는? 20보다 작아야 하나요, 같아도 되나요?"', '경계 값 20이 핵심 발문.'], ['실행', '11~16', '3 슬라이더로 실행, 기록, 비교, 열리는 순간 값 찾기', '"몇이 되는 순간 열렸나요?"', '기록은 실행 중에만 된다.'], ['살펴보기', '16~22', '4 판단 블록·출력 블록 찾기, 입력이 그대로면 왜 가만히 있나', '"무엇이 바뀌어야 문이 움직일까요?"', ''], ['바꾸기', '22~30', '5 과제 1(유모차, 숫자), 과제 2(부등호 고장)', '"숫자를 몇으로 바꿨나요? 다른 수도 될까요?"', '빨리 끝낸 학생은 더 해 보기.'], ['설계', '30~37', '6 가로등/박수 스위치 설계, 테스트 계획표(세 값)로 시험', '"경계 값에서는 어땠나요?"', '설계는 기기에 저장된다.'], ['정리', '37~40', '7 센서 찾기 과제, 정리 문항, 스스로 평가', '"오늘 학교에서 센서를 어디서 봤나요?"', '교구가 있으면 엔트리 하드웨어 연결로 확장(선택).']],
+    evals: [['입력·처리·출력 구분', '페이지 점검(1단계), 발문', '아홉 장면을 맞게 나누고 다른 기기에서도 세 단계를 말한다.', '아홉 장면을 맞게 나눈다.', '도움을 받아 나눈다.'], ['조건 읽기와 값 바꾸기', '페이지 점검(2·3·5단계)', '경계 값을 포함해 예측하고 과제 1을 다른 방법으로도 푼다.', '예측과 과제 1을 해낸다.', '도움을 받아 해낸다.'], ['고장 고치기', '페이지 점검(5단계)', '부등호 고장을 4단계로 고치고 까닭을 말한다.', '고친다.', '도움을 받아 고친다.'], ['설계와 시험', '페이지(6단계), 관찰', '조건을 설계하고 세 값을 테스트하며 경계 값 결과를 설명한다.', '설계하고 세 값을 시험한다.', '설계만 한다.']],
+    notes: ['시뮬레이터의 센서 값은 단위 없는 가상값이다. 실제 센서는 종류마다 값의 범위가 다르다는 것을 한 줄 안내한다.', '‘계속 반복’은 블록 안에 블록을 두 겹으로 넣지 않도록 시작 블록에 붙여 표시했다. 엔트리에서는 ‘계속 반복하기’ 블록 안에 ‘만일’을 넣는 모양이 된다.', '교구(마이크로비트, 햄스터 등)가 있는 학교는 6단계 설계를 엔트리 하드웨어 연결로 실제 기기에서 테스트할 수 있다. 없는 학교는 시뮬레이터로 끝낸다. 두 경우 같은 차시 목표를 쓴다.', '이 차시는 아직 학급에 적용하지 않았다.'] },
+  { key: 'b2', no: 'b2', pg: '교과서에 없는 내용 — 6학년 5단원 1절(68~71쪽)과 이어진다. 5학년에서도 가능(수학 ‘자료와 가능성’ 뒤)', unit: '보강 2 · 데이터(수집·정리·시각화·해석) — 교과서에 없는 것 더하기',
+    std: '직접 대응하는 실과 성취기준 없음. 관련: [6실05-04] 요지(디지털·아날로그 데이터의 특징, 인공지능에 활용 가능한 데이터 탐색). 수학 5학년 자료와 가능성(그래프) 연계 <span class="chk">[확인 필요: 코드]</span>. 중학교 정보 데이터 영역으로 이어짐. 학교자율시간 성취기준 도출안 [5정보02-01·02](도출안)에 해당.', goal: B2.goal,
+    diff: [['6학년 교과서의 데이터는 아날로그/디지털 구분(68~69쪽)과 인공지능용 데이터 유형 분류(70쪽)에서 끝난다. 학생이 데이터를 모으고 정리하고 그래프로 그리고 읽는 활동이 없다.', '실제 부산 공공데이터(해수욕장 방문객)를 표로 읽고, 고장 난 표를 정리하고, 질문에 맞는 그래프를 골라 그리고, 말할 수 있는 것과 없는 것을 가른다. 우리 반 설문으로 같은 과정을 반복한다.', 'CSTA 2026 5학년 표준은 컴퓨팅 도구로 데이터를 수집·정리하고 변동성을 분석하게 한다. 영국 Teach Computing은 5학년 플랫파일 데이터베이스, 6학년 스프레드시트를 둔다. 중국 2022는 3~4학년에 ‘데이터와 인코딩’을 둔다.'], ['소재가 방울토마토(6학년 72쪽)나 가상 상황이다.', '부산시가 공공데이터포털에 공개한 해수욕장 방문객(2025년 해수욕장별, 2015~2025년 전체)을 쓴다. 출처, 단위 환산, 집계 방법(빅데이터·표본조사)을 표 아래에 적는다. 2020년 집계 방식 변경을 ‘자가 바뀌면 비교할 수 없다’로 다룬다.', '지역 데이터는 학생이 값의 뜻을 안다. 집계 방법은 개인정보 이야기의 입구가 된다.'], ['평가는 자기 체크뿐이다.', '그래프 읽기 문항과 한 문장 쓰기로 해석을 확인한다.', '해석까지 가야 데이터 활동이다.']],
+    flow: [['도입', '0~4', '1 예측 투표, 무엇을 보면 알 수 있나', '"느낌 말고 무엇을 보면 알 수 있을까요?"', '설문은 수업 시작에 손들기로 2분.'], ['표 읽기', '4~10', '2 표에서 최댓값·둘째·몇 배', '"해운대는 임랑의 몇 배쯤일까요?"', '어림 계산.'], ['정리', '10~17', '3 고장 난 표에서 빈칸·10배·글자 찾고 고치기', '"빈칸에 아무 수나 넣으면 왜 안 되나요?"', '빈칸은 지어내지 않고 출처에서 찾는다.'], ['그래프 고르기', '17~23', '4 질문에 맞는 그래프 종류 고르기', '"해운대와 광안리 ‘사이’에 값이 있나요?"', '틀린 종류를 고르면 왜 읽기 어려운지 보인다.'], ['읽기', '23~30', '5 연도별 그래프 읽기, 세는 방법 변경, 말할 수 있는 것/없는 것', '"2020년에 무슨 일이 있었나요?" "세는 자가 바뀌었는데 2019년과 2020년을 그대로 비교해도 되나요?"', '감염병만으로 설명하지 않도록 주의한다. 값이 준 데에는 세는 방법 변경도 섞여 있다.'], ['우리 반', '30~38', '6 설문 수 입력, 그래프, 한 문장', '"우리 반 그래프는 막대인가요, 꺾은선인가요? 왜?"', '이름은 적지 않는다.'], ['정리', '38~40', '7 정리 문항, 개인정보, 스스로 평가', '', '']],
+    evals: [['표 읽기', '페이지 점검(2단계)', '최댓값·순서·몇 배를 어림까지 읽는다.', '최댓값과 순서를 읽는다.', '도움을 받아 읽는다.'], ['정리하기', '페이지 점검(3단계)', '세 종류 이상값을 찾고 까닭과 처리 방법을 말한다.', '세 이상값을 찾아 고친다.', '일부만 찾는다.'], ['그래프 고르기', '페이지 점검(4단계), 발문', '종류를 고르고 질문과 연결해 까닭을 말한다.', '종류를 맞게 고른다.', '도움을 받아 고른다.'], ['해석', '5·6단계, 한 문장', '말할 수 있는 것과 없는 것을 가르고, 우리 반 데이터를 한 문장으로 쓴다.', '그래프를 읽고 한 문장을 쓴다.', '한 문장을 쓰지 못한다.']],
+    notes: ['수치 출처: 부산광역시 관광정책과 「부산광역시_해수욕장 방문 현황_20260131」(공공데이터포털 data.go.kr/data/15043252, 2026. 2. 10. 갱신, 이용허락 제한 없음, CSV 78행). 원자료 단위는 천 명이며 만 명으로 바꿔 적었다. 2025년 다대포는 원자료에 서측·동측 두 줄로 나뉘어 있어 더했다. 원자료 CSV는 교재 폴더에 함께 둔다.', '원자료의 2021년 이후 임랑해수욕장 규모(48,000㎡)는 그 전(10,650㎡)과 달라 자료 자체의 오류로 보인다. 이 차시는 규모 열을 쓰지 않지만, 공공데이터에도 이상값이 있다는 예로 교사가 보여 줄 수 있다.', '2020년부터 휴대전화 위치 기반 집계로 바뀐 사실은 부산시 설명(세계일보 2024. 9. 4. 보도)에 따른다. 그 전 집계 방법의 이름은 교재에 쓰지 않았다.', '3단계의 고장 난 표는 교육용으로 만든 것이다. 페이지에 그렇게 밝혀 두었다.', '설문에는 이름을 적지 않는다. 입력한 수는 이 기기에만 저장된다.', '이 차시는 아직 학급에 적용하지 않았다.'] }
+];
+
+
+
+/* pages.js — 재구성 교과서 QR로 여는 웹 활동 3개(112·116·119쪽)와 처음 화면, 주소 연결 */
+const view = document.getElementById('view');
+const topNav = document.getElementById('topnav');
+
+/* ---------- 공통 자료 (교과서 글과 같게) ---------- */
+const W_A1 = [P('start'), P('move', 0, { n: 10 }), P('move', 0, { n: 10 }), P('move', 0, { n: 10 }), P('say', 0, { t: '안녕!', n: 4 })];
+const W_GA = [P('start')].concat(Array.from({ length: 10 }, () => P('move', 0, { n: 10 })));
+const W_NA = [P('start'), P('repeat', 0, { n: 10 }), P('move', 1, { n: 10 })];
+const W_A3 = [P('start'), P('repeat', 0, { n: 10 }), P('move', 1, { n: 10 }), P('wait', 1, { n: 1 }), P('say', 0, { t: '만나서 반가워!', n: 4 })];
+const DONE_T = '1분 더 해냈어요! 성공!';
+const ROPE_OK = [P('start'), P('wait', 0, { n: 120 }), P('say', 0, { t: '2분이 지났어요!', n: 2 }), P('ask', 0, { t: '줄넘기를 1분 더 해 볼까요?' }), P('if', 0, { t: '예' }), P('wait', 1, { n: 60 }), P('say', 1, { t: DONE_T, n: 2 })];
+const ROPE_B1 = [P('start'), P('wait', 0, { n: 120 }), P('say', 0, { t: '2분이 지났어요!', n: 2 }), P('ask', 0, { t: '줄넘기를 1분 더 해 볼까요?' }), P('if', 0, { t: '예' }), P('wait', 1, { n: 60 }), P('say', 0, { t: DONE_T, n: 2 })];
+const ROPE_B2 = ROPE_OK.map(b => b.t === 'if' ? P('if', 0, { t: '네' }) : b);
+const ROPE_SP = [['1', '×1 실제 빠르기'], ['10', '×10'], ['60', '×60 빠르게', 1]];
+const BOTTLE = { item: 'bottle', ask: "내 물병이면 '예'를 입력해요.", yes: '분실물 보관함에서 물병을 찾아가세요.', no: '분실물 보관함에는 찾는 물건이 없어요.' };
+const XSAY = '이용해 주셔서 감사합니다.';
+const MYITEMS = ['umbrella', 'pencil', 'cap', 'shoe'];
+const said = (tr, t) => tr.says.some(s => s.t === t);
+
+const PAGES = {};
+const stateOf = k => store.get(k, {});
+
+/* ---------- 고장 찾기 (교과서 116쪽 4단계: '예'·'아니요'로 한 번씩 실행 → 다른 장면 → 블록 → 고치기) ---------- */
+function fixTask(ctx, cfg) {
+  const S = ctx.S, st = S[cfg.key] = Object.assign({ phase: 'run', done: false, items: null, ry: 0, rn: 0, fy: 0, fn: 0 }, S[cfg.key] || {});
+  const host = ctx.R(cfg.key);
+  const ans = tr => tr && tr.answers[0];
+  function sheet() {
+    const ph = st.done ? 4 : { run: 0, what: 1, find: 2, fix: 3 }[st.phase];
+    let h = `<h3>${cfg.title}</h3><p>${cfg.intro}</p>${debugList(ph)}`;
+    if (!st.done && st.phase === 'run') h += `<p class="mn-msg">아래에서 ▶ 시작하기를 눌러 실행해요. 질문이 나오면 한 번은 <b>예</b>, 한 번은 <b>아니요</b>로 대답해요. <span class="tnum">(예 ${st.ry ? '✓' : '·'} / 아니요 ${st.rn ? '✓' : '·'})</span></p>`;
+    if (!st.done && st.phase === 'what') h += `<p class="q__t">정답과 다른 장면은 무엇이었나요?</p><div data-r="${cfg.key}-what"></div>`;
+    if (!st.done && st.phase === 'find') h += `<p class="mn-msg">그 장면을 만든 블록을 아래 코드에서 눌러 보세요.</p>`;
+    if (!st.done && st.phase === 'fix') h += `<p class="mn-msg">${cfg.fixHint} <span class="tnum">(예 ${st.fy ? '✓' : '·'} / 아니요 ${st.fn ? '✓' : '·'})</span></p>`;
+    if (st.done) h += `<p class="mn-msg mn-msg--ok">✓ 고쳤어요. 교과서 표에 ‘정답과 다른 장면, 고장 난 블록, 고친 방법’을 써 보세요.</p>`;
+    h += `<div><button type="button" class="mn-btn mn-btn--quiet" data-r="${cfg.key}-reset">이 고장 처음 상태로</button></div>`;
+    host.innerHTML = h;
+    const w = host.querySelector(`[data-r="${cfg.key}-what"]`);
+    if (w) choiceGroup(w, { options: cfg.what.options, answer: cfg.what.answer, onPick: v => { if (v === cfg.what.answer) { st.phase = 'find'; ctx.save(); setTimeout(sheet, 600); } } });
+    host.querySelector(`[data-r="${cfg.key}-reset"]`).addEventListener('click', () => { Object.assign(st, { phase: 'run', done: false, items: null, ry: 0, rn: 0, fy: 0, fn: 0 }); ctx.save(); sheet(); cfg.bench.configure(mode()); });
+  }
+  function mode() {
+    return {
+      title: cfg.benchTitle, hint: '빠르기를 ×60으로 두면 2분을 2초 만에 볼 수 있어요', items: fresh(st.items || cfg.base), editable: true, speeds: ROPE_SP,
+      onChange: items => { st.items = plain(items); ctx.save(); },
+      onTap: u => {
+        if (st.done || st.phase === 'fix') return false;
+        if (st.phase !== 'find') { cfg.bench.say(st.phase === 'run' ? '먼저 ‘예’와 ‘아니요’로 한 번씩 실행해 보세요.' : '먼저 위에서 정답과 다른 장면을 골라 주세요.', 'info'); return true; }
+        const it = cfg.bench.items().find(x => x.u === u), ok = cfg.isBug(it, cfg.bench.items()), mk = {}; mk[u] = ok ? 'is-right' : 'is-wrong'; cfg.bench.mark(mk);
+        if (ok) { st.phase = 'fix'; ctx.save(); sheet(); cfg.bench.say('찾았어요. ' + cfg.fixHint, 'ok'); } else cfg.bench.say(cfg.findHint, 'no');
+        return true;
+      },
+      onRun: tr => {
+        const a = ans(tr);
+        if (st.phase === 'run') { if (a === '예') st.ry = 1; else if (a != null) st.rn = 1; if (st.ry && st.rn) st.phase = 'what'; ctx.save(); sheet(); }
+        else if (st.phase === 'fix') {
+          const good = cfg.good(tr);
+          if (a === '예') st.fy = good ? 1 : 0; else if (a != null) st.fn = good ? 1 : 0;
+          if (st.fy && st.fn) { st.done = true; cfg.after && setTimeout(cfg.after, 0); cfg.bench.say('✓ ‘예’와 ‘아니요’ 모두 정답처럼 움직여요.', 'ok'); }
+          else cfg.bench.say(good ? '좋아요. 이번에는 다른 대답으로도 실행해 보세요.' : cfg.notYet, good ? 'ok' : 'info');
+          ctx.save(); sheet();
+        }
+      }
+    };
+  }
+  sheet();
+  return { mode, st };
+}
+
+/* ================= 112쪽: 블록 놀이터 (4차시 활동 1~3) ================= */
+PAGES.w112 = {
+  key: 'w112', no: 4, pg: '112쪽', acts: '활동 1~3', title: ['블록 놀이터', ''],
+  short: '블록 놀이터', what: '블록 3개 실행 → 10걸음 두 코드 비교 → 반복 코드 예측하고 실행',
+  goal: '실행하기 전에 결과를 먼저 예측하고, 실행해서 예측과 비교해요. 엔트리와 같은 모양의 블록이에요.',
+  html: () => `
+  <section class="step"><header class="step__h"><h2><span class="no">1</span>블록 3개를 실행해 봐요</h2><p>교과서 활동 1의 코드예요. ▶ 시작하기를 눌러 실행해요.</p></header><div data-r="b1"></div></section>
+  <section class="step"><header class="step__h"><h2><span class="no">2</span>두 코드를 비교해요</h2><p>두 코드를 실행하기 전에 먼저 예측해요.</p></header>
+    <div class="card"><p class="q__t">(가)와 (나)는 같은 곳까지 갈까요? 내 예측</p><div data-r="p2"></div><div data-r="p2fb"></div></div>
+    <div class="tabs" data-r="t2"><button type="button" class="mn-btn mn-btn--s" data-c="ga">(가) 움직이기 10개</button><button type="button" class="mn-btn mn-btn--s" data-c="na">(나) 10번 반복하기</button></div>
+    <div data-r="b2"></div><div class="help after" data-r="h2" hidden><b>반복하기</b> 블록은 안에 든 블록을 정한 횟수만큼 되풀이해요.</div></section>
+  <section class="step"><header class="step__h"><h2><span class="no">3</span>예측하고 실행해요</h2><p>먼저 예측을 적고 ‘예측 확정’을 누른 뒤 실행해요.</p></header>
+    <div class="card"><table class="pred"><tr><th>질문</th><th>내 예측</th><th>실행 결과</th></tr>
+      <tr><td>움직이기 블록은 몇 번 실행될까요?</td><td><input type="number" inputmode="numeric" min="0" max="99" data-p="m" aria-label="움직이기 예측"> 번</td><td class="res" data-res="m">-</td></tr>
+      <tr><td>"만나서 반가워!"는 몇 번 말할까요?</td><td><input type="number" inputmode="numeric" min="0" max="99" data-p="s" aria-label="말하기 예측"> 번</td><td class="res" data-res="s">-</td></tr></table>
+      <div><button type="button" class="mn-btn mn-btn--primary" data-r="lock3">예측 확정</button></div><div data-r="p3fb"></div></div>
+    <div data-r="b3"></div><div class="help">‘천천히’로 실행하면 블록 옆에 실행된 횟수(×)가 보여요. <b>기다리기</b> 블록이 있어서 한 걸음씩 움직이는 모습이 보여요.</div></section>
+  <section class="step"><header class="step__h"><h2><span class="no">4</span>더 해 보기: 숫자 바꾸기</h2><p>친구가 위치 60에 서 있어요. 블록을 누르고 숫자만 바꿔서, 로봇이 친구 바로 앞에서 인사하게 해 봐요.</p></header>
+    <div class="only-val" data-r="b4"></div></section>
+  ${oneline('다음', '교과서 활동 4: 엔트리에서 활동 3의 코드를 만들고, 반복 안에 ‘다음 모양으로 바꾸기’를 넣어 봐요.')}`,
+  init(ctx) {
+    const { S, R, save } = ctx;
+    /* 1 */
+    const b1 = makeBench(R('b1'), 'walk');
+    b1.configure({ title: '활동 1 코드', hint: '블록을 읽고 실행해요', items: fresh(W_A1), friendU: 100,
+      checks: tr => tr ? [{ ok: true, txt: `로봇이 위치 ${tr.u}까지 움직이고 “안녕!”이라고 말했어요.` }] : [] , onRun: () => { S.a1 = true; save(); } });
+    /* 2 */
+    S.p2 = S.p2 || null; S.r2 = S.r2 || {};
+    let cur2 = 'ga';
+    const fb2 = () => {
+      const done = S.r2.ga != null && S.r2.na != null;
+      R('h2').hidden = !done;
+      R('p2fb').innerHTML = !S.p2 ? '' : !done ? `<p class="mn-msg">예측: <b>${S.p2 === 'same' ? '같다' : '다르다'}</b>. 이제 (가)와 (나)를 모두 실행해 보세요.${S.r2.ga != null ? ` (가) 위치 ${S.r2.ga}` : ''}${S.r2.na != null ? ` (나) 위치 ${S.r2.na}` : ''}</p>`
+        : `<p class="mn-msg mn-msg--${S.p2 === 'same' ? 'ok' : 'no'}">실행 결과: (가) 위치 ${S.r2.ga}, (나) 위치 ${S.r2.na}. 둘은 같은 곳까지 가요. ${S.p2 === 'same' ? '예측이 맞았어요.' : '예측과 다르네요. 왜 같은지 블록을 다시 읽어 보세요.'}</p>`;
+    };
+    choiceGroup(R('p2'), { options: [{ v: 'same', t: '같다' }, { v: 'diff', t: '다르다' }], value: S.p2, locked: () => S.r2.ga != null || S.r2.na != null, onPick: v => { S.p2 = v; save(); fb2(); } });
+    const b2 = makeBench(R('b2'), 'walk');
+    const conf2 = () => {
+      R('t2').querySelectorAll('[data-c]').forEach(b => b.setAttribute('aria-pressed', b.dataset.c === cur2));
+      b2.configure({ title: cur2 === 'ga' ? '(가) 움직이기 블록 10개' : '(나) 10번 반복하기 안에 움직이기 1개', hint: '', items: fresh(cur2 === 'ga' ? W_GA : W_NA), friendU: 100,
+        canRun: () => S.p2 ? true : '먼저 위에서 예측을 골라 주세요.',
+        checks: tr => tr ? [{ ok: true, txt: `위치 ${tr.u}에 도착했어요.` }] : [],
+        onRun: tr => { S.r2[cur2] = tr.u; save(); fb2(); } });
+    };
+    R('t2').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b || b2.isRunning()) return; cur2 = b.dataset.c; conf2(); });
+    conf2(); fb2();
+    /* 3 */
+    S.p3 = S.p3 || {}; const ins = [...ctx.view.querySelectorAll('[data-p]')];
+    const draw3 = () => {
+      ins.forEach(i => { i.value = S.p3[i.dataset.p] != null ? S.p3[i.dataset.p] : ''; i.disabled = !!S.lock3; });
+      R('lock3').disabled = !!S.lock3;
+      const r = S.r3;
+      ['m', 's'].forEach(k => { const c = ctx.view.querySelector(`[data-res="${k}"]`); if (!r) { c.textContent = '-'; c.className = 'res'; return; } c.textContent = r[k] + ' 번'; c.className = 'res' + (+S.p3[k] === r[k] ? '' : ' no'); });
+      R('p3fb').innerHTML = r ? `<p class="mn-msg mn-msg--${+S.p3.m === r.m && +S.p3.s === r.s ? 'ok' : 'no'}">${+S.p3.m === r.m && +S.p3.s === r.s ? '✓ 두 예측이 모두 맞았어요.' : '예측과 다른 칸이 있어요. 말하기 블록이 반복하기 안에 있는지 밖에 있는지 보세요.'}</p>` : S.lock3 ? '<p class="mn-msg">예측을 확정했어요. 이제 아래에서 실행해요.</p>' : '';
+    };
+    ins.forEach(i => i.addEventListener('input', () => { S.p3[i.dataset.p] = i.value === '' ? null : +i.value; save(); }));
+    R('lock3').addEventListener('click', () => { if (S.p3.m == null || S.p3.s == null) { R('p3fb').innerHTML = '<p class="mn-msg">두 칸에 모두 예측을 적어 주세요.</p>'; return; } S.lock3 = true; save(); draw3(); });
+    const b3 = makeBench(R('b3'), 'walk');
+    b3.configure({ title: '활동 3 코드', hint: '예측을 확정해야 실행돼요', items: fresh(W_A3), friendU: 100,
+      canRun: () => S.lock3 ? true : '먼저 위 표에 예측을 적고 ‘예측 확정’을 눌러 주세요.',
+      onRun: tr => { S.r3 = { m: tr.moves, s: tr.says.length }; save(); draw3(); } });
+    draw3();
+    /* 4 */
+    const b4 = makeBench(R('b4'), 'walk');
+    b4.configure({ title: '숫자만 바꿔서 친구 앞에서 인사하기', hint: '블록을 누르면 숫자 칸이 나와요', items: fresh(S.i4 || W_A3), friendU: 60, editable: true, toolHint: '숫자를 바꿀 블록을 누르세요. 숫자 칸이 여기에 나와요.',
+      onChange: items => { S.i4 = plain(items); save(); },
+      checks: tr => tr ? [{ ok: tr.u === 60, txt: tr.u === 60 ? '✓ 친구 바로 앞(위치 60)에 도착했어요.' : `위치 ${tr.u}에 멈췄어요. 친구는 위치 60에 있어요.` }, { ok: tr.says.length === 1, txt: tr.says.length === 1 ? '✓ 한 번 인사했어요.' : `${tr.says.length}번 말했어요.` }] : [{ ok: null, txt: '반복 횟수나 걸음 숫자 가운데 무엇을 바꿀지 먼저 생각해 보세요.' }] });
+  }
+};
+
+/* ================= 116쪽: 고장 찾기 (5차시 활동 4) ================= */
+PAGES.w116 = {
+  key: 'w116', no: 5, pg: '116쪽', acts: '활동 4', title: ['고장 난 줄넘기 타이머', ''],
+  short: '고장 찾기', what: '고장 ①② 두 개를 4단계로 찾아 고치기, 3분으로 바꾸기',
+  goal: '‘예’와 ‘아니요’로 한 번씩 실행해 정답과 다른 장면을 찾고, 그 장면을 만든 블록 하나만 고쳐요.',
+  html: () => `
+  <section class="step"><header class="step__h"><h2><span class="no">1</span>정답 코드 떠올리기</h2><p>교과서 활동 2에서 맞춘 정답 코드예요. 고장 난 코드와 견주어 봐요.</p></header>
+    <details class="card"><summary class="q__t">정답 코드 보기</summary><div class="mn-program" data-r="ok"></div></details></section>
+  <section class="step"><header class="step__h"><h2><span class="no">2</span>고장 고치기</h2><p>고장 ①과 ②를 차례대로 고쳐요. 처음부터 다시 만들지 말고, 다른 장면을 만든 블록 하나만 찾아 고쳐요.</p></header>
+    <div class="tabs" data-r="tabs"><button type="button" class="mn-btn" data-b="b1">고장 ①</button><button type="button" class="mn-btn" data-b="b2">고장 ②</button></div>
+    <div class="card" data-r="bug1"></div><div class="card" data-r="bug2" hidden></div><div data-r="bench"></div></section>
+  <section class="step"><header class="step__h"><h2><span class="no">3</span>더 해 보기</h2><p>3분 동안 줄넘기하도록 바꾸려면 어느 블록의 숫자를 바꿀까요? 함께 고쳐야 할 말은 없을까요? 블록을 눌러 바꾸고 확인해요.</p></header>
+    <div class="only-val" data-r="b3"></div></section>`,
+  init(ctx) {
+    const { S, R, save } = ctx;
+    R('ok').innerHTML = progHTML(fresh(ROPE_OK), {});
+    const bench = makeBench(R('bench'), 'timer');
+    const t1 = fixTask(ctx, { key: 'bug1', bench, base: ROPE_B1, benchTitle: '고장 ①',
+      title: '고장 ①', intro: '한 친구가 만든 줄넘기 타이머예요. 정답과 다르게 움직이는 장면이 있대요.',
+      what: { options: [{ v: 'a', t: '‘아니요’라고 했는데도 “1분 더 해냈어요! 성공!”이라고 말한다' }, { v: 'b', t: '‘예’라고 했는데 1분을 더 기다리지 않는다' }, { v: 'c', t: '“2분이 지났어요!”라고 말하지 않는다' }], answer: 'a' },
+      isBug: it => it && it.t === 'say' && it.v.t === DONE_T,
+      findHint: '이 블록은 정답과 같아요. “성공!”이라고 말하게 하는 블록을 찾아보세요.',
+      fixHint: '그 블록을 눌러 ‘안으로 넣기’로 만일 블록 안, 기다리기 아래로 옮긴 뒤 ‘예’와 ‘아니요’로 다시 실행해요.',
+      good: tr => tr.answers[0] === '예' ? (tr.log.indexOf('w60') > -1 && tr.log.indexOf('s:' + DONE_T) > tr.log.indexOf('w60')) : !said(tr, DONE_T),
+      notYet: '아직 정답과 달라요. ‘예’일 때는 1분을 기다린 뒤에, ‘아니요’일 때는 말하지 않아야 해요.', after: () => draw() });
+    const t2 = fixTask(ctx, { key: 'bug2', bench, base: ROPE_B2, benchTitle: '고장 ②',
+      title: '고장 ②', intro: '다른 친구가 만든 줄넘기 타이머예요. 이번에도 정답과 다른 장면이 있대요.',
+      what: { options: [{ v: 'a', t: '‘아니요’라고 했는데도 “1분 더 해냈어요! 성공!”이라고 말한다' }, { v: 'b', t: '‘예’라고 했는데 1분을 더 기다리지 않고 끝난다' }, { v: 'c', t: '“2분이 지났어요!”라고 말하지 않는다' }], answer: 'b' },
+      isBug: it => it && it.t === 'if',
+      findHint: '이 블록은 정답과 같아요. ‘예’라고 했을 때 어느 길로 갈지 정하는 블록을 찾아보세요.',
+      fixHint: '그 블록을 눌러 글자 칸을 정답과 같게 고친 뒤 ‘예’와 ‘아니요’로 다시 실행해요.',
+      good: tr => tr.answers[0] === '예' ? (tr.branch.yes === 1 && said(tr, DONE_T)) : !said(tr, DONE_T),
+      notYet: '아직 정답과 달라요. 판단 블록 오른쪽 칸의 글자를 정답 코드와 견주어 보세요.', after: () => draw() });
+    S.tab = S.tab || 'b1';
+    const draw = () => {
+      R('tabs').querySelectorAll('[data-b]').forEach(b => { b.setAttribute('aria-pressed', b.dataset.b === S.tab); const st = S['bug' + b.dataset.b.slice(1)]; b.textContent = (b.dataset.b === 'b1' ? '고장 ①' : '고장 ②') + (st && st.done ? ' ✓' : ''); });
+      R('bug1').hidden = S.tab !== 'b1'; R('bug2').hidden = S.tab !== 'b2';
+    };
+    R('tabs').addEventListener('click', e => { const b = e.target.closest('[data-b]'); if (!b || bench.isRunning()) return; S.tab = b.dataset.b; save(); draw(); bench.configure((S.tab === 'b1' ? t1 : t2).mode()); });
+    draw(); bench.configure((S.tab === 'b1' ? t1 : t2).mode());
+    /* 3 */
+    const b3 = makeBench(R('b3'), 'timer');
+    b3.configure({ title: '3분 동안 줄넘기하기', hint: '처음 기다리는 시간을 바꿔요', items: fresh(S.i3 || ROPE_OK), editable: true, speeds: ROPE_SP, toolHint: '바꿀 블록을 누르세요. 숫자 칸과 글자 칸이 여기에 나와요.',
+      onChange: items => { S.i3 = plain(items); save(); },
+      checks: tr => tr ? [{ ok: tr.waits[0] && tr.waits[0].s === 180, txt: tr.waits[0] && tr.waits[0].s === 180 ? '✓ 처음에 180초(3분)를 기다려요.' : `처음에 ${tr.waits[0] ? tr.waits[0].s : 0}초를 기다렸어요. 3분은 몇 초일까요?` }, { ok: tr.says[0] && /3분/.test(tr.says[0].t), txt: tr.says[0] && /3분/.test(tr.says[0].t) ? '✓ 알리는 말도 3분으로 고쳤어요.' : `처음에 “${tr.says[0] ? tr.says[0].t : ''}”라고 말했어요. 이 말도 맞나요?` }] : [{ ok: null, txt: '1분은 60초예요.' }] });
+  }
+};
+
+/* ================= 119쪽: 순서도 따라가기 (6차시 활동 4) ================= */
+const PATHS = { yes: ['n1', 'n2', 'n3', 'n4', 'n5', 'n7'], no: ['n1', 'n2', 'n3', 'n6', 'n7'] };
+PAGES.w119 = {
+  key: 'w119', no: 6, pg: '119쪽', acts: '활동 4', title: ['순서도 따라가기', ''],
+  short: '순서도 따라가기', what: '물병 순서도 두 길 따라가기 → 내 물건 순서도를 보관함에서 테스트하기',
+  goal: '물병 순서도를 두 길로 따라가 보고, 내가 설계한 물건의 순서도를 보관함 화면에서 직접 테스트해요.',
+  html: () => `
+  <section class="step"><header class="step__h"><h2><span class="no">1</span>물병 순서도 따라가기</h2><p>길을 고르고 ‘다음 칸’을 눌러 한 칸씩 따라가요. 두 길을 모두 따라가 봐요.</p></header>
+    <div class="card"><div class="pathbtns"><button type="button" class="mn-btn" data-path="yes">‘예’ 길</button><button type="button" class="mn-btn" data-path="no">‘아니요’ 길</button><button type="button" class="mn-btn mn-btn--primary" data-r="nx">다음 칸 ▶</button></div>
+      <div data-r="f1"></div><div data-r="f1fb"></div></div></section>
+  <section class="step"><header class="step__h"><h2><span class="no">2</span>보관함에서 실행하기</h2><p>▶ 시작하기를 누르고 물병을 눌러요. ‘예’와 ‘아니요’로 한 번씩 대답해 봐요.</p></header>
+    <div data-r="b2"></div><ul class="mn-checks" data-r="c2"></ul></section>
+  <section class="step"><header class="step__h"><h2><span class="no">3</span>내 물건 순서도 넣기</h2><p>교과서에 설계한 내 물건을 고르고, 순서도 칸에 쓴 말을 그대로 넣어요.</p></header>
+    <div class="card"><p class="q__t">내가 맡은 물건</p><div class="tabs" data-r="pick"></div>
+      <div class="fields"><label>묻는 말 (대답을 기다리는 칸)<input data-f="ask" maxlength="24" placeholder="예) 내 우산이면 '예'를 입력해요."></label>
+        <label>‘예’일 때 하는 말<input data-f="yes" maxlength="24" placeholder="예) 분실물 보관함에서 우산을 찾아가세요."></label>
+        <label>‘아니요’일 때 하는 말<input data-f="no" maxlength="24" placeholder="예) 분실물 보관함에는 찾는 물건이 없어요."></label></div>
+      <div data-r="f3"></div></div>
+    <div class="help">물병 순서도와 모양은 같고, 물건 이름과 말만 바뀌어요.</div></section>
+  <section class="step"><header class="step__h"><h2><span class="no">4</span>내 순서도 테스트하기</h2><p>보관함에 내 물건이 생겼어요. 모든 길을 테스트해요.</p></header>
+    <div data-r="b4"></div><ul class="mn-checks" data-r="c4"></ul>
+    <div class="help">다 테스트했으면 짝과 바꿔 서로의 물건을 눌러 봐요. 이상한 곳이 있으면 교과서 순서도를 고쳐요.</div></section>`,
+  init(ctx) {
+    const { S, R, save } = ctx;
+    /* 1 */
+    let path = null, pos = -1; S.tr1 = S.tr1 || {};
+    const draw1 = () => {
+      const mk = {}; if (path) PATHS[path].slice(0, pos + 1).forEach(n => mk[n] = 'is-path');
+      R('f1').innerHTML = flowSVG(objFlow(BOTTLE), FLOW_EDGES_OBJ, { mark: mk, label: '물병 순서도' });
+      ctx.view.querySelectorAll('[data-path]').forEach(b => b.setAttribute('aria-pressed', b.dataset.path === path));
+      const end = path && pos === PATHS[path].length - 1;
+      R('f1fb').innerHTML = !path ? '<p class="mn-msg">먼저 ‘예’ 길이나 ‘아니요’ 길을 골라요.</p>'
+        : end ? `<p class="mn-msg mn-msg--ok">✓ ‘${path === 'yes' ? '예' : '아니요'}’ 길 끝까지 왔어요. ${path === 'yes' ? '물병을 찾아가라고 말하고 물병이 화면에서 사라져요.' : '찾는 물건이 없다고 말하고, 물병은 그대로 있어요.'}${S.tr1.yes && S.tr1.no ? ' 두 길을 모두 따라갔어요.' : ' 다른 길도 따라가 봐요.'}</p>`
+        : pos === 2 ? `<p class="mn-msg">판단 칸이에요. 대답이 ‘예’이면 오른쪽, 아니면 아래로 가요.</p>` : '';
+    };
+    ctx.view.querySelectorAll('[data-path]').forEach(b => b.addEventListener('click', () => { path = b.dataset.path; pos = 0; draw1(); }));
+    R('nx').addEventListener('click', () => { if (!path) { draw1(); return; } if (pos < PATHS[path].length - 1) pos++; if (pos === PATHS[path].length - 1) { S.tr1[path] = true; save(); } draw1(); });
+    draw1();
+    /* 2 */
+    S.r2 = S.r2 || {};
+    const c2 = () => { R('c2').innerHTML = `<li class="${S.r2.yes ? 'is-ok' : ''}">물병을 누르고 ‘예’ → 물병이 사라지나요?</li><li class="${S.r2.no ? 'is-ok' : ''}">물병을 누르고 ‘아니요’ → 물병이 그대로 있나요?</li><li class="${S.r2.x ? 'is-ok' : ''}">엑스 버튼 → 인사하고 끝나나요?</li>`; };
+    const b2 = makeBench(R('b2'), 'locker');
+    b2.configure({ title: '분실물 보관함', hint: '▶ 시작하기 → 물병 누르기', objs: ['bottle', 'x'], flows: { bottle: BOTTLE }, first: 'bottle', intro: '분실물 보관함에 물병이 있어요.', xSay: XSAY,
+      onObjRun: (o, tr) => { if (o === 'x') S.r2.x = true; else { const a = tr.answers[0]; if (a === '예' && tr.hides) S.r2.yes = true; else if (a != null && !tr.hides) S.r2.no = true; } save(); c2(); } });
+    c2();
+    /* 3 */
+    S.d = S.d || null; S.r4 = S.r4 || {};
+    const inputs = [...ctx.view.querySelectorAll('[data-f]')];
+    const filled = () => S.d && S.d.ask && S.d.yes && S.d.no;
+    const drawPick = () => { R('pick').innerHTML = MYITEMS.map(i => `<button type="button" class="mn-btn mn-btn--s" data-i="${i}" aria-pressed="${!!S.d && S.d.item === i}">${ITEM_NAMES[i]}</button>`).join(''); };
+    const drawF3 = () => { inputs.forEach(i => { i.disabled = !S.d; i.value = S.d ? S.d[i.dataset.f] || '' : ''; }); R('f3').innerHTML = S.d ? flowSVG(objFlow(S.d), FLOW_EDGES_OBJ, { label: '내 물건 순서도' }) : '<p class="mn-msg">물건을 먼저 골라 주세요.</p>'; };
+    R('pick').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; const keep = S.d || {}; S.d = { item: b.dataset.i, ask: keep.ask || '', yes: keep.yes || '', no: keep.no || '' }; S.r4 = {}; save(); drawPick(); drawF3(); conf4(); });
+    inputs.forEach(i => i.addEventListener('input', () => { if (!S.d) return; S.d[i.dataset.f] = i.value.trim(); S.r4 = {}; save(); R('f3').innerHTML = flowSVG(objFlow(S.d), FLOW_EDGES_OBJ, { label: '내 물건 순서도' }); conf4(); }));
+    drawPick(); drawF3();
+    /* 4 */
+    const b4 = makeBench(R('b4'), 'locker');
+    const c4 = () => { const n = S.d ? ITEM_NAMES[S.d.item] : '내 물건', eul = n + josa(n, '을', '를'), iga = n + josa(n, '이', '가'); R('c4').innerHTML = `<li class="${S.r4.yes ? 'is-ok' : ''}">${eul} 누르고 ‘예’ → ${iga} 사라지고 찾아가라는 말이 나오나요?</li><li class="${S.r4.no ? 'is-ok' : ''}">${eul} 누르고 ‘아니요’ → ${iga} 그대로 있고 없다는 말이 나오나요?</li><li class="${S.r4.x ? 'is-ok' : ''}">엑스 버튼 → 인사하고 끝나나요?</li>`; };
+    function conf4() {
+      if (!filled()) { b4.configure({ title: '내 순서도 테스트하기', hint: '3번에서 물건을 고르고 세 칸을 모두 채우면 테스트할 수 있어요', objs: ['bottle', 'x'], flows: { bottle: BOTTLE }, first: 'bottle', intro: '분실물 보관함에 물병이 있어요.', xSay: XSAY, canRun: () => '3번에서 내 물건을 고르고 세 칸을 모두 채워 주세요.' }); c4(); return; }
+      const it = S.d.item, nm = ITEM_NAMES[it];
+      b4.configure({ title: '내 순서도 테스트하기', hint: `▶ 시작하기 → ${nm} 누르기`, objs: ['bottle', it, 'x'], flows: { bottle: BOTTLE, [it]: S.d }, first: it, intro: `분실물 보관함에 물병과 ${nm}${josa(nm, '이', '가')} 있어요.`, xSay: XSAY,
+        onObjRun: (o, tr) => { if (o === 'x') S.r4.x = true; else if (o === it) { const a = tr.answers[0]; if (a === '예' && tr.hides) S.r4.yes = true; else if (a != null && a !== '예' && !tr.hides) S.r4.no = true; } save(); c4(); } });
+      c4();
+    }
+    conf4();
+  }
+};
+
+/* ---------- 더하기 1·2 (기존 웹 교재 보강 차시를 교과서 126~133쪽에 맞춰 옮김) ---------- */
+PAGES.b1 = { key: 'b1', no: '더하기 1', pg: '126~129쪽', acts: '활동 1~7', title: ['컴퓨터는 어떻게 일할까', ''], short: '입력·처리·출력', what: '입력·처리·출력 나누기 → 자동문 예측·실행 → 숫자 바꾸기·고장 찾기 → 가로등·박수 스위치 설계', goal: B1.goal, legacy: B1 };
+PAGES.b2 = { key: 'b2', no: '더하기 2', pg: '130~133쪽', acts: '활동 1~7', title: ['데이터로 보는 우리 부산', ''], short: '해수욕장 데이터', what: '예측 → 표 읽기 → 고장 난 표 정리 → 그래프 고르기·읽기 → 우리 반 데이터', goal: B2.goal, legacy: B2 };
+function renderLegacy(L) {
+  const X = L.legacy, S = Object.assign(X.defaults(), stateOf(L.key));
+  view.innerHTML = `<div class="page">
+    <header class="lesson-head"><p class="kicker"><span class="pg">교과서 ${L.pg}</span>교과서에 없는 것 ${L.no}</p><h1>${L.title[0]}</h1><p class="goal"><b>이렇게 해요</b> ${L.goal}</p></header>
+    ${X.steps.map((st, i) => `<section class="step" id="${L.key}-${st.id}"><header class="step__h"><h2><span class="no">${i + 1}</span>${st.name}</h2>${st.lead ? `<p>${st.lead}</p>` : ''}</header>${st.html()}</section>`).join('')}
+    <p class="foot">기록은 이 기기의 브라우저에만 저장돼요. <button type="button" class="mn-btn mn-btn--quiet" data-r="wipe">이 활동 기록 지우기</button></p></div>`;
+  const R = n => view.querySelector(`[data-r="${n}"]`);
+  const ctx = { S, R, view, save: () => store.set(L.key, S), goTo: id => setTimeout(() => { const e = document.getElementById(L.key + '-' + id); e && e.scrollIntoView({ behavior: smooth(), block: 'start' }); }, 60) };
+  X.init(ctx);
+  twice(R('wipe'), '이 활동 기록 지우기', () => { store.set(L.key, {}); renderLegacy(L); });
+}
+
+/* ---------- 처음 화면 ---------- */
+const ORDER = ['w112', 'w116', 'w119'], EXTRA = ['b1', 'b2'];
+function renderHome() {
+  view.innerHTML = `<div class="page">
+    <header class="lesson-head"><p class="kicker"><span class="pg">5학년 실과</span>7. 컴퓨터와 문제 해결</p>
+      <h1>교과서 <em>웹 활동</em></h1>
+      <p class="goal">교과서의 QR을 찍으면 이 화면의 활동이 열려요. 실행하기 전에 먼저 예측하고, 실행해서 비교하고, 다른 장면이 나오면 블록 하나씩 고쳐요.</p></header>
+    <div class="home-cards" style="margin-top:22px">${ORDER.map(k => { const L = PAGES[k]; return `<article class="card"><span class="pgno">교과서 ${L.pg} · ${L.no}차시 ${L.acts}</span><h3>${L.short}</h3><p>${L.what}</p><div><a class="mn-btn mn-btn--primary" href="#${k}">열기</a></div></article>`; }).join('')}</div>
+    <h2 class="home-h">교과서에 없는 것 더하기</h2>
+    <div class="home-cards">${EXTRA.map(k => { const L = PAGES[k]; return `<article class="card"><span class="pgno">교과서 ${L.pg} · ${L.no}</span><h3>${L.title[0]}</h3><p>${L.what}</p><div><a class="mn-btn mn-btn--primary" href="#${k}">열기</a></div></article>`; }).join('')}</div>
+    <p class="foot">기록은 이 기기의 브라우저에만 저장돼요. 이름 같은 개인 정보는 받지 않아요. 엔트리 블록과 같은 모양으로 그린 연습 화면이며, 실제 작품은 엔트리에서 만들어요.</p></div>`;
+}
+function renderPage(L) {
+  const S = Object.assign({}, stateOf(L.key));
+  view.innerHTML = `<div class="page">
+    <header class="lesson-head"><p class="kicker"><span class="pg">교과서 ${L.pg}</span>${L.no}차시 · ${L.acts}</p><h1>${L.title[0]}</h1><p class="goal"><b>이렇게 해요</b> ${L.goal}</p></header>
+    ${L.html()}
+    <p class="foot">기록은 이 기기의 브라우저에만 저장돼요. <button type="button" class="mn-btn mn-btn--quiet" data-r="wipe">이 활동 기록 지우기</button></p></div>`;
+  const R = n => view.querySelector(`[data-r="${n}"]`);
+  const ctx = { S, R, view, save: () => store.set(L.key, S) };
+  L.init(ctx);
+  twice(R('wipe'), '이 활동 기록 지우기', () => { store.set(L.key, {}); renderPage(L); });
+}
+function route() {
+  const k = (location.hash || '').replace('#', '');
+  const L = PAGES[k];
+  topNav.innerHTML = ORDER.concat(EXTRA).map(x => `<a href="#${x}" ${x === k ? 'aria-current="page"' : ''}>${PAGES[x].pg} ${PAGES[x].short}</a>`).join('');
+  document.body.classList.toggle('solo', !!L);
+  if (L) { document.title = `${L.short} · 교과서 ${L.pg} 웹 활동`; L.legacy ? renderLegacy(L) : renderPage(L); } else { document.title = '컴퓨터와 문제 해결 · 교과서 웹 활동'; renderHome(); }
+  window.scrollTo(0, 0); view.focus({ preventScroll: true });
+}
+window.addEventListener('hashchange', route);
+route();
+
+})();</script>
+
+</body></html>
