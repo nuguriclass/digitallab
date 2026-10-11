@@ -456,6 +456,14 @@ a{color:var(--gold-2)}
 .ipo div,.bin,.cls-grid input,.dl-cell{background:#fff;color:var(--ink)}
 /* QR로 연 활동 화면: 그 활동 하나만 보이게 (위 메뉴 숨김) */
 body.solo .tb-top{display:none}
+/* 112 활동 2: (가)·(나)가 어떤 코드인지 예측 위에 작게 보여 주기 */
+.cmp2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.cmp2__h{font-size:15px;color:var(--ink-2);margin-bottom:6px}
+.cmp2__h b{color:var(--coral);margin-right:4px}
+.mn-program.mini{padding:10px;gap:2px}
+.mn-program.mini .mn-block{min-height:26px;padding:2px 9px;font-size:12.5px;gap:4px}
+.mn-program.mini .mn-block__v{padding:0 6px;min-width:0;font-size:12px}
+@media (max-width:640px){.cmp2{grid-template-columns:1fr}}
 
 [hidden]{display:none!important}
 </style></head><body>
@@ -1478,6 +1486,7 @@ PAGES.w112 = {
   html: () => `
   <section class="step"><header class="step__h"><h2><span class="no">1</span>블록 3개를 실행해 봐요</h2><p>교과서 활동 1의 코드예요. ▶ 시작하기를 눌러 실행해요.</p></header><div data-r="b1"></div></section>
   <section class="step"><header class="step__h"><h2><span class="no">2</span>두 코드를 비교해요</h2><p>두 코드를 실행하기 전에 먼저 예측해요.</p></header>
+    <div class="card cmp2"><div><p class="cmp2__h"><b>(가)</b> 움직이기 블록을 10개 이어 붙인 코드</p><div class="mn-program mini">${progHTML(fresh(W_GA))}</div></div><div><p class="cmp2__h"><b>(나)</b> 반복하기 블록 안에 움직이기 블록 1개를 넣은 코드</p><div class="mn-program mini">${progHTML(fresh(W_NA))}</div></div></div>
     <div class="card"><p class="q__t">(가)와 (나)는 같은 곳까지 갈까요? 내 예측</p><div data-r="p2"></div><div data-r="p2fb"></div></div>
     <div class="tabs" data-r="t2"><button type="button" class="mn-btn mn-btn--s" data-c="ga">(가) 움직이기 10개</button><button type="button" class="mn-btn mn-btn--s" data-c="na">(나) 10번 반복하기</button></div>
     <div data-r="b2"></div><div class="help after" data-r="h2" hidden><b>반복하기</b> 블록은 안에 든 블록을 정한 횟수만큼 되풀이해요.</div></section>
