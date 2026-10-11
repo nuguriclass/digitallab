@@ -1460,15 +1460,15 @@ const TEACH_EXTRA = [
 /* 앞부분: 화면 없는 함수 (tools/test_api.js가 시험) */
 const WX_REGIONS = ['부산', '서울', '대구', '광주', '제주'];
 const WX_DAYS = ['오늘', '내일', '모레'];
-const WX_ITEMS = ['기온', '비 올 확률', '하늘'];
+const WX_ITEMS = ['기온', '비 올 확률', '하늘 상태'];
 const wxKey = item => item.replace(/\s/g, '');
 const wxRow = (기온, 비, 하늘) => ({ 기온, 비, 하늘 });
 /* 연습용 값: 진짜 날씨가 아니라 교과서 예시와 같게 정해 둔 값 */
 const WX_PRACTICE = {
-  부산: { 오늘: wxRow(21, 10, '맑음'), 내일: wxRow(19, 60, '흐림'), 모레: wxRow(18, 80, '비') },
-  서울: { 오늘: wxRow(18, 0, '맑음'), 내일: wxRow(17, 20, '구름 조금'), 모레: wxRow(15, 30, '흐림') },
-  대구: { 오늘: wxRow(22, 10, '구름 조금'), 내일: wxRow(20, 40, '흐림'), 모레: wxRow(19, 70, '비') },
-  광주: { 오늘: wxRow(20, 20, '구름 조금'), 내일: wxRow(18, 70, '비'), 모레: wxRow(19, 30, '흐림') },
+  부산: { 오늘: wxRow(21, 10, '맑음'), 내일: wxRow(19, 60, '흐림'), 모레: wxRow(18, 80, '흐림') },
+  서울: { 오늘: wxRow(18, 0, '맑음'), 내일: wxRow(17, 20, '구름 많음'), 모레: wxRow(15, 30, '흐림') },
+  대구: { 오늘: wxRow(22, 10, '구름 많음'), 내일: wxRow(20, 40, '흐림'), 모레: wxRow(19, 70, '흐림') },
+  광주: { 오늘: wxRow(20, 20, '구름 많음'), 내일: wxRow(18, 70, '흐림'), 모레: wxRow(19, 30, '흐림') },
   제주: { 오늘: wxRow(23, 30, '흐림'), 내일: wxRow(22, 50, '흐림'), 모레: wxRow(24, 10, '맑음') }
 };
 const WX_COORDS = { 부산: [35.18, 129.08], 서울: [37.57, 126.98], 대구: [35.87, 128.60], 광주: [35.16, 126.85], 제주: [33.50, 126.53] };
@@ -1504,7 +1504,7 @@ function realPick(json, q) {
 function umbrellaText(pct) { return pct >= 60 ? '우산을 챙겨요' : '우산은 안 챙겨도 돼요'; }
 /*UI*/
 /* 뒷부분: 화면 (#b2 연습용 탭, #b2real 진짜 탭) */
-const WX_ICON = { 기온: '🌡', '비 올 확률': '☔', 하늘: '⛅' };
+const WX_ICON = { 기온: '🌡', '비 올 확률': '☔', '하늘 상태': '⛅' };
 const wxItemName = it => (it === '기온' ? '낮 최고 기온' : it);
 const wxReduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 function wxHtml() {
