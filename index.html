@@ -1,63 +1,154 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script>/* 예전 웹 교재 주소(#l1·#t1·#b1·#b2 등)는 그대로 예전 화면으로 */(function(){var h=location.hash;if(/^#(l[1-4]|t[1-4]|tb[12]|b[12]|home)$/.test(h))location.replace('legacy.html'+h);})();</script>
-<title>재구성 교과서 · 5학년 실과 7. 컴퓨터와 문제 해결</title>
-<meta name="description" content="5학년 실과 7단원 「컴퓨터와 문제 해결」 재구성 교과서 예시와 교과서 QR 웹 활동">
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>(function(){var h=location.hash;if(/^#(l[1-4]|t[1-4]|tb[12]|b[12]|home)$/.test(h))location.replace('legacy.html'+h);})();</script>
+<title>컴퓨터와 문제 해결 · 재구성 교과서</title>
+<meta name="description" content="5학년 실과 7단원 「컴퓨터와 문제 해결」 재구성 교과서 학생용 103~133쪽">
+<meta name="theme-color" content="#E9E5DD">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#23304A;--ink2:#4A5568;--muted:#6B7686;--line:#DCE4EC;--mint:#2C9B78;--mint2:#1F7F61;--mintS:#E7F5F0;--coral:#E6574F;--bg:#F4F8F6}
+:root{--desk:#E9E5DD;--ink:#23304A;--muted:#6B6A66;--mint:#2C9B78;--mint2:#1F7F61;--coral:#E6574F;--bar:64px}
 *{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:var(--ink);font:400 16px/1.7 "Noto Sans KR",system-ui,sans-serif}
-a{color:inherit}
-.wrap{max-width:900px;margin:0 auto;padding:0 16px}
-header.top{background:#fff;border-bottom:1px solid var(--line);padding:28px 0 22px}
-.kick{font:700 13px/1.4 "Noto Sans KR";color:var(--mint2)}
-h1{font:400 clamp(26px,5vw,38px)/1.25 "Jua",sans-serif;margin:6px 0 8px}
-h1 em{font-style:normal;color:var(--coral)}
-.lead{color:var(--ink2);max-width:46em}
-.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.btn{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:15px;text-decoration:none}
-.btn--main{background:var(--mint);border-color:var(--mint);color:#fff}
-nav.chips{position:sticky;top:0;z-index:5;background:rgba(244,248,246,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
-nav.chips .wrap{display:flex;gap:6px;overflow-x:auto;padding:10px 16px;scrollbar-width:thin}
-nav.chips a{flex:none;font:700 13px/1 "Noto Sans KR";text-decoration:none;color:var(--mint2);background:var(--mintS);border-radius:999px;padding:8px 12px}
-h2{font:400 24px/1.3 "Jua",sans-serif;margin:36px 0 6px}
-.sub{color:var(--muted);font-size:14.5px;margin-bottom:14px}
-.pages{display:grid;gap:22px;margin-top:18px}
-.pg{scroll-margin-top:60px}
-.pg__img{position:relative;background:#fff;border-radius:6px;box-shadow:0 1px 2px rgba(35,48,74,.08),0 6px 20px rgba(35,48,74,.08);overflow:hidden}
-.pg__img img{display:block;width:100%;height:auto}
-.pg figcaption{text-align:center;font:700 13px/1 "Noto Sans KR";color:var(--muted);margin-top:8px}
-a.qr{position:absolute;border-radius:6px;outline:2.5px solid transparent;transition:outline-color .15s,background .15s}
-a.qr:hover,a.qr:focus-visible{outline-color:var(--coral);background:rgba(230,87,79,.08)}
-.cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.card{display:grid;gap:4px;align-content:start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-decoration:none}
-.card:hover{border-color:var(--mint)}
-.card b{font:400 20px/1.3 "Jua",sans-serif}
-.card span{color:var(--ink2);font-size:14.5px}
-.card .tag{justify-self:start;font:700 12.5px/1 "Noto Sans KR";color:#fff;background:var(--coral);border-radius:999px;padding:5px 10px}
-.legacy{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:8px}
-.legacy ul{padding-left:1.2em;color:var(--ink2);font-size:15px}
-footer{color:var(--muted);font-size:13.5px;padding:36px 0 60px}
+html,body{height:100%}
+body{background:radial-gradient(120% 90% at 50% 40%,#F3F0EA 0%,var(--desk) 60%,#DCD7CD 100%);color:var(--ink);font:500 15px/1.4 "Noto Sans KR",system-ui,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.stage{position:fixed;inset:0 0 calc(var(--bar) + env(safe-area-inset-bottom)) 0;display:flex;align-items:center;justify-content:center;padding:18px 64px 6px}
+.book-box{width:100%;height:100%;position:relative}
+#book{width:100%;height:100%}
+.page{background:#fff;overflow:hidden;position:relative}
+.page img{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none}
+/* 가운데 접힘 그늘 */
+.--landscape .page.--left::after,.--landscape .page.--right::after{content:"";position:absolute;top:0;bottom:0;width:7%;pointer-events:none}
+.--landscape .page.--left::after{right:0;background:linear-gradient(to left,rgba(0,0,0,.13),rgba(0,0,0,0))}
+.--landscape .page.--right::after{left:0;background:linear-gradient(to right,rgba(0,0,0,.13),rgba(0,0,0,0))}
+.stf__block{filter:drop-shadow(0 10px 22px rgba(60,50,30,.22)) drop-shadow(0 2px 4px rgba(60,50,30,.12))}
+a.qr{position:absolute;z-index:2;border-radius:5px;outline:2.5px solid transparent;transition:outline-color .15s,background .15s}
+a.qr:hover,a.qr:focus-visible{outline-color:var(--coral);background:rgba(230,87,79,.1)}
+/* 속표지 */
+.page--cover{background:linear-gradient(160deg,#FFFFFF 0%,#F2F8F5 100%)}
+.cv{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 12%;container-type:inline-size}
+.cv__k{font:700 4.6cqi/1.3 "Noto Sans KR";color:var(--mint2);letter-spacing:.02em}
+.cv__t{font:400 14cqi/1.12 "Jua",sans-serif;color:var(--ink);margin-top:3cqi}
+.cv__line{width:16cqi;height:1.6cqi;background:var(--coral);border-radius:1cqi;margin:7cqi 0 6cqi}
+.cv__s{font:500 5.4cqi/1.5 "Noto Sans KR";color:var(--ink)}
+.cv__s b{color:var(--coral)}
+.cv__p{position:absolute;left:12%;bottom:8%;font:700 3.6cqi/1 "Noto Sans KR";color:var(--muted)}
+/* 넘기기 버튼 */
+.nav{position:fixed;top:calc(50% - var(--bar)/2);transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:0;background:rgba(255,255,255,.85);color:var(--ink);box-shadow:0 2px 8px rgba(60,50,30,.18);display:grid;place-items:center;cursor:pointer;z-index:10;transition:opacity .2s,background .15s}
+.nav:hover{background:#fff}
+.nav:disabled{opacity:0;pointer-events:none}
+.nav svg{width:22px;height:22px}
+.nav--prev{left:10px}.nav--next{right:10px}
+/* 아래 막대 */
+.bar{position:fixed;left:0;right:0;bottom:0;height:calc(var(--bar) + env(safe-area-inset-bottom));padding:0 16px env(safe-area-inset-bottom);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.dl{justify-self:start;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px 0 13px;border-radius:22px;background:var(--mint);color:#fff;font:700 14.5px/1 "Noto Sans KR";text-decoration:none;box-shadow:0 2px 8px rgba(31,127,97,.28)}
+.dl:hover{background:var(--mint2)}
+.dl svg{width:18px;height:18px}
+.pno{justify-self:center;font:700 14px/1 "Noto Sans KR";color:var(--ink);background:rgba(255,255,255,.75);border-radius:999px;padding:9px 14px;min-width:96px;text-align:center;font-variant-numeric:tabular-nums}
+.pno small{color:var(--muted);font-weight:500}
+.fs{justify-self:end;width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center}
+.fs:hover{color:var(--ink);background:rgba(255,255,255,.6)}
+.fs svg{width:20px;height:20px}
+.hint{position:fixed;left:50%;bottom:calc(var(--bar) + 14px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(35,48,74,.82);color:#fff;font:700 14px/1.4 "Noto Sans KR";padding:10px 16px;border-radius:12px;pointer-events:none;opacity:0;transition:opacity .4s;z-index:20;white-space:nowrap}
+.hint.on{opacity:1}
+@media (max-width:640px){.stage{padding:12px 16px 4px}.nav{width:40px;height:40px;background:rgba(255,255,255,.7)}.nav--prev{left:4px}.nav--next{right:4px}.dl span.l{display:none}.dl{padding:0 14px}.dl::after{content:"PDF"}}
+@media (prefers-reduced-motion:reduce){.hint{transition:none}}
+.noscript{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px}
 </style></head>
 <body>
-<header class="top"><div class="wrap">
- <p class="kick">2022 개정 초등 정보교육 교재 예시</p>
- <h1>5학년 실과 <em>7. 컴퓨터와 문제 해결</em><br>재구성 교과서</h1>
- <p class="lead">현행 교과서의 개념은 그대로 두고, 학생이 하는 일을 예측하기·직접 나누기·테스트하고 고치기로 바꾼 교과서입니다. 앞의 2쪽은 재구성 의도, 103~125쪽은 8차시 본문, 126~133쪽은 교과서에 없는 입력·처리·출력과 데이터를 더한 2차시입니다. 쪽 안의 QR 그림을 누르면 웹 활동이 열립니다.</p>
- <div class="btns"><a class="btn btn--main" href="#p1">교과서 보기</a><a class="btn" href="book/textbook7.pdf" download="실과7_재구성교과서.pdf">PDF 내려받기 (33쪽)</a><a class="btn" href="#acts">QR 웹 활동</a><a class="btn" href="#legacy">재구성 웹 교재(4차시)</a></div>
-</div></header>
-<nav class="chips" aria-label="쪽 바로 가기"><div class="wrap"><a href="#p1">재구성 의도</a><a href="#p3">1차시 103</a><a href="#p6">2차시 106</a><a href="#p9">3차시 109</a><a href="#p11">4차시 111</a><a href="#p14">5차시 114</a><a href="#p17">6차시 117</a><a href="#p20">7차시 120</a><a href="#p23">8차시 123</a><a href="#p26">더하기 1 · 126</a><a href="#p30">더하기 2 · 130</a></div></nav>
-<main class="wrap">
- <div class="pages"><figure class="pg" id="p1"><div class="pg__img"><img src="book/p01.webp" width="1259" height="1722" alt="재구성 의도 1/2"  decoding="async"></div><figcaption>재구성 의도 1/2</figcaption></figure><figure class="pg" id="p2"><div class="pg__img"><img src="book/p02.webp" width="1259" height="1722" alt="재구성 의도 2/2"  decoding="async"><a class="qr" href="textbook/#w112" style="left:9.43%;top:77.46%;width:8.44%;height:6.48%" aria-label="블록 놀이터 웹 활동 열기"></a><a class="qr" href="textbook/#w116" style="left:38.69%;top:77.46%;width:8.44%;height:6.48%" aria-label="고장 찾기 웹 활동 열기"></a><a class="qr" href="textbook/#w119" style="left:67.96%;top:77.46%;width:8.44%;height:6.48%" aria-label="순서도 따라가기 웹 활동 열기"></a></div><figcaption>재구성 의도 2/2</figcaption></figure><figure class="pg" id="p3"><div class="pg__img"><img src="book/p03.webp" width="1259" height="1722" alt="103쪽" loading="lazy" decoding="async"></div><figcaption>103쪽</figcaption></figure><figure class="pg" id="p4"><div class="pg__img"><img src="book/p04.webp" width="1259" height="1722" alt="104쪽" loading="lazy" decoding="async"></div><figcaption>104쪽</figcaption></figure><figure class="pg" id="p5"><div class="pg__img"><img src="book/p05.webp" width="1259" height="1722" alt="105쪽" loading="lazy" decoding="async"></div><figcaption>105쪽</figcaption></figure><figure class="pg" id="p6"><div class="pg__img"><img src="book/p06.webp" width="1259" height="1722" alt="106쪽" loading="lazy" decoding="async"></div><figcaption>106쪽</figcaption></figure><figure class="pg" id="p7"><div class="pg__img"><img src="book/p07.webp" width="1259" height="1722" alt="107쪽" loading="lazy" decoding="async"></div><figcaption>107쪽</figcaption></figure><figure class="pg" id="p8"><div class="pg__img"><img src="book/p08.webp" width="1259" height="1722" alt="108쪽" loading="lazy" decoding="async"></div><figcaption>108쪽</figcaption></figure><figure class="pg" id="p9"><div class="pg__img"><img src="book/p09.webp" width="1259" height="1722" alt="109쪽" loading="lazy" decoding="async"></div><figcaption>109쪽</figcaption></figure><figure class="pg" id="p10"><div class="pg__img"><img src="book/p10.webp" width="1259" height="1722" alt="110쪽" loading="lazy" decoding="async"></div><figcaption>110쪽</figcaption></figure><figure class="pg" id="p11"><div class="pg__img"><img src="book/p11.webp" width="1259" height="1722" alt="111쪽" loading="lazy" decoding="async"></div><figcaption>111쪽</figcaption></figure><figure class="pg" id="p12"><div class="pg__img"><img src="book/p12.webp" width="1259" height="1722" alt="112쪽" loading="lazy" decoding="async"><a class="qr" href="textbook/#w112" style="left:61.21%;top:28.18%;width:9.0%;height:6.69%" aria-label="블록 놀이터 웹 활동 열기"></a></div><figcaption>112쪽</figcaption></figure><figure class="pg" id="p13"><div class="pg__img"><img src="book/p13.webp" width="1259" height="1722" alt="113쪽" loading="lazy" decoding="async"></div><figcaption>113쪽</figcaption></figure><figure class="pg" id="p14"><div class="pg__img"><img src="book/p14.webp" width="1259" height="1722" alt="114쪽" loading="lazy" decoding="async"></div><figcaption>114쪽</figcaption></figure><figure class="pg" id="p15"><div class="pg__img"><img src="book/p15.webp" width="1259" height="1722" alt="115쪽" loading="lazy" decoding="async"></div><figcaption>115쪽</figcaption></figure><figure class="pg" id="p16"><div class="pg__img"><img src="book/p16.webp" width="1259" height="1722" alt="116쪽" loading="lazy" decoding="async"><a class="qr" href="textbook/#w116" style="left:71.2%;top:7.41%;width:9.15%;height:6.69%" aria-label="고장 찾기 웹 활동 열기"></a></div><figcaption>116쪽</figcaption></figure><figure class="pg" id="p17"><div class="pg__img"><img src="book/p17.webp" width="1259" height="1722" alt="117쪽" loading="lazy" decoding="async"></div><figcaption>117쪽</figcaption></figure><figure class="pg" id="p18"><div class="pg__img"><img src="book/p18.webp" width="1259" height="1722" alt="118쪽" loading="lazy" decoding="async"></div><figcaption>118쪽</figcaption></figure><figure class="pg" id="p19"><div class="pg__img"><img src="book/p19.webp" width="1259" height="1722" alt="119쪽" loading="lazy" decoding="async"><a class="qr" href="textbook/#w119" style="left:75.28%;top:64.7%;width:9.0%;height:6.58%" aria-label="순서도 따라가기 웹 활동 열기"></a></div><figcaption>119쪽</figcaption></figure><figure class="pg" id="p20"><div class="pg__img"><img src="book/p20.webp" width="1259" height="1722" alt="120쪽" loading="lazy" decoding="async"></div><figcaption>120쪽</figcaption></figure><figure class="pg" id="p21"><div class="pg__img"><img src="book/p21.webp" width="1259" height="1722" alt="121쪽" loading="lazy" decoding="async"></div><figcaption>121쪽</figcaption></figure><figure class="pg" id="p22"><div class="pg__img"><img src="book/p22.webp" width="1259" height="1722" alt="122쪽" loading="lazy" decoding="async"></div><figcaption>122쪽</figcaption></figure><figure class="pg" id="p23"><div class="pg__img"><img src="book/p23.webp" width="1259" height="1722" alt="123쪽" loading="lazy" decoding="async"></div><figcaption>123쪽</figcaption></figure><figure class="pg" id="p24"><div class="pg__img"><img src="book/p24.webp" width="1259" height="1722" alt="124쪽" loading="lazy" decoding="async"></div><figcaption>124쪽</figcaption></figure><figure class="pg" id="p25"><div class="pg__img"><img src="book/p25.webp" width="1259" height="1722" alt="125쪽" loading="lazy" decoding="async"></div><figcaption>125쪽</figcaption></figure><figure class="pg" id="p26"><div class="pg__img"><img src="book/p26.webp" width="1259" height="1722" alt="126쪽" loading="lazy" decoding="async"></div><figcaption>126쪽</figcaption></figure><figure class="pg" id="p27"><div class="pg__img"><img src="book/p27.webp" width="1259" height="1722" alt="127쪽" loading="lazy" decoding="async"></div><figcaption>127쪽</figcaption></figure><figure class="pg" id="p28"><div class="pg__img"><img src="book/p28.webp" width="1259" height="1722" alt="128쪽" loading="lazy" decoding="async"><a class="qr" href="textbook/#b1" style="left:73.87%;top:11.62%;width:9.15%;height:6.58%" aria-label="입력·처리·출력 웹 활동 열기"></a></div><figcaption>128쪽</figcaption></figure><figure class="pg" id="p29"><div class="pg__img"><img src="book/p29.webp" width="1259" height="1722" alt="129쪽" loading="lazy" decoding="async"></div><figcaption>129쪽</figcaption></figure><figure class="pg" id="p30"><div class="pg__img"><img src="book/p30.webp" width="1259" height="1722" alt="130쪽" loading="lazy" decoding="async"></div><figcaption>130쪽</figcaption></figure><figure class="pg" id="p31"><div class="pg__img"><img src="book/p31.webp" width="1259" height="1722" alt="131쪽" loading="lazy" decoding="async"></div><figcaption>131쪽</figcaption></figure><figure class="pg" id="p32"><div class="pg__img"><img src="book/p32.webp" width="1259" height="1722" alt="132쪽" loading="lazy" decoding="async"><a class="qr" href="textbook/#b2" style="left:68.66%;top:20.98%;width:9.15%;height:6.58%" aria-label="데이터로 보는 우리 부산 웹 활동 열기"></a></div><figcaption>132쪽</figcaption></figure><figure class="pg" id="p33"><div class="pg__img"><img src="book/p33.webp" width="1259" height="1722" alt="133쪽" loading="lazy" decoding="async"></div><figcaption>133쪽</figcaption></figure></div>
- <h2 id="acts">교과서 QR이 여는 웹 활동</h2>
- <p class="sub">설치·로그인 없이 태블릿·휴대전화·PC에서 열립니다. 기록은 보는 기기의 브라우저에만 남습니다.</p>
- <div class="cards"><a class="card" href="textbook/#w112"><span class="tag">112쪽 · 4차시</span><b>블록 놀이터</b><span>블록 3개 실행, 두 코드 비교, 반복 예측 뒤 실행, 숫자 바꾸기</span></a><a class="card" href="textbook/#w116"><span class="tag">116쪽 · 5차시</span><b>고장 찾기</b><span>줄넘기 타이머의 고장 두 곳을 4단계로 찾아 고치기</span></a><a class="card" href="textbook/#w119"><span class="tag">119쪽 · 6차시</span><b>순서도 따라가기</b><span>물병 순서도 두 갈래 따라가기, 내 물건 순서도 테스트</span></a><a class="card" href="textbook/#b1"><span class="tag">128쪽 · 더하기 1</span><b>입력·처리·출력</b><span>센서 값으로 움직이는 자동문 예측·실행, 고장 고치기, 설계</span></a><a class="card" href="textbook/#b2"><span class="tag">132쪽 · 더하기 2</span><b>데이터로 보는 우리 부산</b><span>해수욕장 공공데이터 표 읽기, 고장 난 표 정리, 그래프 고르기</span></a></div>
- <h2 id="legacy">재구성 웹 교재 (4차시 + 보강 2차시)</h2>
- <div class="legacy"><p>같은 단원 2절 '컴퓨터 프로그래밍'을 웹에서 차시별로 재구성한 교재입니다.</p>
-  <ul><li>재구성 4차시 학생용: 읽고 예측하기, 살펴보고 고치기, 내가 설계하기, 만들고 테스트하기</li><li>차시별 교사용 지도안: 달라진 점과 까닭, 40분 흐름, 발문, 평가 기준</li><li>보강 2차시: 입력·처리·출력, 데이터</li></ul>
-  <div class="btns" style="margin-top:4px"><a class="btn btn--main" href="legacy.html">재구성 웹 교재 열기</a></div></div>
-</main>
-<footer class="wrap">교과서 안의 엔트리 화면 그림 일부(111·113·115·117·120쪽)는 현행 실과 5 교과서 7단원에서 가져왔고, 쪽마다 출처를 적었습니다. 데이터 출처: 부산광역시 관광정책과 「해수욕장 방문 현황」(공공데이터포털).</footer>
+<div class="stage"><div class="book-box"><div id="book">
+<div class="page page--cover" data-no="0"><div class="cv">
+ <p class="cv__k">실과 5 · 7단원</p>
+ <p class="cv__t">컴퓨터와<br>문제 해결</p>
+ <div class="cv__line"></div>
+ <p class="cv__s">재구성 교과서<br><b>학생용</b></p>
+ <p class="cv__p">103~133쪽</p>
+</div></div>
+<div class="page" data-no="103"><img src="book/103.webp" alt="103쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="104"><img src="book/104.webp" alt="104쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="105"><img src="book/105.webp" alt="105쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="106"><img src="book/106.webp" alt="106쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="107"><img src="book/107.webp" alt="107쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="108"><img src="book/108.webp" alt="108쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="109"><img src="book/109.webp" alt="109쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="110"><img src="book/110.webp" alt="110쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="111"><img src="book/111.webp" alt="111쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="112"><img src="book/112.webp" alt="112쪽" width="1259" height="1722" decoding="async" draggable="false"><a class="qr" href="textbook/#w112" style="left:61.21%;top:28.18%;width:9.0%;height:6.69%" aria-label="112쪽 QR: 블록 놀이터 웹 활동 열기"></a></div>
+<div class="page" data-no="113"><img src="book/113.webp" alt="113쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="114"><img src="book/114.webp" alt="114쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="115"><img src="book/115.webp" alt="115쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="116"><img src="book/116.webp" alt="116쪽" width="1259" height="1722" decoding="async" draggable="false"><a class="qr" href="textbook/#w116" style="left:71.2%;top:7.41%;width:9.15%;height:6.69%" aria-label="116쪽 QR: 고장 찾기 웹 활동 열기"></a></div>
+<div class="page" data-no="117"><img src="book/117.webp" alt="117쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="118"><img src="book/118.webp" alt="118쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="119"><img src="book/119.webp" alt="119쪽" width="1259" height="1722" decoding="async" draggable="false"><a class="qr" href="textbook/#w119" style="left:75.28%;top:64.7%;width:9.0%;height:6.58%" aria-label="119쪽 QR: 순서도 따라가기 웹 활동 열기"></a></div>
+<div class="page" data-no="120"><img src="book/120.webp" alt="120쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="121"><img src="book/121.webp" alt="121쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="122"><img src="book/122.webp" alt="122쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="123"><img src="book/123.webp" alt="123쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="124"><img src="book/124.webp" alt="124쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="125"><img src="book/125.webp" alt="125쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="126"><img src="book/126.webp" alt="126쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="127"><img src="book/127.webp" alt="127쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="128"><img src="book/128.webp" alt="128쪽" width="1259" height="1722" decoding="async" draggable="false"><a class="qr" href="textbook/#b1" style="left:73.87%;top:11.62%;width:9.15%;height:6.58%" aria-label="128쪽 QR: 입력·처리·출력 웹 활동 열기"></a></div>
+<div class="page" data-no="129"><img src="book/129.webp" alt="129쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="130"><img src="book/130.webp" alt="130쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="131"><img src="book/131.webp" alt="131쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+<div class="page" data-no="132"><img src="book/132.webp" alt="132쪽" width="1259" height="1722" decoding="async" draggable="false"><a class="qr" href="textbook/#b2" style="left:68.66%;top:20.98%;width:9.15%;height:6.58%" aria-label="132쪽 QR: 데이터로 보는 우리 부산 웹 활동 열기"></a></div>
+<div class="page" data-no="133"><img src="book/133.webp" alt="133쪽" width="1259" height="1722" decoding="async" draggable="false"></div>
+</div></div></div>
+<button class="nav nav--prev" type="button" aria-label="앞 쪽으로" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+<button class="nav nav--next" type="button" aria-label="다음 쪽으로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+<div class="bar">
+ <a class="dl" href="book/textbook7_student.pdf" download="실과7_컴퓨터와문제해결_재구성교과서_학생용.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span class="l">PDF 다운로드</span></a>
+ <div class="pno" aria-live="polite">속표지</div>
+ <button class="fs" type="button" aria-label="전체 화면" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</div>
+<div class="hint" aria-hidden="true">옆으로 밀거나 화살표를 눌러 넘겨요</div>
+<noscript><div class="noscript"><p>이 화면은 자바스크립트가 필요해요. <a href="book/textbook7_student.pdf">PDF로 보기</a></p></div></noscript>
+<script src="vendor/page-flip.browser.js"></script>
+<script>
+(function(){
+  var FIRST=103, LAST=133;
+  var bookEl=document.getElementById('book'), box=document.querySelector('.book-box');
+  var prev=document.querySelector('.nav--prev'), next=document.querySelector('.nav--next'), pno=document.querySelector('.pno');
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 주소 #p112 → 112쪽에서 시작
+  var m=/^#p(\d{3})$/.exec(location.hash), start=0;
+  if(m){var n=+m[1]; if(n>=FIRST&&n<=LAST) start=n-FIRST+1;}
+  // 화면이 세로로 길면 한 쪽씩, 가로로 넓으면 두 쪽 펼침
+  function single(){var r=box.getBoundingClientRect();return r.width/r.height<1.15;}
+  var mode=single();
+  var pf=new St.PageFlip(bookEl,{width:1259,height:1722,size:'stretch',minWidth:mode?Math.ceil(box.getBoundingClientRect().width)+10:200,maxWidth:1259,minHeight:400,maxHeight:1722,
+    autoSize:false,showCover:false,usePortrait:true,drawShadow:true,maxShadowOpacity:.45,flippingTime:reduce?250:750,
+    mobileScrollSupport:false,swipeDistance:24,clickEventForward:true,disableFlipByClick:false,showPageCorners:true,startPage:start});
+  pf.loadFromHTML(document.querySelectorAll('#book .page'));
+  function label(i){return i===0?'속표지':(FIRST+i-1)+'쪽';}
+  function update(){
+    var i=pf.getCurrentPageIndex(), total=pf.getPageCount(), land=pf.getOrientation()==='landscape', txt;
+    if(land){var a=i-(i%2), b=a+1; txt=a===0?label(0)+' · '+label(1):label(a).replace('쪽','')+'–'+label(b);} else txt=label(i);
+    pno.innerHTML=txt+' <small>/ '+LAST+'쪽</small>';
+    prev.disabled=i<=0; next.disabled=land?(i-(i%2))+2>=total:i>=total-1;
+    var no=land?Math.max(FIRST,FIRST+(i-(i%2))-1+(i<2?1:0)):(i===0?0:FIRST+i-1);
+    try{history.replaceState(null,'',no?'#p'+no:location.pathname+location.search);}catch(e){}
+  }
+  pf.on('flip',update); pf.on('changeOrientation',update); pf.on('init',update);
+  prev.addEventListener('click',function(){pf.flipPrev();});
+  next.addEventListener('click',function(){pf.flipNext();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){pf.flipNext();e.preventDefault();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){pf.flipPrev();e.preventDefault();}
+    else if(e.key==='Home'){pf.turnToPage(0);update();} else if(e.key==='End'){pf.turnToPage(pf.getPageCount()-1);update();}
+  });
+  update();
+  // 처음 한 번만 넘기는 법 안내
+  var hint=document.querySelector('.hint'), seen=false; try{seen=sessionStorage.getItem('tb7-hint')==='1';}catch(e){}
+  if(!seen){setTimeout(function(){hint.classList.add('on');},500);setTimeout(function(){hint.classList.remove('on');},3200);try{sessionStorage.setItem('tb7-hint','1');}catch(e){}}
+  pf.on('flip',function(){hint.classList.remove('on');});
+  // 전체 화면
+  var fs=document.querySelector('.fs'), de=document.documentElement;
+  if(de.requestFullscreen){fs.hidden=false;fs.addEventListener('click',function(){document.fullscreenElement?document.exitFullscreen():de.requestFullscreen().catch(function(){});});}
+  // 화면 크기가 바뀌면 다시 맞춤
+  var t; window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(function(){if(single()!==mode){location.reload();return;}pf.update();update();},150);});
+})();
+</script>
 </body></html>
