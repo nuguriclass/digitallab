@@ -1505,6 +1505,7 @@ function umbrellaText(pct) { return pct >= 60 ? '우산을 챙겨요' : '우산�
 /*UI*/
 /* 뒷부분: 화면 (#b2 연습용 탭, #b2real 진짜 탭) */
 const WX_ICON = { 기온: '🌡', '비 올 확률': '☔', 하늘: '⛅' };
+const wxItemName = it => (it === '기온' ? '낮 최고 기온' : it);
 const wxReduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 function wxHtml() {
   return `
@@ -1514,7 +1515,7 @@ function wxHtml() {
     <p class="wx-badge" data-r="badge"></p>
     <div class="card wx"><p class="wx-h"><span class="wx-n">1</span>요청 만들기</p><div class="wx-chips" data-r="chips"></div>
       <label class="wx-own" data-r="ownrow">지역 직접 쓰기 <input type="text" data-r="own" maxlength="12" autocomplete="off" placeholder="예: 부산"></label>
-      <p class="wx-h"><span class="wx-n">2</span>요청 주소</p><div class="wx-url" data-r="url"></div><p class="wx-legend" data-r="legend"></p>
+      <p class="wx-h"><span class="wx-n">2</span>요청 주소</p><p class="wx-legend">요청 주소는 요청서를 컴퓨터가 읽는 한 줄로 바꾼 것이에요.</p><div class="wx-url" data-r="url"></div><p class="wx-legend" data-r="legend"></p>
       <p class="wx-h"><span class="wx-n">3</span>요청 보내기</p><div class="wx-sendrow"><button type="button" class="mn-btn mn-btn--primary" data-r="send">요청 보내기</button>
         <div class="wx-track" aria-hidden="true"><span>내 화면</span><i data-r="env">✉</i><span>API</span></div></div>
       <p class="wx-h"><span class="wx-n">4</span>응답</p>
@@ -1551,7 +1552,7 @@ function wxInit(ctx, startTab) {
     R('badge').className = 'wx-badge ' + (real() ? 'is-real' : 'is-prac');
     R('ownrow').hidden = real(); R('own').value = S.own || '';
     R('logbox').hidden = real();
-    R('legend').innerHTML = real() ? '<span class="u u1">지역</span> → 위치(위도·경도) · <span class="u u3">항목</span> → daily · <span class="u u2">날짜</span> → 오늘·내일 이틀 치를 받아 고른 날의 값을 읽어요' : '';
+    R('legend').innerHTML = real() ? '<span class="u u1">지역</span> → 위치(위도·경도: 지구 위 위치를 나타내는 두 숫자) · <span class="u u3">항목</span> → daily(날마다의 값) · <span class="u u2">날짜</span> → forecast_days=2(오늘·내일 이틀 치)를 받아 고른 날의 값을 읽어요' : '';
     R('src').innerHTML = real() ? '날씨 데이터: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0)' : '';
     chips(); R('url').innerHTML = urlHtml(flashK);
     R('log').innerHTML = S.log.map(x => `<li><code>${esc(x.url)}</code><span>${esc(x.res)}</span></li>`).join('') || '<li class="empty">아직 없어요.</li>';
@@ -1567,7 +1568,7 @@ function wxInit(ctx, startTab) {
     R('raw').textContent = JSON.stringify(body, null, 2);
     let card, sum;
     if (!res.ok) { card = `<span class="wx-err">⚠ 오류</span><b>${esc(body.오류)}</b>`; sum = '오류: ' + body.오류; }
-    else { const it = wxClean(qq.항목), v = body[wxKey(it)], u = it === '기온' ? '도' : it === '비 올 확률' ? '%' : ''; card = `<span class="wx-ic">${WX_ICON[it]}</span><b>${esc(v)}${u}</b><small>${esc(body.지역)} · ${esc(body.날짜)} · ${it}</small>`; sum = `${it} ${v}${u}`; }
+    else { const it = wxClean(qq.항목), v = body[wxKey(it)], u = it === '기온' ? '도' : it === '비 올 확률' ? '%' : ''; card = `<span class="wx-ic">${WX_ICON[it]}</span><b>${esc(v)}${u}</b><small>${esc(body.지역)} · ${esc(body.날짜)} · ${wxItemName(it)}</small>`; sum = `${it} ${v}${u}`; }
     R('card').innerHTML = card;
     S.log.unshift({ url: practiceUrl(qq), res: sum }); S.log = S.log.slice(0, 5); save(); paint();
   }
@@ -1589,7 +1590,7 @@ function wxInit(ctx, startTab) {
       const mk = R('raw').querySelector('mark'); if (mk) R('raw').scrollTop = Math.max(0, mk.offsetTop - R('raw').clientHeight / 2);
       if (pk.value == null) { R('card').innerHTML = '<span class="wx-err">⚠</span><b>값이 오지 않았어요</b>'; R('judge').hidden = true; }
       else {
-        R('card').innerHTML = `<span class="wx-ic">${WX_ICON[qq.항목]}</span><b>${pk.value}${pk.unit}</b><small>${esc(qq.지역)} · ${esc(qq.날짜)}${pk.date ? ` (${esc(pk.date)})` : ''} · ${qq.항목}</small>`;
+        R('card').innerHTML = `<span class="wx-ic">${WX_ICON[qq.항목]}</span><b>${pk.value}${pk.unit}</b><small>${esc(qq.지역)} · ${esc(qq.날짜)}${pk.date ? ` (${esc(pk.date)})` : ''} · ${wxItemName(qq.항목)}</small>`;
         R('judge').hidden = qq.항목 !== '비 올 확률';
         if (qq.항목 === '비 올 확률') R('judge').textContent = `비 올 확률이 ${pk.value}%니까 ${umbrellaText(pk.value)}.`;
       }
@@ -1870,8 +1871,8 @@ PAGES.w119 = {
 
 /* ---------- 더하기 1·2 (기존 웹 교재 보강 차시를 교과서 126~133쪽에 맞춰 옮김) ---------- */
 PAGES.b1 = { key: 'b1', no: '더하기 1', pg: '126~129쪽', acts: '활동 1~7', title: ['컴퓨터는 어떻게 일할까', ''], short: '입력·처리·출력', what: '입력·처리·출력 나누기 → 자동문 예측·실행 → 숫자 바꾸기·고장 찾기 → 가로등·박수 스위치 설계', goal: B1.goal, legacy: B1 };
-PAGES.b2 = { key: 'b2', no: '더하기 2', pg: '132쪽', acts: '활동 2', title: ['API로 날씨 데이터 가져오기', ''], short: '날씨 API', what: '연습용 날씨 API에 요청하고 응답 읽기 → 진짜 날씨 API에 물어보기', goal: WX_GOAL, html: wxHtml, init: ctx => wxInit(ctx, 'practice') };
-PAGES.b2real = { key: 'b2real', no: '더하기 2', pg: '133쪽', acts: '활동 3', title: ['진짜 날씨 API에 물어봐요', ''], short: '진짜 날씨 API', what: '진짜 날씨 API(Open-Meteo)에 요청 주소를 만들어 보내기', goal: WX_GOAL, html: wxHtml, init: ctx => wxInit(ctx, 'real') };
+PAGES.b2 = { key: 'b2', no: '더하기 2', pg: '132쪽', acts: '활동 3', title: ['API로 날씨 데이터 가져오기', ''], short: '날씨 API', what: '연습용 날씨 API에 요청하고 응답 읽기 → 진짜 날씨 API에 물어보기', goal: WX_GOAL, html: wxHtml, init: ctx => wxInit(ctx, 'practice') };
+PAGES.b2real = { key: 'b2real', no: '더하기 2', pg: '133쪽', acts: '활동 4', title: ['진짜 날씨 API에 물어봐요', ''], short: '진짜 날씨 API', what: '진짜 날씨 API(Open-Meteo)에 요청 주소를 만들어 보내기', goal: WX_GOAL, html: wxHtml, init: ctx => wxInit(ctx, 'real') };
 function renderLegacy(L) {
   const X = L.legacy, S = Object.assign(X.defaults(), stateOf(L.key));
   view.innerHTML = `<div class="page">
