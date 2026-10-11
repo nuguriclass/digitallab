@@ -464,6 +464,53 @@ body.solo .tb-top{display:none}
 .mn-program.mini .mn-block{min-height:26px;padding:2px 9px;font-size:12.5px;gap:4px}
 .mn-program.mini .mn-block__v{padding:0 6px;min-width:0;font-size:12px}
 @media (max-width:640px){.cmp2{grid-template-columns:1fr}}
+/* 더하기 2 · 날씨 API */
+.wx-tabs{margin:6px 0 4px}
+.wx-tabs .mn-btn[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#fff}
+.wx-badge{font-size:14.5px;border-radius:10px;padding:8px 12px;margin:6px 0 10px}
+.wx-badge.is-prac{background:#FFF6E0;color:#7A5A12}
+.wx-badge.is-real{background:#E3F4FB;color:#0E6A86}
+.wx{display:grid;gap:8px}
+.wx-h{font:400 19px/1.3 "Jua",var(--f-body);color:var(--ink);display:flex;align-items:center;gap:8px;margin-top:6px}
+.wx-n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--coral);color:#fff;font:400 15px/1 "Jua"}
+.wx-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:3px 0}
+.wx-k{font:700 13px/1 var(--f-body);border-radius:6px;padding:6px 8px;min-width:42px;text-align:center;color:#fff}
+.wx-k1,.u1{--wx:#2C9B78}.wx-k2,.u2{--wx:#E3A35A}.wx-k3,.u3{--wx:#7A5BD6}
+.wx-k{background:var(--wx)}
+.wx-chip{min-height:42px;padding:0 14px;border-radius:21px;border:1.5px solid var(--line-2);background:#fff;font:700 15px/1 var(--f-body);color:var(--ink);cursor:pointer}
+.wx-chip[aria-pressed="true"]{background:var(--gold-soft);border-color:var(--gold);color:var(--gold-2)}
+.wx-own{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:700 14px/1.4 var(--f-body);color:var(--ink-2)}
+.wx-own input{min-height:42px;width:140px;font:inherit;padding:0 10px;border:1.5px dashed var(--line-2);border-radius:10px}
+.wx-url{font:500 15px/1.7 ui-monospace,Menlo,Consolas,monospace;background:#F6F7F9;border:1px solid var(--line);border-radius:10px;padding:10px 12px;overflow-wrap:anywhere;word-break:break-all;color:var(--ink-2)}
+.u{border-bottom:3px solid var(--wx);color:var(--ink);font-weight:700;border-radius:2px;transition:background .3s}
+.u.is-flash{animation:wxflash .9s ease-out}
+@keyframes wxflash{0%{background:#FFE58A}100%{background:transparent}}
+.wx-legend{font-size:13.5px;color:var(--muted)}
+.wx-legend .u{font-weight:700}
+.wx-sendrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wx-track{flex:1;min-width:200px;display:flex;align-items:center;justify-content:space-between;position:relative;font:700 13px/1 var(--f-body);color:var(--muted);border-bottom:2px dashed var(--line-2);padding-bottom:6px}
+.wx-track i{position:absolute;left:52px;bottom:4px;font-style:normal;font-size:20px;opacity:0}
+.wx-track i.go{animation:wxfly .9s ease-in-out}
+@keyframes wxfly{0%{left:52px;opacity:1}45%{left:calc(100% - 52px);opacity:1}55%{left:calc(100% - 52px);opacity:1}100%{left:52px;opacity:0}}
+.wx-resp{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}
+.wx-sub{font:700 13px/1.4 var(--f-body);color:var(--muted);margin-bottom:4px}
+.wx-raw{position:relative;font:500 13.5px/1.5 ui-monospace,Menlo,Consolas,monospace;background:#23304A;color:#E8EEF6;border-radius:10px;padding:10px 12px;max-height:260px;overflow:auto;white-space:pre-wrap;word-break:break-all;margin:0}
+.wx-raw mark{background:#FFE58A;color:#23304A;border-radius:3px;padding:0 2px}
+.wx-card{min-height:96px;display:grid;align-content:center;gap:4px;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+.wx-card b{font:400 28px/1.2 "Jua",var(--f-body);color:var(--ink)}
+.wx-card small{color:var(--muted);font-size:13.5px}
+.wx-ic{font-size:26px}
+.wx-err{color:var(--coral);font-weight:700}
+.wx-judge{background:var(--gold-soft);border-radius:10px;padding:10px 12px;font-weight:700;color:var(--gold-2)}
+.wx-fail{background:#FDECEA;border-radius:10px;padding:10px 12px;color:#B83F38;font-weight:700}
+.wx-log{list-style:none;padding:0;display:grid;gap:6px}
+.wx-log li{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.wx-log code{font-size:13px;color:var(--ink-2);word-break:break-all}
+.wx-log span{font-weight:700;color:var(--gold-2)}
+.wx-log .empty{color:var(--muted)}
+.wx-src{font-size:13px;color:var(--muted);margin-top:6px}
+@media (max-width:640px){.wx-resp{grid-template-columns:1fr}.wx-track{min-width:0;width:100%}}
+@media (prefers-reduced-motion:reduce){.u.is-flash{animation:none;background:#FFE58A}}
 
 [hidden]{display:none!important}
 </style></head><body>
@@ -1409,6 +1456,162 @@ const TEACH_EXTRA = [
 
 
 
+/* ---------- 더하기 2 · API로 날씨 데이터 가져오기 (교과서 132·133쪽) ---------- */
+/* 앞부분: 화면 없는 함수 (tools/test_api.js가 시험) */
+const WX_REGIONS = ['부산', '서울', '대구', '광주', '제주'];
+const WX_DAYS = ['오늘', '내일', '모레'];
+const WX_ITEMS = ['기온', '비 올 확률', '하늘'];
+const wxKey = item => item.replace(/\s/g, '');
+const wxRow = (기온, 비, 하늘) => ({ 기온, 비, 하늘 });
+/* 연습용 값: 진짜 날씨가 아니라 교과서 예시와 같게 정해 둔 값 */
+const WX_PRACTICE = {
+  부산: { 오늘: wxRow(21, 10, '맑음'), 내일: wxRow(19, 60, '흐림'), 모레: wxRow(18, 80, '비') },
+  서울: { 오늘: wxRow(18, 0, '맑음'), 내일: wxRow(17, 20, '구름 조금'), 모레: wxRow(15, 30, '흐림') },
+  대구: { 오늘: wxRow(22, 10, '구름 조금'), 내일: wxRow(20, 40, '흐림'), 모레: wxRow(19, 70, '비') },
+  광주: { 오늘: wxRow(20, 20, '구름 조금'), 내일: wxRow(18, 70, '비'), 모레: wxRow(19, 30, '흐림') },
+  제주: { 오늘: wxRow(23, 30, '흐림'), 내일: wxRow(22, 50, '흐림'), 모레: wxRow(24, 10, '맑음') }
+};
+const WX_COORDS = { 부산: [35.18, 129.08], 서울: [37.57, 126.98], 대구: [35.87, 128.60], 광주: [35.16, 126.85], 제주: [33.50, 126.53] };
+const wxIra = w => { const c = String(w).charCodeAt(String(w).length - 1); return c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 === 0 ? '라는' : '이라는'; };
+const wxClean = v => (v == null ? '' : String(v).trim());
+
+function practiceAsk(q) {
+  const 지역 = wxClean(q.지역), 날짜 = wxClean(q.날짜), 항목 = wxClean(q.항목);
+  if (!지역) return { ok: false, body: { 오류: '지역이 비어 있어요' } };
+  if (!날짜) return { ok: false, body: { 오류: '날짜가 비어 있어요' } };
+  if (!항목) return { ok: false, body: { 오류: '항목이 비어 있어요' } };
+  if (!WX_REGIONS.includes(지역)) return { ok: false, body: { 오류: `'${지역}'${wxIra(지역)} 지역은 없어요` } };
+  if (!WX_DAYS.includes(날짜)) return { ok: false, body: { 오류: `'${날짜}'${wxIra(날짜)} 날짜는 없어요` } };
+  if (!WX_ITEMS.includes(항목)) return { ok: false, body: { 오류: `'${항목}'${wxIra(항목)} 항목은 없어요` } };
+  const row = WX_PRACTICE[지역][날짜];
+  const val = 항목 === '기온' ? row.기온 : 항목 === '비 올 확률' ? row.비 : row.하늘;
+  return { ok: true, body: { 지역, 날짜, [wxKey(항목)]: val } };
+}
+function practiceUrl(q) {
+  return `연습날씨API/날씨?지역=${wxClean(q.지역)}&날짜=${wxClean(q.날짜)}&항목=${wxKey(wxClean(q.항목))}`;
+}
+const WX_VAR = { '기온': 'temperature_2m_max', '비 올 확률': 'precipitation_probability_max' };
+function realUrl(q) {
+  const [lat, lon] = WX_COORDS[q.지역];
+  return `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=${WX_VAR[q.항목]}&timezone=Asia/Seoul&forecast_days=2`;
+}
+function realPick(json, q) {
+  const i = q.날짜 === '내일' ? 1 : 0, unit = q.항목 === '기온' ? '도' : '%';
+  const d = json && json.daily, arr = d && d[WX_VAR[q.항목]];
+  const v = arr && arr[i];
+  return { value: typeof v === 'number' ? v : null, unit, date: (d && d.time && d.time[i]) || '' };
+}
+function umbrellaText(pct) { return pct >= 60 ? '우산을 챙겨요' : '우산은 안 챙겨도 돼요'; }
+/*UI*/
+/* 뒷부분: 화면 (#b2 연습용 탭, #b2real 진짜 탭) */
+const WX_ICON = { 기온: '🌡', '비 올 확률': '☔', 하늘: '⛅' };
+const wxReduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function wxHtml() {
+  return `
+  <section class="step"><header class="step__h"><h2><span class="no">!</span>API는 무엇일까요</h2>
+    <p><b>API</b>는 프로그램이 필요한 데이터를 정해진 방법으로 <b>요청</b>하고 <b>응답</b>을 받는 창구예요. 칸을 골라 요청을 만들고 보내 봐요.</p></header>
+    <div class="tabs wx-tabs" data-r="tabs" role="group" aria-label="API 고르기"><button type="button" class="mn-btn" data-t="practice">연습용 날씨 API</button><button type="button" class="mn-btn" data-t="real">진짜 날씨 API</button></div>
+    <p class="wx-badge" data-r="badge"></p>
+    <div class="card wx"><p class="wx-h"><span class="wx-n">1</span>요청 만들기</p><div class="wx-chips" data-r="chips"></div>
+      <label class="wx-own" data-r="ownrow">지역 직접 쓰기 <input type="text" data-r="own" maxlength="12" autocomplete="off" placeholder="예: 부산"></label>
+      <p class="wx-h"><span class="wx-n">2</span>요청 주소</p><div class="wx-url" data-r="url"></div><p class="wx-legend" data-r="legend"></p>
+      <p class="wx-h"><span class="wx-n">3</span>요청 보내기</p><div class="wx-sendrow"><button type="button" class="mn-btn mn-btn--primary" data-r="send">요청 보내기</button>
+        <div class="wx-track" aria-hidden="true"><span>내 화면</span><i data-r="env">✉</i><span>API</span></div></div>
+      <p class="wx-h"><span class="wx-n">4</span>응답</p>
+      <div class="wx-resp"><div><p class="wx-sub">원래 모양</p><pre class="wx-raw" data-r="raw">아직 보낸 요청이 없어요.</pre></div><div><p class="wx-sub">읽기 쉽게</p><div class="wx-card" data-r="card">-</div></div></div>
+      <p class="wx-judge" data-r="judge" hidden></p>
+      <p class="wx-fail" data-r="fail" hidden role="status"></p>
+    </div>
+    <div class="card wx-logbox" data-r="logbox"><p class="wx-h">보낸 요청 기록</p><ul class="wx-log" data-r="log"></ul></div>
+    <p class="wx-src" data-r="src"></p>
+  </section>`;
+}
+function wxInit(ctx, startTab) {
+  const { S, R, save } = ctx;
+  S.tab = S.tab || startTab; S.qp = S.qp || {}; S.qr = S.qr || {}; S.log = S.log || [];
+  let busy = false, last = '';
+  const real = () => S.tab === 'real';
+  const q = () => (real() ? S.qr : S.qp);
+  const days = () => (real() ? ['오늘', '내일'] : WX_DAYS), items = () => (real() ? ['기온', '비 올 확률'] : WX_ITEMS);
+  function chips() {
+    const qq = q(), own = real() ? '' : wxClean(S.own);
+    const row = (k, vals) => `<div class="wx-row"><span class="wx-k wx-k${k === '지역' ? 1 : k === '날짜' ? 2 : 3}">${k}</span>${vals.map(v => `<button type="button" class="wx-chip" data-k="${k}" data-v="${v}" aria-pressed="${qq[k] === v && !(k === '지역' && own)}">${v}</button>`).join('')}</div>`;
+    R('chips').innerHTML = row('지역', WX_REGIONS) + row('날짜', days()) + row('항목', items());
+  }
+  function curQ() { const qq = Object.assign({}, q()); if (!real() && wxClean(S.own)) qq.지역 = wxClean(S.own); return qq; }
+  function urlHtml(flashK) {
+    const qq = curQ(), f = k => (k === flashK ? ' is-flash' : '');
+    if (!real()) return `연습날씨API/날씨?<span class="u u1${f('지역')}">지역=${esc(wxClean(qq.지역))}</span>&amp;<span class="u u2${f('날짜')}">날짜=${esc(wxClean(qq.날짜))}</span>&amp;<span class="u u3${f('항목')}">항목=${esc(wxKey(wxClean(qq.항목)))}</span>`;
+    const c = WX_COORDS[qq.지역], v = WX_VAR[qq.항목];
+    return `https://api.open-meteo.com/v1/forecast?<span class="u u1${f('지역')}">${c ? `latitude=${c[0]}&amp;longitude=${c[1]}` : 'latitude=?&amp;longitude=?'}</span>&amp;<span class="u u3${f('항목')}">daily=${v || '?'}</span>&amp;timezone=Asia/Seoul&amp;<span class="u u2${f('날짜')}">forecast_days=2</span>`;
+  }
+  function paint(flashK) {
+    R('tabs').querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === S.tab)));
+    R('badge').innerHTML = real() ? '<b>진짜 날씨 API</b> · Open-Meteo에 진짜로 요청해요. 인터넷이 필요해요.' : '<b>연습용 데이터</b> · 진짜 날씨가 아니에요. 교과서와 같은 값이 와요.';
+    R('badge').className = 'wx-badge ' + (real() ? 'is-real' : 'is-prac');
+    R('ownrow').hidden = real(); R('own').value = S.own || '';
+    R('logbox').hidden = real();
+    R('legend').innerHTML = real() ? '<span class="u u1">지역</span> → 위치(위도·경도) · <span class="u u3">항목</span> → daily · <span class="u u2">날짜</span> → 오늘·내일 이틀 치를 받아 고른 날의 값을 읽어요' : '';
+    R('src').innerHTML = real() ? '날씨 데이터: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0)' : '';
+    chips(); R('url').innerHTML = urlHtml(flashK);
+    R('log').innerHTML = S.log.map(x => `<li><code>${esc(x.url)}</code><span>${esc(x.res)}</span></li>`).join('') || '<li class="empty">아직 없어요.</li>';
+  }
+  function resetResp() { R('raw').textContent = '아직 보낸 요청이 없어요.'; R('card').textContent = '-'; R('judge').hidden = true; R('fail').hidden = true; }
+  function fly(done) {
+    const env = R('env'); if (wxReduce()) { done(); return; }
+    env.classList.remove('go'); void env.offsetWidth; env.classList.add('go'); setTimeout(done, 900);
+  }
+  function setBusy(b) { busy = b; R('send').disabled = b; R('send').textContent = b ? '응답을 기다리는 중…' : '요청 보내기'; }
+  function showPractice() {
+    const qq = curQ(), res = practiceAsk(qq), body = res.body;
+    R('raw').textContent = JSON.stringify(body, null, 2);
+    let card, sum;
+    if (!res.ok) { card = `<span class="wx-err">⚠ 오류</span><b>${esc(body.오류)}</b>`; sum = '오류: ' + body.오류; }
+    else { const it = wxClean(qq.항목), v = body[wxKey(it)], u = it === '기온' ? '도' : it === '비 올 확률' ? '%' : ''; card = `<span class="wx-ic">${WX_ICON[it]}</span><b>${esc(v)}${u}</b><small>${esc(body.지역)} · ${esc(body.날짜)} · ${it}</small>`; sum = `${it} ${v}${u}`; }
+    R('card').innerHTML = card;
+    S.log.unshift({ url: practiceUrl(qq), res: sum }); S.log = S.log.slice(0, 5); save(); paint();
+  }
+  function markRaw(json, qq) {
+    const txt = JSON.stringify(json, null, 2), lines = txt.split('\n').map(esc), key = `"${WX_VAR[qq.항목]}": [`;
+    const at = lines.findIndex(l => l.includes(esc(key))), tgt = at < 0 ? -1 : at + 1 + (qq.날짜 === '내일' ? 1 : 0);
+    if (tgt > 0 && lines[tgt] && !/^\s*\]/.test(lines[tgt])) lines[tgt] = lines[tgt].replace(/^(\s*)(.*)$/, '$1<mark>$2</mark>');
+    return lines.join('\n');
+  }
+  async function showReal() {
+    const qq = curQ();
+    if (!qq.지역 || !qq.날짜 || !qq.항목) { R('card').innerHTML = '<span class="wx-err">⚠</span><b>지역·날짜·항목을 모두 골라요</b>'; return; }
+    const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 8000);
+    try {
+      const r = await fetch(realUrl(qq), { signal: ac.signal });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const json = await r.json(), pk = realPick(json, qq);
+      R('raw').innerHTML = markRaw(json, qq);
+      const mk = R('raw').querySelector('mark'); if (mk) R('raw').scrollTop = Math.max(0, mk.offsetTop - R('raw').clientHeight / 2);
+      if (pk.value == null) { R('card').innerHTML = '<span class="wx-err">⚠</span><b>값이 오지 않았어요</b>'; R('judge').hidden = true; }
+      else {
+        R('card').innerHTML = `<span class="wx-ic">${WX_ICON[qq.항목]}</span><b>${pk.value}${pk.unit}</b><small>${esc(qq.지역)} · ${esc(qq.날짜)}${pk.date ? ` (${esc(pk.date)})` : ''} · ${qq.항목}</small>`;
+        R('judge').hidden = qq.항목 !== '비 올 확률';
+        if (qq.항목 === '비 올 확률') R('judge').textContent = `비 올 확률이 ${pk.value}%니까 ${umbrellaText(pk.value)}.`;
+      }
+    } catch (e) {
+      R('fail').hidden = false; R('fail').textContent = '응답이 오지 않았어요. 인터넷 연결을 확인하거나 연습용 탭에서 해 봐요.';
+    } finally { clearTimeout(timer); }
+  }
+  R('tabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b || busy) return; S.tab = b.dataset.t; save(); resetResp(); paint(); });
+  R('chips').addEventListener('click', e => {
+    const b = e.target.closest('[data-k]'); if (!b || busy) return; const qq = q(), k = b.dataset.k, v = b.dataset.v;
+    qq[k] = qq[k] === v && !(k === '지역' && !real() && wxClean(S.own)) ? null : v; if (k === '지역' && !real()) S.own = '';
+    save(); paint(k);
+  });
+  R('own').addEventListener('input', () => { S.own = R('own').value; save(); R('url').innerHTML = urlHtml('지역'); chips(); });
+  R('send').addEventListener('click', () => {
+    if (busy) return; setBusy(true); R('fail').hidden = true; R('judge').hidden = true;
+    fly(async () => { try { if (real()) await showReal(); else showPractice(); } finally { setBusy(false); } });
+  });
+  paint();
+}
+const WX_GOAL = '연습용 날씨 API에 요청을 보내고 응답을 읽어요. 그다음 진짜 날씨 API에 같은 방법으로 물어봐요.';
+
 /* pages.js — 재구성 교과서 QR로 여는 웹 활동 3개(112·116·119쪽)와 처음 화면, 주소 연결 */
 const view = document.getElementById('view');
 const topNav = document.getElementById('topnav');
@@ -1667,7 +1870,8 @@ PAGES.w119 = {
 
 /* ---------- 더하기 1·2 (기존 웹 교재 보강 차시를 교과서 126~133쪽에 맞춰 옮김) ---------- */
 PAGES.b1 = { key: 'b1', no: '더하기 1', pg: '126~129쪽', acts: '활동 1~7', title: ['컴퓨터는 어떻게 일할까', ''], short: '입력·처리·출력', what: '입력·처리·출력 나누기 → 자동문 예측·실행 → 숫자 바꾸기·고장 찾기 → 가로등·박수 스위치 설계', goal: B1.goal, legacy: B1 };
-PAGES.b2 = { key: 'b2', no: '더하기 2', pg: '130~133쪽', acts: '활동 1~7', title: ['데이터로 보는 우리 부산', ''], short: '해수욕장 데이터', what: '예측 → 표 읽기 → 고장 난 표 정리 → 그래프 고르기·읽기 → 우리 반 데이터', goal: B2.goal, legacy: B2 };
+PAGES.b2 = { key: 'b2', no: '더하기 2', pg: '132쪽', acts: '활동 2', title: ['API로 날씨 데이터 가져오기', ''], short: '날씨 API', what: '연습용 날씨 API에 요청하고 응답 읽기 → 진짜 날씨 API에 물어보기', goal: WX_GOAL, html: wxHtml, init: ctx => wxInit(ctx, 'practice') };
+PAGES.b2real = { key: 'b2real', no: '더하기 2', pg: '133쪽', acts: '활동 3', title: ['진짜 날씨 API에 물어봐요', ''], short: '진짜 날씨 API', what: '진짜 날씨 API(Open-Meteo)에 요청 주소를 만들어 보내기', goal: WX_GOAL, html: wxHtml, init: ctx => wxInit(ctx, 'real') };
 function renderLegacy(L) {
   const X = L.legacy, S = Object.assign(X.defaults(), stateOf(L.key));
   view.innerHTML = `<div class="page">
@@ -1695,7 +1899,7 @@ function renderHome() {
 function renderPage(L) {
   const S = Object.assign({}, stateOf(L.key));
   view.innerHTML = `<div class="page">
-    <header class="lesson-head"><p class="kicker"><span class="pg">교과서 ${L.pg}</span>${L.no}차시 · ${L.acts}</p><h1>${L.title[0]}</h1><p class="goal"><b>이렇게 해요</b> ${L.goal}</p></header>
+    <header class="lesson-head"><p class="kicker"><span class="pg">교과서 ${L.pg}</span>${typeof L.no === 'number' ? L.no + '차시' : '교과서에 없는 것 ' + L.no} · ${L.acts}</p><h1>${L.title[0]}</h1><p class="goal"><b>이렇게 해요</b> ${L.goal}</p></header>
     ${L.html()}
     <p class="foot">기록은 이 기기의 브라우저에만 저장돼요. <button type="button" class="mn-btn mn-btn--quiet" data-r="wipe">이 활동 기록 지우기</button></p></div>`;
   const R = n => view.querySelector(`[data-r="${n}"]`);
