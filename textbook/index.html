@@ -1528,8 +1528,10 @@ function wxHtml() {
   </section>`;
 }
 function wxInit(ctx, startTab) {
-  const { S, R, save } = ctx;
-  S.tab = S.tab || startTab; S.qp = S.qp || {}; S.qr = S.qr || {}; S.log = S.log || [];
+  const { S, save } = ctx;
+  const root = ctx.R('send').closest('.page'), alive = () => root.isConnected;
+  const R = n => root.querySelector(`[data-r="${n}"]`);
+  S.tab = startTab; S.qp = S.qp || {}; S.qr = S.qr || {}; S.log = S.log || [];
   let busy = false, last = '';
   const real = () => S.tab === 'real';
   const q = () => (real() ? S.qr : S.qp);
@@ -1586,6 +1588,7 @@ function wxInit(ctx, startTab) {
       const r = await fetch(realUrl(qq), { signal: ac.signal });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const json = await r.json(), pk = realPick(json, qq);
+      if (!alive()) return;
       R('raw').innerHTML = markRaw(json, qq);
       const mk = R('raw').querySelector('mark'); if (mk) R('raw').scrollTop = Math.max(0, mk.offsetTop - R('raw').clientHeight / 2);
       if (pk.value == null) { R('card').innerHTML = '<span class="wx-err">⚠</span><b>값이 오지 않았어요</b>'; R('judge').hidden = true; }
@@ -1595,6 +1598,7 @@ function wxInit(ctx, startTab) {
         if (qq.항목 === '비 올 확률') R('judge').textContent = `비 올 확률이 ${pk.value}%니까 ${umbrellaText(pk.value)}.`;
       }
     } catch (e) {
+      if (!alive()) return;
       R('fail').hidden = false; R('fail').textContent = '응답이 오지 않았어요. 인터넷 연결을 확인하거나 연습용 탭에서 해 봐요.';
     } finally { clearTimeout(timer); }
   }
@@ -1602,12 +1606,12 @@ function wxInit(ctx, startTab) {
   R('chips').addEventListener('click', e => {
     const b = e.target.closest('[data-k]'); if (!b || busy) return; const qq = q(), k = b.dataset.k, v = b.dataset.v;
     qq[k] = qq[k] === v && !(k === '지역' && !real() && wxClean(S.own)) ? null : v; if (k === '지역' && !real()) S.own = '';
-    save(); paint(k);
+    save(); resetResp(); paint(k);
   });
   R('own').addEventListener('input', () => { S.own = R('own').value; save(); R('url').innerHTML = urlHtml('지역'); chips(); });
   R('send').addEventListener('click', () => {
-    if (busy) return; setBusy(true); R('fail').hidden = true; R('judge').hidden = true;
-    fly(async () => { try { if (real()) await showReal(); else showPractice(); } finally { setBusy(false); } });
+    if (busy) return; setBusy(true); resetResp();
+    fly(async () => { if (!alive()) return; try { if (real()) await showReal(); else showPractice(); } finally { if (alive()) setBusy(false); } });
   });
   paint();
 }
